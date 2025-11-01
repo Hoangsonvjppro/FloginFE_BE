@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: backend
+  
+  # TODO: Configure dual datasources for Auth (Oracle) and Product (PostgreSQL)
+  datasource:
+    auth:
+      url: ${AUTH_DB_URL:jdbc:oracle:thin:@//localhost:1521/FLOGIN}
+      username: ${AUTH_DB_USERNAME:auth_user}
+      password: ${AUTH_DB_PASSWORD:auth_password}
+      driver-class-name: oracle.jdbc.OracleDriver
+    product:
+      url: ${PRODUCT_DB_URL:jdbc:postgresql://localhost:5432/products}
+      username: ${PRODUCT_DB_USERNAME:product_user}
+      password: ${PRODUCT_DB_PASSWORD:product_password}
+      driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    auth:
+      database-platform: org.hibernate.dialect.OracleDialect
+    product:
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        format_sql: true
+
+logging:
+  level:
+    org.springframework: INFO
+    com.flogin: DEBUG
+

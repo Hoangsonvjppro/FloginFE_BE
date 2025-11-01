@@ -1,0 +1,76 @@
+FloginFE_BE/
+├─ .github/
+│  └─ workflows/
+│     └─ ci.yml                    # CI: FE (Jest) + BE (JUnit/Mockito + IT với Testcontainers) + (tuỳ chọn) E2E
+├─ frontend/
+│  ├─ src/
+│  │  ├─ components/
+│  │  │  ├─ auth/
+│  │  │  │  ├─ LoginForm.jsx
+│  │  │  │  └─ RegisterForm.jsx
+│  │  │  └─ product/
+│  │  │     ├─ ProductList.jsx
+│  │  │     ├─ ProductForm.jsx
+│  │  │     └─ ProductItem.jsx
+│  │  ├─ services/
+│  │  │  ├─ httpClient.js
+│  │  │  ├─ authApi.js
+│  │  │  └─ productApi.js
+│  │  ├─ utils/
+│  │  │  ├─ validators.js
+│  │  │  └─ constants.js
+│  │  └─ tests/
+│  │     ├─ unit/
+│  │     │  ├─ LoginForm.test.jsx
+│  │     │  └─ ProductForm.test.jsx
+│  │     └─ integration/
+│  │        └─ ProductFlow.test.jsx
+│  └─ package.json
+└─ backend/
+   ├─ src/
+   │  ├─ main/
+   │  │  ├─ java/com/flogin/
+   │  │  │  ├─ AuthDataSourceConfig.java        # cấu hình Oracle DS/EMF/Tx (đặt ở root package)
+   │  │  │  ├─ ProductDataSourceConfig.java     # cấu hình Postgres DS/EMF/Tx (đặt ở root package)
+   │  │  │  ├─ SecurityConfig.java              # (nếu dùng) Spring Security/JWT
+   │  │  │  ├─ controller/
+   │  │  │  │  ├─ AuthController.java
+   │  │  │  │  ├─ ProductController.java
+   │  │  │  │  └─ GlobalExceptionHandler.java   # @ControllerAdvice (handler đặt trong controller/)
+   │  │  │  ├─ service/
+   │  │  │  │  ├─ auth/
+   │  │  │  │  │  └─ AuthService.java
+   │  │  │  │  ├─ product/
+   │  │  │  │  │  └─ ProductService.java
+   │  │  │  │  ├─ BadRequestException.java      # custom exceptions đặt trong service/
+   │  │  │  │  └─ NotFoundException.java
+   │  │  │  ├─ dto/
+   │  │  │  │  ├─ auth/
+   │  │  │  │  │  ├─ LoginRequest.java
+   │  │  │  │  │  └─ RegisterRequest.java
+   │  │  │  │  └─ product/
+   │  │  │  │     ├─ ProductRequest.java
+   │  │  │  │     ├─ ProductResponse.java
+   │  │  │  │     └─ ProductMapper.java         # mapper đặt trong dto/
+   │  │  │  ├─ entity/
+   │  │  │  │  ├─ auth/
+   │  │  │  │  │  └─ User.java                  # Oracle
+   │  │  │  │  └─ product/
+   │  │  │  │     └─ Product.java               # PostgreSQL
+   │  │  │  └─ repository/
+   │  │  │     ├─ auth/
+   │  │  │     │  └─ UserRepository.java
+   │  │  │     └─ product/
+   │  │  │        └─ ProductRepository.java
+   │  │  └─ resources/
+   │  │     ├─ application.yml                   # bind 2 datasource qua prefix khác nhau
+   │  │     └─ application-test.yml              # cấu hình test (Testcontainers/H2 fallback)
+   │  └─ test/java/com/flogin/
+   │     ├─ unit/
+   │     │  ├─ service/auth/AuthServiceTest.java
+   │     │  ├─ service/product/ProductServiceTest.java
+   │     │  └─ controller/ProductControllerTest.java
+   │     └─ integration/
+   │        ├─ AuthIntegrationTest.java
+   │        └─ ProductIntegrationTest.java
+   └─ pom.xml

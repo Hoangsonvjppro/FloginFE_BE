@@ -1,0 +1,33 @@
+# TODO: Configure test profile with H2 in-memory databases
+spring:
+  datasource:
+    auth:
+      url: jdbc:h2:mem:authdb;MODE=Oracle;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
+      username: sa
+      password:
+      driver-class-name: org.h2.Driver
+    product:
+      url: jdbc:h2:mem:productdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
+      username: sa
+      password:
+      driver-class-name: org.h2.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    auth:
+      database-platform: org.hibernate.dialect.H2Dialect
+    product:
+      database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        format_sql: false
+  
+  sql:
+    init:
+      mode: never
+
+logging:
+  level:
+    com.flogin: DEBUG
+
