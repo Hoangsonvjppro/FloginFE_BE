@@ -26,6 +26,19 @@ Dự án xây dựng ứng dụng web full-stack với **Test-Driven Development
 - **Testing**: Jest, React Testing Library
 - **E2E Testing**: Cypress (planned)
 
+---
+
+## 📚 MỤC LỤC
+1. [Cấu trúc dự án](#-cấu-trúc-dự-án)
+2. [Bắt đầu nhanh](#-bắt-đầu-nhanh)
+3. [Cài đặt môi trường](#-cài-đặt-môi-trường)
+4. [Hướng dẫn TDD](#-hướng-dẫn-tdd)
+5. [Testing](#-testing)
+6. [API Endpoints](#-api-endpoints)
+7. [Troubleshooting](#-troubleshooting)
+
+---
+
 ## 📁 Cấu trúc dự án
 
 ```
@@ -123,15 +136,23 @@ FloginFE_BE/
 - Oracle Database (port 1521)
 - PostgreSQL (port 5432)
 
-📖 **Chi tiết cài đặt**: Xem file [SETUP_ENVIRONMENT.md](./SETUP_ENVIRONMENT.md)
+### 2. Setup Database với Docker (Nhanh nhất)
 
-### 2. Cài đặt dependencies
+```powershell
+# Oracle
+docker run -d --name oracle-auth -p 1521:1521 -e ORACLE_PWD=password container-registry.oracle.com/database/express:latest
+
+# PostgreSQL
+docker run -d --name postgres-product -p 5432:5432 -e POSTGRES_USER=product_user -e POSTGRES_PASSWORD=product_password -e POSTGRES_DB=products postgres:16
+```
+
+### 3. Cài đặt dependencies
 
 #### Backend:
 ```bash
 cd backend
-./mvnw clean install -DskipTests  # Linux/Mac
 .\mvnw.cmd clean install -DskipTests  # Windows
+./mvnw clean install -DskipTests      # Linux/Mac
 ```
 
 #### Frontend:
@@ -140,9 +161,9 @@ cd frontend
 npm install
 ```
 
-### 3. Cấu hình Database
+### 4. Cấu hình Database
 
-Tạo file `.env` hoặc cấu hình biến môi trường:
+Cấu hình trong `backend/src/main/resources/application.yaml` hoặc tạo file `.env`:
 
 ```properties
 # Oracle
@@ -156,13 +177,13 @@ PRODUCT_DB_USERNAME=product_user
 PRODUCT_DB_PASSWORD=product_password
 ```
 
-### 4. Chạy ứng dụng
+### 5. Chạy ứng dụng
 
 #### Backend (Terminal 1):
 ```bash
 cd backend
-./mvnw spring-boot:run  # Linux/Mac
 .\mvnw.cmd spring-boot:run  # Windows
+./mvnw spring-boot:run      # Linux/Mac
 ```
 → API running at: http://localhost:8081
 
@@ -271,6 +292,165 @@ Dự án này áp dụng **Test-Driven Development**:
 - Kiểm tra cấu hình test environment
 - Xem chi tiết lỗi trong test output
 
+---
+
+## � Cài đặt môi trường
+
+### Cài đặt Java JDK 21+
+
+#### Windows:
+1. Tải JDK 21 từ: https://www.oracle.com/java/technologies/downloads/#java21
+2. Hoặc sử dụng OpenJDK: https://adoptium.net/
+3. Cấu hình JAVA_HOME:
+   ```powershell
+   # Thêm JAVA_HOME = C:\Program Files\Java\jdk-21
+   # Thêm %JAVA_HOME%\bin vào PATH
+   ```
+4. Kiểm tra: `java -version`
+
+### Cài đặt Maven
+
+#### Windows:
+1. Tải Maven từ: https://maven.apache.org/download.cgi
+2. Giải nén vào `C:\Program Files\Apache\maven`
+3. Thêm `C:\Program Files\Apache\maven\bin` vào PATH
+4. Kiểm tra: `mvn -version`
+
+**Hoặc sử dụng Maven Wrapper** (đã có trong dự án): `.\mvnw.cmd -version`
+
+### Cài đặt Node.js và npm
+
+1. Tải Node.js LTS từ: https://nodejs.org/ (khuyến nghị v20.x)
+2. Cài đặt (npm được cài cùng)
+3. Kiểm tra:
+   ```bash
+   node -v   # v20.x.x
+   npm -v    # 10.x.x
+   ```
+
+### Cài đặt Database
+
+#### Oracle Database
+**Option 1: Oracle XE**
+- Tải từ: https://www.oracle.com/database/technologies/xe-downloads.html
+
+**Option 2: Docker (Khuyến nghị)**
+```powershell
+docker pull container-registry.oracle.com/database/express:latest
+docker run -d --name oracle-auth -p 1521:1521 -e ORACLE_PWD=password container-registry.oracle.com/database/express:latest
+```
+
+#### PostgreSQL
+**Option 1: Cài đặt trực tiếp**
+- Tải từ: https://www.postgresql.org/download/
+
+**Option 2: Docker (Khuyến nghị)**
+```powershell
+docker pull postgres:16
+docker run -d --name postgres-product -p 5432:5432 -e POSTGRES_USER=product_user -e POSTGRES_PASSWORD=product_password -e POSTGRES_DB=products postgres:16
+```
+
+---
+
+## 🎯 Hướng dẫn TDD
+
+### Nguyên tắc TDD: Red-Green-Refactor
+
+```
+🔴 RED → 🟢 GREEN → 🔵 REFACTOR
+```
+
+1. **🔴 RED**: Viết test trước (test sẽ fail)
+2. **🟢 GREEN**: Viết code tối thiểu để pass test
+3. **🔵 REFACTOR**: Cải thiện code (giữ test passing)
+
+### Ví dụ: Tạo User Entity
+
+#### Step 1: Viết Test (RED)
+```java
+// File: backend/src/test/java/com/flogin/unit/entity/UserTest.java
+@Test
+void shouldCreateUserWithValidData() {
+    // Given
+    User user = new User();
+    user.setUsername("testuser");
+    user.setEmail("test@example.com");
+    user.setPassword("password123");
+    
+    // Then
+    assertEquals("testuser", user.getUsername());
+    assertEquals("test@example.com", user.getEmail());
+}
+```
+
+Chạy test: `.\mvnw.cmd test -Dtest=UserTest`  
+→ ❌ Test sẽ FAIL (chưa có implementation)
+
+#### Step 2: Implement Code (GREEN)
+```java
+// File: backend/src/main/java/com/flogin/entity/auth/User.java
+@Entity
+@Table(name = "users")
+@Data
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(unique = true, nullable = false)
+    private String username;
+    
+    @Column(unique = true, nullable = false)
+    private String email;
+    
+    @Column(nullable = false)
+    private String password;
+}
+```
+
+Chạy lại test: `.\mvnw.cmd test -Dtest=UserTest`  
+→ ✅ Test PASS
+
+#### Step 3: Refactor
+- Thêm validation
+- Thêm timestamps
+- Optimize code
+
+### Roadmap phát triển
+
+#### Phase 1: Backend - Authentication
+1. User Entity + tests
+2. UserRepository + tests
+3. AuthService + tests
+4. AuthController + tests
+5. Integration tests
+
+#### Phase 2: Backend - Product CRUD
+1. Product Entity + tests
+2. ProductRepository + tests
+3. ProductService + tests
+4. ProductController + tests
+5. Integration tests
+
+#### Phase 3: Frontend - Components
+1. LoginForm + tests
+2. RegisterForm + tests
+3. ProductList + tests
+4. ProductForm + tests
+5. ProductItem + tests
+
+#### Phase 4: Integration & E2E
+1. Backend integration tests
+2. Frontend integration tests
+3. Cypress E2E tests (optional)
+
+### Test Coverage Goals
+- **Unit Tests**: ≥ 80% coverage
+- **Integration Tests**: Core flows
+- **E2E Tests**: Critical user journeys
+
+---
+
 ## 📄 License
 
 This project is for educational purposes.
@@ -281,6 +461,8 @@ This project is for educational purposes.
 
 ---
 
-**Note**: Mã nguồn hiện tại đã được xóa sạch để bắt đầu phát triển theo TDD từ đầu. Tất cả file đều là template rỗng với TODO comments.
+## 📝 Ghi chú quan trọng
 
-**Bắt đầu phát triển**: Xem [SETUP_ENVIRONMENT.md](./SETUP_ENVIRONMENT.md) để cài đặt môi trường đầy đủ.
+⚠️ **Mã nguồn đã được xóa sạch**: Tất cả file đều là template rỗng với TODO comments, sẵn sàng cho phát triển TDD từ đầu.
+
+✅ **Sẵn sàng bắt đầu**: Môi trường đã được cấu hình đầy đủ, dependencies đã được định nghĩa, có thể bắt đầu viết test ngay!
