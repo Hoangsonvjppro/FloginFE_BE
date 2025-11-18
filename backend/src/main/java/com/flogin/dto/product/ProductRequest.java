@@ -1,5 +1,53 @@
 package com.flogin.dto.product;
 
+import java.math.BigDecimal;
+
 public class ProductRequest {
-    // TODO: Implement product request DTO using TDD approach
+    private String name;
+    private String description;
+    private BigDecimal price;
+    private Integer quantity;
+
+    // Constructors
+    public ProductRequest() {}
+
+    public ProductRequest(String name, String description, BigDecimal price, Integer quantity) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
+    // Getters and Setters
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 }
