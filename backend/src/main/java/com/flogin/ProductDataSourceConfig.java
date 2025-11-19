@@ -34,10 +34,18 @@ public class ProductDataSourceConfig {
     public LocalContainerEntityManagerFactoryBean productEntityManagerFactory(
             EntityManagerFactoryBuilder builder,
             @Qualifier("productDataSource") DataSource dataSource) {
+        
+        java.util.Map<String, Object> properties = new java.util.HashMap<>();
+        properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+        properties.put("hibernate.hbm2ddl.auto", "update");
+        properties.put("hibernate.show_sql", "false");
+        properties.put("hibernate.format_sql", "true");
+        
         return builder
                 .dataSource(dataSource)
                 .packages("com.flogin.entity.product")
                 .persistenceUnit("product")
+                .properties(properties)
                 .build();
     }
     

@@ -7,7 +7,7 @@ spring:
   
   datasource:
     auth:
-      jdbc-url: ${AUTH_DB_URL:jdbc:oracle:thin:@oracle-db:1521/XE}
+      jdbc-url: ${AUTH_DB_URL:jdbc:oracle:thin:@oracle-db:1521/XEPDB1}
       username: ${AUTH_DB_USERNAME:auth_user}
       password: ${AUTH_DB_PASSWORD:AuthPassword123}
       driver-class-name: oracle.jdbc.OracleDriver
