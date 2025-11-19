@@ -25,6 +25,6 @@ export const deleteProduct = async (id) => {
 };
 
 export const searchProducts = async (keyword) => {
-  const response = await httpClient.get(`/products/search?keyword=${keyword}`);
+  const response = await httpClient.get(`/products/search?keyword=${encodeURIComponent(keyword)}`);
   return response.data;
 };
