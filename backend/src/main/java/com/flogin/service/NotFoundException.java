@@ -1,5 +1,12 @@
 package com.flogin.service;
 
 public class NotFoundException extends RuntimeException {
-    // TODO: Implement custom exception using TDD approach
+    
+    public NotFoundException(String message) {
+        super(message);
+    }
+    
+    public NotFoundException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
