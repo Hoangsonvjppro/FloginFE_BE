@@ -28,8 +28,8 @@ function RegisterForm({ onSubmit, onGoogleRegister, onSwitchToLogin }) {
     
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
     }
     
     if (!formData.confirmPassword) {
@@ -51,7 +51,7 @@ function RegisterForm({ onSubmit, onGoogleRegister, onSwitchToLogin }) {
         await onSubmit({
           email: formData.email,
           password: formData.password,
-          name: formData.name
+          fullName: formData.name
         });
       } finally {
         setIsLoading(false);
