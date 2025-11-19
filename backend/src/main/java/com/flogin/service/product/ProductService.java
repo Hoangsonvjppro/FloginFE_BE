@@ -5,8 +5,8 @@ import com.flogin.dto.product.ProductRequest;
 import com.flogin.dto.product.ProductResponse;
 import com.flogin.entity.product.Product;
 import com.flogin.repository.product.ProductRepository;
-import com.flogin.service.BadRequestException;
-import com.flogin.service.NotFoundException;
+import com.flogin.exception.BadRequestException;
+import com.flogin.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +40,13 @@ public class ProductService {
     @Transactional(readOnly = true)
     public List<ProductResponse> getAllProducts() {
         return productRepository.findAll().stream()
+                .map(productMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+    
+    @Transactional(readOnly = true)
+    public List<ProductResponse> searchProducts(String keyword) {
+        return productRepository.findByNameContainingIgnoreCase(keyword).stream()
                 .map(productMapper::toResponse)
                 .collect(Collectors.toList());
     }

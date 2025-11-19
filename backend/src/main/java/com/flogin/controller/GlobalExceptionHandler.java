@@ -1,7 +1,7 @@
 package com.flogin.controller;
 
-import com.flogin.service.BadRequestException;
-import com.flogin.service.NotFoundException;
+import com.flogin.exception.BadRequestException;
+import com.flogin.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

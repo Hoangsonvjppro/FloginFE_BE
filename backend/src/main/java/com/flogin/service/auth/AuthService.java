@@ -4,7 +4,7 @@ import com.flogin.dto.auth.LoginRequest;
 import com.flogin.dto.auth.RegisterRequest;
 import com.flogin.entity.auth.User;
 import com.flogin.repository.auth.UserRepository;
-import com.flogin.service.BadRequestException;
+import com.flogin.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,37 +25,43 @@ public class AuthService {
     
     @Transactional
     public User register(RegisterRequest request) {
+        // Trim inputs first
+        if (request.getEmail() != null) {
+            request.setEmail(request.getEmail().trim().toLowerCase());
+        }
+        if (request.getFullName() != null) {
+            request.setFullName(request.getFullName().trim());
+        }
+        
         // Validate inputs
         validateRegisterRequest(request);
         
-        // Trim inputs
-        String email = request.getEmail().trim().toLowerCase();
-        String fullName = request.getFullName().trim();
-        
         // Check if email already exists
-        if (userRepository.existsByEmail(email)) {
+        if (userRepository.existsByEmail(request.getEmail())) {
             throw new BadRequestException("Email already exists");
         }
         
         // Create user
         User user = new User();
-        user.setEmail(email);
+        user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setFullName(fullName);
+        user.setFullName(request.getFullName());
         
         return userRepository.save(user);
     }
     
     @Transactional(readOnly = true)
     public User login(LoginRequest request) {
+        // Trim and normalize email first
+        if (request.getEmail() != null) {
+            request.setEmail(request.getEmail().trim().toLowerCase());
+        }
+        
         // Validate inputs
         validateLoginRequest(request);
         
-        // Trim and normalize email
-        String email = request.getEmail().trim().toLowerCase();
-        
         // Find user
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmail(request.getEmail())
             .orElseThrow(() -> new BadRequestException("Invalid email or password"));
         
         // Verify password
