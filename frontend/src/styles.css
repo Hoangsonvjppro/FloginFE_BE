@@ -533,7 +533,8 @@ main {
 .product-header-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 /* ==================== VIEW MODE TOGGLE ==================== */
@@ -572,46 +573,35 @@ main {
 }
 
 .btn-add {
-  padding: 16px 32px;
-  background: linear-gradient(135deg, #007aff 0%, #5ac8fa 100%);
-  color: white;
-  border: none;
-  border-radius: var(--radius-xl);
-  font-weight: 600;
-  font-size: 16px;
+  padding: 14px 28px;
+  background: var(--black);
+  color: var(--white);
+  border: 2px solid var(--black);
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 15px;
   cursor: pointer;
-  transition: all var(--transition);
-  box-shadow: 0 8px 24px rgba(0, 122, 255, 0.35);
-  display: flex;
+  transition: var(--transition);
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  position: relative;
-  overflow: hidden;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.btn-add::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s;
-}
-
-.btn-add:hover::before {
-  left: 100%;
+.btn-add svg {
+  flex-shrink: 0;
 }
 
 .btn-add:hover {
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 12px 32px rgba(0, 122, 255, 0.45);
-  background: linear-gradient(135deg, #0051d5 0%, #007aff 100%);
+  background: var(--white);
+  color: var(--black);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .btn-add:active {
-  transform: translateY(-1px) scale(1);
+  transform: translateY(0);
 }
 
 .products-grid {
@@ -1160,14 +1150,29 @@ main {
 }
 
 .btn-secondary {
-  background: var(--gray-100);
-  color: var(--gray-700);
+  padding: 14px 24px;
+  background: var(--white);
+  color: var(--black);
+  border: 2px solid var(--black);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .btn-secondary:hover {
-  background: var(--gray-200);
+  background: var(--black);
+  color: var(--white);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-secondary svg {
+  flex-shrink: 0;
 }
 
 .btn-danger {
@@ -1441,6 +1446,204 @@ main {
   
   .toast {
     min-width: unset;
+    width: 100%;
+  }
+}
+
+/* ==================== CATEGORY MANAGER ==================== */
+
+.category-manager-modal {
+  max-width: 900px;
+  width: 90vw;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.category-manager-modal .modal-body {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.category-manager-header {
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.category-manager-header .btn-primary {
+  padding: 16px 32px;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.category-list {
+  margin-top: 20px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+}
+
+.data-table thead {
+  background: var(--gray-100);
+  border-bottom: 2px solid var(--black);
+}
+
+.data-table th {
+  text-align: left;
+  padding: 16px;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--black);
+}
+
+.data-table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--gray-200);
+  font-size: 15px;
+}
+
+.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tr:hover {
+  background: var(--gray-50);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-icon {
+  background: none;
+  border: 1px solid var(--gray-300);
+  padding: 8px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon:hover {
+  background: var(--gray-100);
+  border-color: var(--black);
+}
+
+.btn-icon.btn-edit {
+  color: var(--gray-700);
+}
+
+.btn-icon.btn-delete {
+  color: var(--danger);
+}
+
+.btn-icon.btn-delete:hover {
+  background: var(--danger);
+  color: var(--white);
+  border-color: var(--danger);
+}
+
+.category-form {
+  background: var(--white);
+  padding: 32px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--black);
+  margin-top: 24px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 2px solid var(--gray-200);
+}
+
+.form-actions button {
+  min-width: 140px;
+}
+
+.char-count {
+  display: block;
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-top: 4px;
+  text-align: right;
+}
+
+/* ==================== SELECT DROPDOWN ==================== */
+
+select {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 15px;
+  font-family: inherit;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--black);
+  transition: var(--transition);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='%23404040' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 40px;
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--black);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+select.error {
+  border-color: var(--danger);
+}
+
+select option {
+  padding: 12px;
+}
+
+/* ==================== PRODUCT HEADER ENHANCEMENT ==================== */
+
+.product-header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.product-header-actions .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 768px) {
+  .product-header-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .product-header-actions > * {
     width: 100%;
   }
 }

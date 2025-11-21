@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import ProductItem from './ProductItem';
 import ProductForm from './ProductForm';
+import CategoryManager from './CategoryManager';
 import { getAllProducts, createProduct, updateProduct, deleteProduct } from '../../services/productApi';
 import { useToast } from '../ToastContainer';
 import ConfirmDialog from '../ConfirmDialog';
@@ -9,6 +10,7 @@ export default function ProductList() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [viewMode, setViewMode] = useState('large');
@@ -115,6 +117,15 @@ export default function ProductList() {
               </svg>
             </button>
           </div>
+          <button className="btn-secondary" onClick={() => setShowCategoryManager(true)}>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <rect x="2" y="2" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+              <rect x="11" y="2" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+              <rect x="2" y="11" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+              <rect x="11" y="11" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+            </svg>
+            Categories
+          </button>
           <button className="btn-add" onClick={() => setShowForm(!showForm)}>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d="M10 4V16M4 10H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
@@ -123,6 +134,11 @@ export default function ProductList() {
           </button>
         </div>
       </div>
+
+      <CategoryManager
+        isOpen={showCategoryManager}
+        onClose={() => setShowCategoryManager(false)}
+      />
 
       <ProductForm
         isOpen={showForm}

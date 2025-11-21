@@ -3,7 +3,9 @@ package com.flogin.service.product;
 import com.flogin.dto.product.ProductMapper;
 import com.flogin.dto.product.ProductRequest;
 import com.flogin.dto.product.ProductResponse;
+import com.flogin.entity.product.Category;
 import com.flogin.entity.product.Product;
+import com.flogin.repository.product.CategoryRepository;
 import com.flogin.repository.product.ProductRepository;
 import com.flogin.exception.BadRequestException;
 import com.flogin.exception.NotFoundException;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class ProductService {
     
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
     
     @Transactional
@@ -27,11 +30,18 @@ public class ProductService {
         // Validate request
         validateProductRequest(request);
         
-        // Trim name
+        // Trim name and description
         request.setName(request.getName().trim());
+        if (request.getDescription() != null) {
+            request.setDescription(request.getDescription().trim());
+        }
+        
+        // Get category
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new BadRequestException("Category not found with id: " + request.getCategoryId()));
         
         // Create product
-        Product product = productMapper.toEntity(request);
+        Product product = productMapper.toEntity(request, category);
         Product savedProduct = productRepository.save(product);
         
         return productMapper.toResponse(savedProduct);
@@ -68,11 +78,18 @@ public class ProductService {
         // Validate request
         validateProductRequest(request);
         
-        // Trim name
+        // Trim name and description
         request.setName(request.getName().trim());
+        if (request.getDescription() != null) {
+            request.setDescription(request.getDescription().trim());
+        }
+        
+        // Get category
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new BadRequestException("Category not found with id: " + request.getCategoryId()));
         
         // Update product
-        productMapper.updateEntity(product, request);
+        productMapper.updateEntity(product, request, category);
         Product updatedProduct = productRepository.save(product);
         
         return productMapper.toResponse(updatedProduct);
@@ -88,24 +105,44 @@ public class ProductService {
     }
     
     private void validateProductRequest(ProductRequest request) {
+        // Name validation
         if (request.getName() == null || request.getName().trim().isEmpty()) {
             throw new BadRequestException("Product name is required");
         }
+        if (request.getName().trim().length() < 3 || request.getName().trim().length() > 100) {
+            throw new BadRequestException("Product name must be between 3 and 100 characters");
+        }
         
+        // Description validation
+        if (request.getDescription() != null && request.getDescription().length() > 500) {
+            throw new BadRequestException("Description must not exceed 500 characters");
+        }
+        
+        // Price validation
         if (request.getPrice() == null) {
             throw new BadRequestException("Price is required");
         }
-        
         if (request.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
             throw new BadRequestException("Price must be greater than 0");
         }
+        if (request.getPrice().compareTo(new BigDecimal("999999999")) > 0) {
+            throw new BadRequestException("Price must not exceed 999,999,999");
+        }
         
+        // Quantity validation
         if (request.getQuantity() == null) {
             throw new BadRequestException("Quantity is required");
         }
-        
         if (request.getQuantity() < 0) {
             throw new BadRequestException("Quantity must be greater than or equal to 0");
+        }
+        if (request.getQuantity() > 99999) {
+            throw new BadRequestException("Quantity must not exceed 99,999");
+        }
+        
+        // Category validation
+        if (request.getCategoryId() == null) {
+            throw new BadRequestException("Category is required");
         }
     }
 }

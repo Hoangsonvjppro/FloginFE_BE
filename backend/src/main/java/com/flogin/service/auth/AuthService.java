@@ -73,24 +73,35 @@ public class AuthService {
     }
     
     private void validateRegisterRequest(RegisterRequest request) {
+        // Email validation
         if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
             throw new BadRequestException("Email is required");
         }
-        
         if (!EMAIL_PATTERN.matcher(request.getEmail()).matches()) {
             throw new BadRequestException("Invalid email format");
         }
         
+        // Password validation (6-100 characters, must have letters and numbers)
         if (request.getPassword() == null || request.getPassword().isEmpty()) {
             throw new BadRequestException("Password is required");
         }
-        
-        if (request.getPassword().length() < 8) {
-            throw new BadRequestException("Password must be at least 8 characters");
+        if (request.getPassword().length() < 6 || request.getPassword().length() > 100) {
+            throw new BadRequestException("Password must be between 6 and 100 characters");
+        }
+        if (!request.getPassword().matches("^(?=.*[A-Za-z])(?=.*\\d).+$")) {
+            throw new BadRequestException("Password must contain both letters and numbers");
         }
         
+        // Username validation (3-50 characters, only a-z, A-Z, 0-9, -, ., _)
         if (request.getFullName() == null || request.getFullName().trim().isEmpty()) {
-            throw new BadRequestException("Full name is required");
+            throw new BadRequestException("Username is required");
+        }
+        String trimmedName = request.getFullName().trim();
+        if (trimmedName.length() < 3 || trimmedName.length() > 50) {
+            throw new BadRequestException("Username must be between 3 and 50 characters");
+        }
+        if (!trimmedName.matches("^[a-zA-Z0-9._-]+$")) {
+            throw new BadRequestException("Username can only contain letters, numbers, dots, hyphens, and underscores");
         }
     }
     

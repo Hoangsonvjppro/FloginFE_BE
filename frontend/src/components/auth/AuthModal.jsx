@@ -41,11 +41,21 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
+    } else if (formData.password.length > 100) {
+      newErrors.password = 'Password must not exceed 100 characters';
+    } else if (!/^(?=.*[A-Za-z])(?=.*\d).+$/.test(formData.password)) {
+      newErrors.password = 'Password must contain both letters and numbers';
     }
 
     if (!isLogin) {
       if (!formData.fullName || !formData.fullName.trim()) {
-        newErrors.fullName = 'Full name is required';
+        newErrors.fullName = 'Username is required';
+      } else if (formData.fullName.trim().length < 3) {
+        newErrors.fullName = 'Username must be at least 3 characters';
+      } else if (formData.fullName.trim().length > 50) {
+        newErrors.fullName = 'Username must not exceed 50 characters';
+      } else if (!/^[a-zA-Z0-9._-]+$/.test(formData.fullName.trim())) {
+        newErrors.fullName = 'Username can only contain letters, numbers, dots, dashes, and underscores';
       }
       
       if (!formData.confirmPassword) {
