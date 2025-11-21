@@ -94,12 +94,11 @@ function RegisterForm({ onSubmit, onGoogleRegister, onSwitchToLogin }) {
       
       <form onSubmit={handleSubmit} className="auth-form-fields">
         <div className="form-group">
-          <label htmlFor="name">Full Name</label>
           <input
             id="name"
             type="text"
             className={errors.name ? 'error' : ''}
-            placeholder="Enter your name"
+            placeholder="Full name"
             value={formData.name}
             onChange={(e) => {
               setFormData({ ...formData, name: e.target.value });
@@ -110,12 +109,11 @@ function RegisterForm({ onSubmit, onGoogleRegister, onSwitchToLogin }) {
         </div>
         
         <div className="form-group">
-          <label htmlFor="register-email">Email Address</label>
           <input
             id="register-email"
             type="email"
             className={errors.email ? 'error' : ''}
-            placeholder="Enter your email"
+            placeholder="Email address"
             value={formData.email}
             onChange={(e) => {
               setFormData({ ...formData, email: e.target.value });
@@ -126,12 +124,11 @@ function RegisterForm({ onSubmit, onGoogleRegister, onSwitchToLogin }) {
         </div>
         
         <div className="form-group">
-          <label htmlFor="register-password">Password</label>
           <input
             id="register-password"
             type="password"
             className={errors.password ? 'error' : ''}
-            placeholder="Create a password"
+            placeholder="Password"
             value={formData.password}
             onChange={(e) => {
               setFormData({ ...formData, password: e.target.value });
@@ -142,12 +139,11 @@ function RegisterForm({ onSubmit, onGoogleRegister, onSwitchToLogin }) {
         </div>
         
         <div className="form-group">
-          <label htmlFor="confirm-password">Confirm Password</label>
           <input
             id="confirm-password"
             type="password"
             className={errors.confirmPassword ? 'error' : ''}
-            placeholder="Confirm your password"
+            placeholder="Confirm password"
             value={formData.confirmPassword}
             onChange={(e) => {
               setFormData({ ...formData, confirmPassword: e.target.value });

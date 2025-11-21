@@ -4,13 +4,14 @@ import RegisterForm from './auth/RegisterForm';
 import ProductList from './product/ProductList';
 import { login } from '../services/authApi';
 import { register } from '../services/authApi';
+import { ToastProvider, useToast } from './ToastContainer';
 
-function App() {
+function AppContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [user, setUser] = useState(null);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const { showSuccess, showError } = useToast();
 
   useEffect(() => {
     // Check if user is already logged in
@@ -24,26 +25,24 @@ function App() {
 
   const handleLogin = async (credentials) => {
     try {
-      setError('');
       const response = await login(credentials);
       localStorage.setItem('token', response.token);
       localStorage.setItem('user', JSON.stringify(response.user || { email: credentials.email }));
       setIsAuthenticated(true);
       setUser(response.user || { email: credentials.email });
+      showSuccess(`Welcome back, ${credentials.email}! 🎉`);
     } catch (err) {
-      setError(err.message || 'Login failed. Please check your credentials.');
+      showError(err.message || 'Login failed. Please check your credentials.');
     }
   };
 
   const handleRegister = async (userData) => {
     try {
-      setError('');
       const response = await register(userData);
-      setSuccess('Account created successfully! Please sign in.');
+      showSuccess('Account created successfully! Please sign in. ✨');
       setShowRegister(false);
-      // Auto-fill email in login form would be nice
     } catch (err) {
-      setError(err.message || 'Registration failed. Please try again.');
+      showError(err.message || 'Registration failed. Please try again.');
     }
   };
 
@@ -52,6 +51,7 @@ function App() {
     localStorage.removeItem('user');
     setIsAuthenticated(false);
     setUser(null);
+    showSuccess('Logged out successfully. See you soon! 👋');
   };
 
   return (
@@ -67,26 +67,15 @@ function App() {
               <p className="tagline">Product Management System</p>
             </div>
             
-            {error && <div className="alert alert-error">{error}</div>}
-            {success && <div className="alert alert-success">{success}</div>}
-            
             {showRegister ? (
               <RegisterForm 
                 onSubmit={handleRegister}
-                onSwitchToLogin={() => {
-                  setShowRegister(false);
-                  setError('');
-                  setSuccess('');
-                }}
+                onSwitchToLogin={() => setShowRegister(false)}
               />
             ) : (
               <LoginForm 
                 onSubmit={handleLogin}
-                onSwitchToRegister={() => {
-                  setShowRegister(true);
-                  setError('');
-                  setSuccess('');
-                }}
+                onSwitchToRegister={() => setShowRegister(true)}
               />
             )}
             
@@ -98,23 +87,46 @@ function App() {
       ) : (
         <div className="main-container">
           <header className="app-header">
-            <div className="header-left">
-              <div className="logo">
-                <div className="logo-icon">F</div>
-                <span>Flogin</span>
+            <div className="header-content">
+              <div className="header-left">
+                <div className="logo">
+                  <div className="logo-icon">F</div>
+                  <span>Flogin</span>
+                </div>
+                <h1>Product Management</h1>
               </div>
-              <h1>Product Management</h1>
-            </div>
-            <div className="user-info">
-              <div className="user-avatar">{user?.email?.[0]?.toUpperCase() || 'U'}</div>
-              <span>{user?.email || 'User'}</span>
-              <button onClick={handleLogout} className="btn-logout">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M6 14H3.33333C2.59695 14 2 13.403 2 12.6667V3.33333C2 2.59695 2.59695 2 3.33333 2H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                  <path d="M10.6667 11.3333L14 8M14 8L10.6667 4.66667M14 8H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                Logout
-              </button>
+              <div className="header-right">
+                <div className="user-menu-wrapper">
+                  <button 
+                    className="user-menu-trigger"
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                  >
+                    <div className="user-avatar">{user?.email?.[0]?.toUpperCase() || 'U'}</div>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className={showUserMenu ? 'rotate' : ''}>
+                      <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                  {showUserMenu && (
+                    <div className="user-dropdown">
+                      <div className="dropdown-header">
+                        <div className="user-avatar-large">{user?.email?.[0]?.toUpperCase() || 'U'}</div>
+                        <div className="user-details">
+                          <div className="user-email">{user?.email || 'User'}</div>
+                          <div className="user-role">Account</div>
+                        </div>
+                      </div>
+                      <div className="dropdown-divider"></div>
+                      <button className="dropdown-item" onClick={handleLogout}>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                          <path d="M6 14H3.33333C2.59695 14 2 13.403 2 12.6667V3.33333C2 2.59695 2.59695 2 3.33333 2H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                          <path d="M10.6667 11.3333L14 8M14 8L10.6667 4.66667M14 8H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </header>
           <main>
@@ -123,6 +135,14 @@ function App() {
         </div>
       )}
     </div>
+  );
+}
+
+function App() {
+  return (
+    <ToastProvider>
+      <AppContent />
+    </ToastProvider>
   );
 }
 

@@ -70,12 +70,11 @@ function LoginForm({ onSubmit, onGoogleLogin, onSwitchToRegister }) {
       
       <form onSubmit={handleSubmit} className="auth-form-fields">
         <div className="form-group">
-          <label htmlFor="email">Email Address</label>
           <input
             id="email"
             type="email"
             className={errors.email ? 'error' : ''}
-            placeholder="Enter your email"
+            placeholder="Email address"
             value={formData.email}
             onChange={(e) => {
               setFormData({ ...formData, email: e.target.value });
@@ -86,12 +85,11 @@ function LoginForm({ onSubmit, onGoogleLogin, onSwitchToRegister }) {
         </div>
         
         <div className="form-group">
-          <label htmlFor="password">Password</label>
           <input
             id="password"
             type="password"
             className={errors.password ? 'error' : ''}
-            placeholder="Enter your password"
+            placeholder="Password"
             value={formData.password}
             onChange={(e) => {
               setFormData({ ...formData, password: e.target.value });

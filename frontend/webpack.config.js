@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
   entry: './src/index.jsx',
   output: {
-    filename: 'bundle.js',
+    filename: 'bundle.[contenthash].js',
     path: path.resolve(__dirname, 'dist'),
     clean: true
   },
@@ -33,7 +33,13 @@ module.exports = {
   ],
   devServer: {
     port: 3000,
+    host: '0.0.0.0',
     historyApiFallback: true,
-    hot: true
+    hot: true,
+    proxy: [{
+      context: ['/api'],
+      target: 'http://backend:8081',
+      changeOrigin: true
+    }]
   }
 };
