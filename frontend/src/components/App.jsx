@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Lock } from 'lucide-react';
 import AuthModal from './auth/AuthModal';
 import ProductList from './product/ProductList';
 import { authService } from '../services/authApi';
@@ -88,7 +87,10 @@ function AppContent() {
                 </div>
               ) : (
                 <button className="btn-primary" onClick={openAuthModal}>
-                  <Lock size={16} />
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor">
+                    <rect x="2" y="7" width="12" height="7" rx="1" strokeWidth="1.5"/>
+                    <path d="M5 7V5a3 3 0 0 1 6 0v2" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
                   Sign In
                 </button>
               )}
@@ -102,12 +104,18 @@ function AppContent() {
             <div className="locked-content">
               <div className="locked-overlay">
                 <div className="locked-icon">
-                  <Lock size={64} strokeWidth={2} />
+                  <svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="currentColor">
+                    <rect x="8" y="28" width="48" height="28" rx="4" strokeWidth="4"/>
+                    <path d="M16 28V20a16 16 0 0 1 32 0v8" strokeWidth="4" strokeLinecap="round"/>
+                  </svg>
                 </div>
                 <h2>Content Locked</h2>
                 <p>Please sign in to access the product management system</p>
                 <button className="btn-primary btn-large" onClick={openAuthModal}>
-                  <Lock size={20} />
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                    <rect x="3" y="9" width="14" height="9" rx="1" strokeWidth="2"/>
+                    <path d="M6 9V7a4 4 0 0 1 8 0v2" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
                   Sign In to Continue
                 </button>
               </div>

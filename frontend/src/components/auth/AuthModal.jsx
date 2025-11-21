@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { ChevronRight, X, Lock } from 'lucide-react';
 import { authService } from '../../services/authApi';
-import { useToast } from '../Toast';
+import { useToast } from '../ToastContainer';
 
 const AuthModal = ({ isOpen, onClose, onSuccess }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    fullName: ''
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -44,6 +44,10 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
     }
 
     if (!isLogin) {
+      if (!formData.fullName || !formData.fullName.trim()) {
+        newErrors.fullName = 'Full name is required';
+      }
+      
       if (!formData.confirmPassword) {
         newErrors.confirmPassword = 'Please confirm your password';
       } else if (formData.password !== formData.confirmPassword) {
@@ -66,7 +70,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
         await authService.login(formData.email, formData.password);
         showToast('Login successful', 'success');
       } else {
-        await authService.register(formData.email, formData.password);
+        await authService.register(formData.email, formData.password, formData.fullName);
         showToast('Registration successful', 'success');
       }
       
@@ -74,7 +78,8 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
       setFormData({
         email: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        fullName: ''
       });
       setErrors({});
       
@@ -97,7 +102,8 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
     setFormData({
       email: '',
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
+      fullName: ''
     });
     setErrors({});
   };
@@ -110,13 +116,18 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
         <div className="modal-header">
           <h3>{isLogin ? 'Sign In' : 'Create Account'}</h3>
           <button className="btn-close" onClick={onClose}>
-            <X size={20} />
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
           </button>
         </div>
 
         <div className="modal-body">
           <div className="auth-modal-intro">
-            <Lock size={48} strokeWidth={2.5} />
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" strokeWidth="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
             <p>
               {isLogin 
                 ? 'Sign in to access product management'
@@ -125,6 +136,23 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form-fields">
+            {!isLogin && (
+              <div className="form-group">
+                <input
+                  type="text"
+                  name="fullName"
+                  placeholder="Full name"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  className={errors.fullName ? 'error' : ''}
+                  disabled={isLoading}
+                />
+                {errors.fullName && (
+                  <span className="error-message">{errors.fullName}</span>
+                )}
+              </div>
+            )}
+
             <div className="form-group">
               <input
                 type="email"
@@ -189,7 +217,9 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
               disabled={isLoading}
             >
               {isLogin ? "Don't have an account?" : 'Already have an account?'}
-              <ChevronRight size={16} />
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </button>
           </div>
         </div>
