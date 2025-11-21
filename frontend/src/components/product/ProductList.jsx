@@ -34,6 +34,7 @@ export default function ProductList() {
     try {
       await createProduct(productData);
       setShowForm(false);
+      setEditingProduct(null);
       loadProducts();
       showSuccess(`Product "${productData.name}" created successfully! 🎉`);
     } catch (err) {
@@ -45,6 +46,7 @@ export default function ProductList() {
     try {
       await updateProduct(id, productData);
       setEditingProduct(null);
+      setShowForm(false);
       loadProducts();
       showSuccess(`Product "${productData.name}" updated successfully! ✨`);
     } catch (err) {
@@ -122,13 +124,12 @@ export default function ProductList() {
         </div>
       </div>
 
-      {showForm && (
-        <ProductForm
-          onSubmit={editingProduct ? (data) => handleUpdate(editingProduct.id, data) : handleCreate}
-          onCancel={handleCancelEdit}
-          initialData={editingProduct}
-        />
-      )}
+      <ProductForm
+        isOpen={showForm}
+        onSubmit={editingProduct ? (data) => handleUpdate(editingProduct.id, data) : handleCreate}
+        onCancel={handleCancelEdit}
+        initialData={editingProduct}
+      />
 
       <div className={`products-grid ${viewMode === 'small' ? 'grid-small' : 'grid-large'}`}>
         {products.length === 0 ? (
