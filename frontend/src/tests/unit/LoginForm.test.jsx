@@ -20,6 +20,12 @@ jest.mock('../../services/authApi', () => ({
   }
 }));
 
+// Helper function to get submit button (avoid conflict with Google button)
+const getSubmitButton = () => {
+  const buttons = screen.getAllByRole('button');
+  return buttons.find(btn => btn.type === 'submit');
+};
+
 describe('LoginForm Component - Integration & Mock Tests', () => {
 
   const mockOnSubmit = jest.fn();
@@ -54,7 +60,7 @@ describe('LoginForm Component - Integration & Mock Tests', () => {
       expect(passwordInput).toHaveAttribute('type', 'password');
 
       // Check submit button exists
-      const submitButton = screen.getByRole('button', { name: /sign in/i });
+      const submitButton = getSubmitButton();
       expect(submitButton).toBeInTheDocument();
       expect(submitButton).toHaveAttribute('type', 'submit');
 
@@ -92,7 +98,7 @@ describe('LoginForm Component - Integration & Mock Tests', () => {
       );
 
       // Click submit without filling form
-      const submitButton = screen.getByRole('button', { name: /sign in/i });
+      const submitButton = getSubmitButton();
       fireEvent.click(submitButton);
 
       // Wait for validation errors to appear
@@ -121,7 +127,7 @@ describe('LoginForm Component - Integration & Mock Tests', () => {
       fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
       fireEvent.change(passwordInput, { target: { value: 'Password123' } });
 
-      const submitButton = screen.getByRole('button', { name: /sign in/i });
+      const submitButton = getSubmitButton();
       fireEvent.click(submitButton);
 
       await waitFor(() => {
@@ -145,7 +151,7 @@ describe('LoginForm Component - Integration & Mock Tests', () => {
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'Pass12' } }); // Only 6 chars
 
-      const submitButton = screen.getByRole('button', { name: /sign in/i });
+      const submitButton = getSubmitButton();
       fireEvent.click(submitButton);
 
       await waitFor(() => {
@@ -164,7 +170,7 @@ describe('LoginForm Component - Integration & Mock Tests', () => {
       );
 
       // Submit empty form to trigger errors
-      const submitButton = screen.getByRole('button', { name: /sign in/i });
+      const submitButton = getSubmitButton();
       fireEvent.click(submitButton);
 
       await waitFor(() => {
@@ -207,7 +213,7 @@ describe('LoginForm Component - Integration & Mock Tests', () => {
       fireEvent.change(passwordInput, { target: { value: 'Password123' } });
 
       // Submit form
-      const submitButton = screen.getByRole('button', { name: /sign in/i });
+      const submitButton = getSubmitButton();
       fireEvent.click(submitButton);
 
       // Wait for onSubmit to be called
@@ -241,7 +247,7 @@ describe('LoginForm Component - Integration & Mock Tests', () => {
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'Password123' } });
 
-      const submitButton = screen.getByRole('button', { name: /sign in/i });
+      const submitButton = getSubmitButton();
       fireEvent.click(submitButton);
 
       // Button should be disabled and show loading text
@@ -284,7 +290,7 @@ describe('LoginForm Component - Integration & Mock Tests', () => {
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'WrongPassword123' } });
 
-      const submitButton = screen.getByRole('button', { name: /sign in/i });
+      const submitButton = getSubmitButton();
       fireEvent.click(submitButton);
 
       // Verify onSubmit was called
@@ -308,7 +314,7 @@ describe('LoginForm Component - Integration & Mock Tests', () => {
 
       const emailInput = screen.getByPlaceholderText(/email address/i);
       const passwordInput = screen.getByPlaceholderText(/password/i);
-      const submitButton = screen.getByRole('button', { name: /sign in/i });
+      const submitButton = getSubmitButton();
 
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'Password123' } });
@@ -405,7 +411,7 @@ describe('LoginForm Component - Integration & Mock Tests', () => {
         />
       );
 
-      const submitButton = screen.getByRole('button', { name: /sign in/i });
+      const submitButton = getSubmitButton();
       fireEvent.click(submitButton);
 
       await waitFor(() => {
