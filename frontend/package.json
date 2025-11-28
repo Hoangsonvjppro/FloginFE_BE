@@ -8,7 +8,9 @@
     "build": "webpack --mode production",
     "test": "jest",
     "lint": "eslint src --ext .js,.jsx",
-    "lint:fix": "eslint src --ext .js,.jsx --fix"
+    "lint:fix": "eslint src --ext .js,.jsx --fix",
+    "cy:run": "cypress run",
+    "cy:open": "cypress open"
   },
   "dependencies": {
     "axios": "^1.7.7",
@@ -38,7 +40,9 @@
     "style-loader": "^4.0.0",
     "webpack": "^5.96.1",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.1.0"
+    "webpack-dev-server": "^5.1.0",
+    "cypress": "^13.6.0",
+    "wait-on": "^7.2.0"
   },
   "private": true
 }

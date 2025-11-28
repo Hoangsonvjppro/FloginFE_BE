@@ -102,24 +102,18 @@ jobs:
         run: npm ci
         working-directory: ./frontend
 
-      - name: Install Cypress
-        run: npm install --save-dev cypress
-        working-directory: ./frontend
+
 
       - name: Build frontend (if needed for E2E)
         run: npm run build
         working-directory: ./frontend
         continue-on-error: true
 
-      - name: Start application in background (optional)
+      - name: Start application and run Cypress
         run: |
           npm start &
-          sleep 10
-        working-directory: ./frontend
-        continue-on-error: true
-
-      - name: Run Cypress E2E tests
-        run: npx cypress run --headless --browser chrome
+          npx wait-on http://localhost:8080
+          npm run cy:run -- --headless --browser chrome
         working-directory: ./frontend
         env:
           CYPRESS_baseUrl: http://localhost:8080
