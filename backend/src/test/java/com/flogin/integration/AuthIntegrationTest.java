@@ -96,7 +96,7 @@ class AuthIntegrationTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").value("Login successful"))
                 .andExpect(jsonPath("$.token").exists())
-                .andExpect(jsonPath("$.token").value(startsWith("mock-jwt-token-")))
+                .andExpect(jsonPath("$.token").value(org.hamcrest.Matchers.startsWith("mock-jwt-token-")))
                 .andExpect(jsonPath("$.userId").value(testUser.getId()))
                 .andExpect(jsonPath("$.email").value(testUser.getEmail()))
                 .andExpect(jsonPath("$.fullName").value(testUser.getFullName()));

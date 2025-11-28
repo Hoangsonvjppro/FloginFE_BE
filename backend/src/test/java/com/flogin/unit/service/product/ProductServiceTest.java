@@ -1,5 +1,6 @@
 package com.flogin.unit.service.product;
 
+import com.flogin.dto.product.ProductMapper;
 import com.flogin.dto.product.ProductRequest;
 import com.flogin.dto.product.ProductResponse;
 import com.flogin.entity.product.Product;
@@ -28,11 +29,15 @@ class ProductServiceTest {
     @Mock
     private ProductRepository productRepository;
 
+    @Mock
+    private ProductMapper productMapper;
+
     @InjectMocks
     private ProductService productService;
 
     private Product product;
     private ProductRequest productRequest;
+    private ProductResponse productResponse;
 
     @BeforeEach
     void setUp() {
@@ -46,12 +51,21 @@ class ProductServiceTest {
         productRequest.setName("Test Product");
         productRequest.setPrice(new BigDecimal("100.00"));
         productRequest.setQuantity(10);
+
+        productResponse = ProductResponse.builder()
+                .id(1L)
+                .name("Test Product")
+                .price(new BigDecimal("100.00"))
+                .quantity(10)
+                .build();
     }
 
     @Test
     @DisplayName("Create Product: Success")
     void createProduct_Success() {
+        when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(product);
         when(productRepository.save(any(Product.class))).thenReturn(product);
+        when(productMapper.toResponse(any(Product.class))).thenReturn(productResponse);
 
         ProductResponse result = productService.createProduct(productRequest);
 
@@ -64,6 +78,7 @@ class ProductServiceTest {
     @DisplayName("Get Product By ID: Success")
     void getProductById_Success() {
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+        when(productMapper.toResponse(any(Product.class))).thenReturn(productResponse);
 
         ProductResponse result = productService.getProductById(1L);
 
