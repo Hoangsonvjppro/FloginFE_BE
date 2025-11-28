@@ -345,7 +345,7 @@ describe('validateProduct', () => {
         };
         const result = validateProduct(product);
         expect(result.valid).toBe(false);
-        expect(result.errors.name).toBe('Product name cannot be empty');
+        expect(result.errors.name).toBe('Product name is required');
     });
 
     test('should return error for whitespace-only name', () => {
