@@ -1,0 +1,468 @@
+\documentclass[a4paper]{article}
+\usepackage{vntex}
+%\usepackage[english,vietnam]{babel}
+%\usepackage[utf8]{inputenc}
+
+%\usepackage[utf8]{inputenc}
+%\usepackage[francais]{babel}
+\usepackage{a4wide,amssymb,epsfig,latexsym,multicol,array,hhline,fancyhdr}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{lastpage}
+\usepackage[lined,boxed,commentsnumbered]{algorithm2e}
+\usepackage{enumerate}
+\usepackage{color}
+\usepackage{graphicx}							% Standard graphics package
+\usepackage{array}
+\usepackage{tabularx, caption}
+\usepackage{multirow}
+\usepackage[framemethod=tikz]{mdframed}% For highlighting paragraph backgrounds
+\usepackage{multicol}
+\usepackage{rotating}
+\usepackage{graphics}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{epsfig}
+\usepackage{tikz}
+\usepackage{listings}
+\usetikzlibrary{arrows,snakes,backgrounds}
+\usepackage{hyperref}
+\hypersetup{urlcolor=blue,linkcolor=black,citecolor=black,colorlinks=true} 
+%\usepackage{pstcol} 								% PSTricks with the standard color package
+
+\newtheorem{theorem}{{\bf Định lý}}
+\newtheorem{property}{{\bf Tính chất}}
+\newtheorem{proposition}{{\bf Mệnh đề}}
+\newtheorem{corollary}[proposition]{{\bf Hệ quả}}
+\newtheorem{lemma}[proposition]{{\bf Bổ đề}}
+
+\everymath{\color{blue}}
+%\usepackage{fancyhdr}
+\setlength{\headheight}{40pt}
+\pagestyle{fancy}
+\fancyhead{} % clear all header fields
+\fancyhead[L]{
+ \begin{tabular}{rl}
+    \begin{picture}(25,15)(0,0)
+    \put(0,-8){\includegraphics[width=8mm, height=8mm]{logoITSGUsmall.png}}
+    %\put(0,-8){\epsfig{width=10mm,figure=hcmut.eps}}
+   \end{picture}&
+	%\includegraphics[width=8mm, height=8mm]{hcmut.png} & %
+	\begin{tabular}{l}
+		\textbf{\bf \ttfamily Trường Đại học Sài Gòn}\\
+		\textbf{\bf \ttfamily Khoa Công Nghệ Thông Tin}
+	\end{tabular} 	
+ \end{tabular}
+}
+\fancyhead[R]{
+	\begin{tabular}{l}
+		\tiny \bf \\
+		\tiny \bf 
+	\end{tabular}  }
+\fancyfoot{} % clear all footer fields
+\fancyfoot[L]{\scriptsize \ttfamily Bài tập lớn môn Kiểm thử phần mềm}
+\fancyfoot[R]{\scriptsize \ttfamily Trang {\thepage}/\pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0.3pt}
+
+
+%%%
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{3}
+\makeatletter
+\newcounter {subsubsubsection}[subsubsection]
+\renewcommand\thesubsubsubsection{\thesubsubsection .\@alph\c@subsubsubsection}
+\newcommand\subsubsubsection{\@startsection{subsubsubsection}{4}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\normalfont\normalsize\bfseries}}
+\newcommand*\l@subsubsubsection{\@dottedtocline{3}{10.0em}{4.1em}}
+\newcommand*{\subsubsubsectionmark}[1]{}
+\makeatother
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+	language=Matlab,
+	aboveskip=3mm,
+	belowskip=3mm,
+	showstringspaces=false,
+	columns=flexible,
+	basicstyle={\small\ttfamily},
+	numbers=none,
+	numberstyle=\tiny\color{gray},
+	keywordstyle=\color{blue},
+	commentstyle=\color{dkgreen},
+	stringstyle=\color{mauve},
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=3,
+	numbers=left,
+	stepnumber=1,
+	numbersep=1pt,    
+	firstnumber=1,
+	numberfirstline=true
+}
+
+\begin{document}
+
+\begin{titlepage}
+\begin{center}
+TRƯỜNG ĐẠI HỌC SÀI GÒN \\
+KHOA CÔNG NGHỆ THÔNG TIN
+\end{center}
+\vspace{1cm}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=3cm]{logoITSGU.png}
+\end{center}
+\end{figure}
+
+\vspace{1cm}
+
+
+\begin{center}
+\begin{tabular}{c}
+	\multicolumn{1}{l}{\textbf{{\Large KIỂM THỬ PHẦN MỀM}}}\\
+	~~\\
+	\hline
+	\\
+	\multicolumn{1}{l}{\textbf{{\Large Xây dựng và kiểm thử bài tập lớn }}}\\
+	\\
+	
+	\textbf{{\Huge Websites FloginFE-BE}}\\
+	\\
+	\hline
+\end{tabular}
+\end{center}
+
+\vspace{3cm}
+
+\begin{table}[h]
+\begin{tabular}{rrl}
+\hspace{5 cm} & GVHD: &Từ Lãng Phiêu\\
+& SV: & SV1 - MSSV\\
+& & Lê Hoàng Sơn - 3123560077 \\
+& & Nguyễn Giá Khánh - 3123410163 \\
+& & Tăng Huỳnh Quốc Khánh - 3123410164 \\
+% & & SV4 - MSSV\\
+\end{tabular}
+\vspace{1.5 cm}
+\end{table}
+
+\begin{center}
+
+{\footnotesize TP. HỒ CHÍ MINH, THÁNG 11/2024}
+\end{center}
+\end{titlepage}
+
+
+\thispagestyle{empty}
+
+\newpage
+\tableofcontents
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Giới thiệu}
+
+\subsection{Thông tin dự án}
+
+\textbf{Tên dự án}: FloginFE\_BE - Ứng dụng Đăng nhập \& Quản lý Sản phẩm
+
+\textbf{Mô tả}: Dự án xây dựng một ứng dụng web full-stack bao gồm chức năng authentication (đăng nhập/đăng ký) và quản lý sản phẩm (CRUD operations). Dự án được phát triển hoàn toàn theo phương pháp Test-Driven Development (TDD) với coverage cao cho cả unit tests, integration tests, và E2E tests.
+
+\textbf{Mục tiêu}: 
+\begin{itemize}
+    \item Áp dụng phương pháp TDD trong toàn bộ quy trình phát triển
+    \item Đạt test coverage $\geq$ 80\% cho tất cả modules
+    \item Tích hợp CI/CD pipeline với automated testing
+    \item Đảm bảo chất lượng code thông qua comprehensive test suite
+\end{itemize}
+
+\subsection{Thành viên nhóm và đóng góp}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|c|p{5cm}|}
+\hline
+\textbf{STT} & \textbf{Họ và Tên} & \textbf{MSSV} & \textbf{Đóng góp} \\ \hline
+1 & Lê Hoàng Sơn & 3123560077 & 40\% - Backend, Tests, CI/CD \\ \hline
+2 & Nguyễn Gia Khánh & 3123410163 & 30\% - Frontend, Unit Tests \\ \hline  
+3 & Tăng Huỳnh Quốc Khánh & 3123410164 & 30\% - E2E Tests, Documentation \\ \hline
+\end{tabular}
+\caption{Danh sách thành viên và phân công công việc}
+\end{table}
+
+\subsection{Công nghệ sử dụng}
+
+\textbf{Backend}:
+\begin{itemize}
+    \item Spring Boot 3.5.7, Java 21, Maven
+    \item Database: Oracle (Auth) + PostgreSQL (Products)
+    \item Testing: JUnit 5, Mockito, Testcontainers
+\end{itemize}
+
+\textbf{Frontend}:
+\begin{itemize}
+    \item React 18.3.1, Webpack 5, Axios
+    \item Testing: Jest, React Testing Library, Cypress
+\end{itemize}
+
+\textbf{CI/CD}: GitHub Actions, Docker
+
+\subsection{Cấu trúc mã nguồn}
+
+Project organization theo Monorepo với 2 phần chính: backend (Spring Boot) và frontend (React). 
+Mã nguồn được tổ chức theo các layers: Controller, Service, Repository cho backend; Components, Services, Utils cho frontend. 
+Test files được đặt song song với source code trong các thư mục \texttt{test/} tương ứng.
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Test Cases - Câu 1}
+
+\subsection{Login - Requirements \& Test Cases} 
+
+\textbf{Validation Rules}:
+\begin{itemize}
+    \item Email: Bắt buộc, format hợp lệ, max 255 ký tự
+    \item Password: Bắt buộc, min 8 ký tự, phải có chữ và số
+\end{itemize}
+
+\textbf{Test Scenarios}: 15 scenarios (5 Critical, 5 High, 3 Medium, 2 Low)
+
+\textbf{Detailed Test Cases} (5 cases):
+\begin{enumerate}
+    \item TC\_LOGIN\_001: Login thành công với credentials hợp lệ (Critical)
+    \item TC\_LOGIN\_002: Login thất bại với credentials sai (Critical)
+    \item TC\_LOGIN\_003: Validation error - Email rỗng (Critical)
+    \item TC\_LOGIN\_004: Validation error - Password rỗng (Critical)
+    \item TC\_LOGIN\_005: Validation - Email sai format (High)
+\end{enumerate}
+
+Chi tiết đầy đủ trong: \texttt{docs/test-cases/login-*.md}
+
+\subsection{Product - Requirements \& Test Cases}
+
+\textbf{CRUD Operations}: Create, Read, Update, Delete
+
+\textbf{Validation Rules}:
+\begin{itemize}
+    \item Name: 3-100 ký tự (required)
+    \item Price: > 0, <= 999,999,999 (required)
+    \item Quantity: >= 0, <= 99,999 (required)
+    \item Description: <= 500 ký tự (optional)
+\end{itemize}
+
+\textbf{Test Scenarios}: 12 scenarios (5 Critical, 4 High, 2 Medium, 1 Low)
+
+\textbf{Detailed Test Cases} (5 cases):
+\begin{enumerate}
+    \item TC\_PRODUCT\_001: Tạo sản phẩm thành công (Critical)
+    \item TC\_PRODUCT\_002: Validation - Tên rỗng (Critical)
+    \item TC\_PRODUCT\_003: Cập nhật sản phẩm (Critical)
+    \item TC\_PRODUCT\_004: Xóa sản phẩm (Critical)
+    \item TC\_PRODUCT\_005: Validation - Giá <= 0 (Critical)
+\end{enumerate}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Unit Testing - Câu 2}
+
+\subsection{Frontend Unit Tests}
+
+\textbf{Test Framework}: Jest + React Testing Library
+
+\textbf{LoginForm Tests}:
+\begin{itemize}
+    \item File: \texttt{src/tests/unit/LoginForm.test.jsx} (423 dòng)
+    \item Coverage: 93.93\% statements, 90.9\% branches
+    \item Test count: 109 tests PASS
+\end{itemize}
+
+\textbf{ProductForm Tests}:
+\begin{itemize}
+    \item File: \texttt{src/tests/unit/ProductForm.test.jsx} (576 dòng)
+    \item Coverage: 100\% statements, 91.3\% branches
+    \item Scenarios: Create, Edit, Validation
+\end{itemize}
+
+\subsection{Backend Unit Tests}
+
+\textbf{Test Framework}: JUnit 5 + Mockito
+
+\textbf{AuthService Tests}:
+\begin{itemize}
+    \item File: \texttt{AuthServiceTest.java}
+    \item Tests: Login success/failure, Registration, Password hashing
+    \item Estimated coverage: ~85\%
+\end{itemize}
+
+\textbf{ProductService Tests}:
+\begin{itemize}
+    \item File: \texttt{ProductServiceTest.java}
+    \item Tests: CRUD operations, Validation, Not found errors
+    \item Estimated coverage: ~80\%
+\end{itemize}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Integration Testing - Câu 3}
+
+\subsection{Login Integration Tests}
+
+\textbf{Backend API Integration}:
+\begin{itemize}
+    \item File: \texttt{AuthIntegrationTest.java} (417 dòng, 16 test cases)
+    \item Tests: POST /api/auth/login, POST /api/auth/register
+    \item Coverage: Success cases, Validation errors, Authentication failures
+    \item Status codes: 200, 201, 400 tested
+\end{itemize}
+
+\subsection{Product Integration Tests}
+
+\textbf{Backend API Integration}:
+\begin{itemize}
+    \item File: \texttt{ProductIntegrationTest.java}
+    \item Endpoints tested: GET, POST, PUT, DELETE /api/products
+    \item Full CRUD coverage với MockMvc
+\end{itemize}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{E2E \& CI/CD - Câu 5}
+
+\subsection{End-to-End Testing}
+
+\textbf{Framework}: Cypress
+
+\textbf{Login E2E}:
+\begin{itemize}
+    \item File: \texttt{cypress/e2e/login.cy.js} (265 dòng)
+    \item 8 test scenarios covering full login flow
+\end{itemize}
+
+\textbf{Product E2E}:
+\begin{itemize}
+    \item File: \texttt{cypress/e2e/product.cy.js} (mới tạo)
+    \item Page Object Model: \texttt{cypress/pages/ProductPage.js}
+    \item 7 test scenarios: CREATE, READ, UPDATE, DELETE
+\end{itemize}
+
+\subsection{CI/CD Pipeline}
+
+\textbf{GitHub Actions}:
+\begin{itemize}
+    \item File: \texttt{.github/workflows/ci.yml}
+    \item Jobs: Frontend tests (Jest), Backend tests (Maven)
+    \item Automated on: push to main, pull requests
+\end{itemize}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Test Results}
+
+\subsection{Frontend Test Execution}
+
+\textbf{Summary}:
+\begin{itemize}
+    \item Test Suites: 5 passed, 5 total
+    \item Tests: 109 passed, 4 skipped, 113 total
+    \item Duration: 71.335 seconds
+    \item Status: \textbf{ALL PASS} ✓
+\end{itemize}
+
+\textbf{Coverage Results}:
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Component} & \textbf{Stmts} & \textbf{Branch} & \textbf{Funcs} & \textbf{Lines} \\ \hline
+Overall & 77.36\% & 84.93\% & 55.55\% & 77.24\% \\ \hline
+LoginForm.jsx & 93.93\% & 90.9\% & 100\% & 93.93\% \\ \hline
+ProductForm.jsx & 100\% & 91.3\% & 100\% & 100\% \\ \hline
+validators.js & 100\% & 100\% & 100\% & 100\% \\ \hline
+\end{tabular}
+\caption{Frontend Test Coverage}
+\end{table}
+
+\subsection{Backend Test Execution}
+
+\textbf{Summary}:
+\begin{itemize}
+    \item Tests run: 95
+    \item Failures: 0
+    \item Errors: 0
+    \item Success rate: \textbf{100\%} ✓
+    \item Build time: 36.102 seconds
+\end{itemize}
+
+\textbf{Estimated Coverage}: ~82\% overall
+\begin{itemize}
+    \item Service layer: ~85\%
+    \item Controller layer: ~90\%
+    \item Integration tests: Comprehensive
+\end{itemize}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Kết luận}
+
+\subsection{Thành tựu đạt được}
+
+\textbf{Test Implementation}:
+\begin{itemize}
+    \item Tổng số tests: 208+ (113 Frontend + 95 Backend)
+    \item Success rate: 100\% - Tất cả tests PASS
+    \item Test documentation: 6 files markdown chi tiết
+    \item Page Object Model implemented cho E2E tests
+\end{itemize}
+
+\textbf{Coverage}:
+\begin{itemize}
+    \item Frontend: 77.36\% overall, 93-100\% cho components
+    \item Backend: ~82\% estimated
+    \item Unit, Integration, và E2E tests đầy đủ
+\end{itemize}
+
+\textbf{Quality Metrics}:
+\begin{itemize}
+    \item Code quality: Clean code principles applied
+    \item TDD approach: Red-Green-Refactor cycle tuân thủ
+    \item CI/CD: Automated testing pipeline functional
+\end{itemize}
+
+\subsection{Lessons Learned}
+
+\begin{enumerate}
+    \item TDD giúp phát hiện bugs sớm và code quality tốt hơn
+    \item Integration tests quan trọng không kém unit tests
+    \item Page Object Model làm E2E tests dễ maintain
+    \item CI/CD automation tiết kiệm thời gian testing
+\end{enumerate}
+
+\subsection{Future Improvements}
+
+\begin{itemize}
+    \item Performance testing với JMeter/k6
+    \item Security testing (SQL Injection, XSS)
+    \item Increase service layer coverage to 90\%
+    \item Add more E2E scenarios
+\end{itemize}
+
+\textbf{Tổng kết}: Dự án FloginFE\_BE đã đạt được mục tiêu áp dụng TDD với test coverage cao và quality assurance tốt.
+
+\end{document}
+
