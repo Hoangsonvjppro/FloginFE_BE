@@ -2,22 +2,37 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 function LoginForm({ onSubmit, onGoogleLogin, onSwitchToRegister }) {
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({ username: '', password: '' });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.email) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
+    
+    // Username validation: 3-50 chars, only a-z, A-Z, 0-9, -, ., _
+    if (!formData.username) {
+      newErrors.username = 'Username is required';
+    } else if (formData.username.length < 3) {
+      newErrors.username = 'Username must be at least 3 characters';
+    } else if (formData.username.length > 50) {
+      newErrors.username = 'Username must not exceed 50 characters';
+    } else if (!/^[a-zA-Z0-9._-]+$/.test(formData.username)) {
+      newErrors.username = 'Username can only contain letters, numbers, dots, hyphens, and underscores';
     }
+    
+    // Password validation: 6-100 chars, must have letter AND number
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    } else if (formData.password.length > 100) {
+      newErrors.password = 'Password must not exceed 100 characters';
+    } else if (!/[a-zA-Z]/.test(formData.password)) {
+      newErrors.password = 'Password must contain at least one letter';
+    } else if (!/[0-9]/.test(formData.password)) {
+      newErrors.password = 'Password must contain at least one number';
     }
+    
     return newErrors;
   };
 
@@ -71,17 +86,17 @@ function LoginForm({ onSubmit, onGoogleLogin, onSwitchToRegister }) {
       <form onSubmit={handleSubmit} className="auth-form-fields">
         <div className="form-group">
           <input
-            id="email"
-            type="email"
-            className={errors.email ? 'error' : ''}
-            placeholder="Email address"
-            value={formData.email}
+            id="username"
+            type="text"
+            className={errors.username ? 'error' : ''}
+            placeholder="Username"
+            value={formData.username}
             onChange={(e) => {
-              setFormData({ ...formData, email: e.target.value });
-              setErrors({ ...errors, email: '' });
+              setFormData({ ...formData, username: e.target.value });
+              setErrors({ ...errors, username: '' });
             }}
           />
-          {errors.email && <span className="error-message">{errors.email}</span>}
+          {errors.username && <span className="error-message">{errors.username}</span>}
         </div>
         
         <div className="form-group">

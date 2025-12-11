@@ -1,5 +1,6 @@
 package com.flogin.dto.product;
 
+import com.flogin.entity.product.Category;
 import com.flogin.entity.product.Product;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,7 @@ public class ProductMapper {
                 .description(product.getDescription())
                 .price(product.getPrice())
                 .quantity(product.getQuantity())
+                .category(product.getCategory() != null ? product.getCategory().name() : null)
                 .createdAt(product.getCreatedAt())
                 .updatedAt(product.getUpdatedAt())
                 .build();
@@ -32,6 +34,7 @@ public class ProductMapper {
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setQuantity(request.getQuantity());
+        product.setCategory(Category.fromString(request.getCategory()));
         
         return product;
     }
@@ -45,5 +48,6 @@ public class ProductMapper {
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setQuantity(request.getQuantity());
+        product.setCategory(Category.fromString(request.getCategory()));
     }
 }

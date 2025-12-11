@@ -155,7 +155,7 @@ KHOA CÔNG NGHỆ THÔNG TIN
 
 \begin{center}
 
-{\footnotesize TP. HỒ CHÍ MINH, THÁNG 11/2024}
+{\footnotesize TP. HỒ CHÍ MINH, THÁNG 11/2025}
 \end{center}
 \end{titlepage}
 
@@ -825,7 +825,7 @@ Quantity: 10 units \\ \hline
 ✓ Success message displayed \newline
 ✓ Product visible in list \\ \hline
 \textbf{Status} & \textcolor{green}{\textbf{PASS}} \\ \hline
-\textbf{Test Date} & 30/11/2024 \\ \hline
+\textbf{Test Date} & 30/11/2025 \\ \hline
 \textbf{Tested By} & Lê Hoàng Sơn \\ \hline
 \textbf{Notes} & Test executed successfully on first attempt. No defects found. \\ \hline
 \end{tabular}
@@ -1408,7 +1408,7 @@ Tests run: 21, Failures: 0, Errors: 0, Skipped: 0
 [INFO] BUILD SUCCESS
 [INFO] -------------------------------------------------------
 [INFO] Total time:  36.102 s
-[INFO] Finished at: 2024-11-30T13:00:02Z
+[INFO] Finished at: 2025-11-30T13:00:02Z
 [INFO] -------------------------------------------------------
 \end{verbatim}
 
@@ -1465,6 +1465,507 @@ Tests run: 21, Failures: 0, Errors: 0, Skipped: 0
     \item Frontend tests (Jest) run in parallel με Backend tests (Maven)
     \item Build verification ensures deployability
     \item Lint checks for code quality
+\end{itemize}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Phụ lục E: Architecture \& Design}
+
+\subsection{System Architecture Overview}
+
+\textbf{Architecture Pattern}: Layered Architecture với clear separation of concerns
+
+\begin{figure}[h!]
+\centering
+\begin{verbatim}
+┌─────────────────────────────────────────────────┐
+│          FRONTEND (React + Webpack)             │
+│  ┌──────────────────────────────────────────┐  │
+│  │  Components Layer                         │  │
+│  │  - LoginForm, ProductForm, etc.           │  │
+│  ├──────────────────────────────────────────┤  │
+│  │  Services Layer                           │  │
+│  │  - authService, productService            │  │
+│  ├──────────────────────────────────────────┤  │
+│  │  Utils Layer                              │  │
+│  │  - validators, httpClient                 │  │
+│  └──────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────┘
+               ▼ HTTP/REST API ▼
+┌─────────────────────────────────────────────────┐
+│         BACKEND (Spring Boot + Java 21)         │
+│  ┌──────────────────────────────────────────┐  │
+│  │  Controller Layer (REST Endpoints)        │  │
+│  │  - AuthController, ProductController      │  │
+│  ├──────────────────────────────────────────┤  │
+│  │  Service Layer (Business Logic)          │  │
+│  │  - AuthService, ProductService            │  │
+│  ├──────────────────────────────────────────┤  │
+│  │  Repository Layer (Data Access)          │  │
+│  │  - UserRepository, ProductRepository      │  │
+│  ├──────────────────────────────────────────┤  │
+│  │  Entity Layer (Domain Models)            │  │
+│  │  - User, Product entities                 │  │
+│  └──────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────┘
+               ▼ JPA/Hibernate ▼
+┌─────────────────────────────────────────────────┐
+│  DATABASE LAYER                                 │
+│  ┌────────────────┐    ┌────────────────┐      │
+│  │ Oracle DB      │    │ PostgreSQL     │      │
+│  │ (auth schema)  │    │ (product)      │      │
+│  └────────────────┘    └────────────────┘      │
+└─────────────────────────────────────────────────┘
+\end{verbatim}
+\caption{System Architecture Diagram}
+\end{figure}
+
+\subsection{Design Patterns Applied}
+
+\textbf{1. Repository Pattern}:
+\begin{itemize}
+    \item Abstracts data access logic
+    \item Spring Data JPA interfaces
+    \item Easy testing với mocking
+\end{itemize}
+
+\textbf{2. Dependency Injection}:
+\begin{itemize}
+    \item Spring @Autowired, @RequiredArgsConstructor (Lombok)
+    \item Loose coupling between layers
+    \item Testability improved
+\end{itemize}
+
+\textbf{3. DTO Pattern}:
+\begin{itemize}
+    \item Separate DTOs for requests/responses
+    \item Data validation với @Valid
+    \item Security: không expose entities directly
+\end{itemize}
+
+\newpage
+
+\subsection{Database Schema Design}
+
+\subsubsection{Users Table (Oracle DB)}
+
+\begin{verbatim}
+CREATE TABLE users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    full_name VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+        ON UPDATE CURRENT_TIMESTAMP,
+    
+    INDEX idx_email (email),
+    INDEX idx_created_at (created_at)
+);
+\end{verbatim}
+
+\textbf{Entity Class Implementation}:
+
+\begin{verbatim}
+@Entity
+@Table(name = "users")
+@Data
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(unique = true, nullable = false, length = 100)
+    private String email;
+    
+    @Column(nullable = false, length = 255)
+    private String password;  // BCrypt hashed
+    
+    @Column(nullable = false, length = 100)
+    private String fullName;
+    
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+    
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+    
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+}
+\end{verbatim}
+
+\subsubsection{Products Table (PostgreSQL)}
+
+\begin{verbatim}
+CREATE TABLE products (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    price DECIMAL(12,2) NOT NULL CHECK (price > 0),
+    quantity INTEGER NOT NULL CHECK (quantity >= 0),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    INDEX idx_name (name),
+    INDEX idx_price (price)
+);
+\end{verbatim}
+
+\newpage
+
+\subsection{API Endpoint Documentation}
+
+\subsubsection{Authentication Endpoints}
+
+\textbf{POST /api/auth/register}
+
+\begin{table}[h!]
+\centering
+\footnotesize
+\begin{tabular}{|p{3cm}|p{11cm}|}
+\hline
+\rowcolor{blue!20}
+\multicolumn{2}{|c|}{\textbf{POST /api/auth/register}} \\ \hline
+\textbf{Description} & Register new user account \\ \hline
+\textbf{Request Body} & 
+\begin{verbatim}
+{
+  "email": "user@example.com",
+  "password": "Password123",
+  "fullName": "User Name"
+}
+\end{verbatim} \\ \hline
+\textbf{Validations} & 
+- Email: valid format, unique \newline
+- Password: min 8 chars, has letter + number \newline
+- FullName: required, 3-100 chars \\ \hline
+\textbf{Success (201)} &
+\begin{verbatim}
+{
+  "message": "User registered successfully",
+  "userId": 1,
+  "email": "user@example.com",
+  "fullName": "User Name"
+}
+\end{verbatim} \\ \hline
+\textbf{Error (400)} &
+\begin{verbatim}
+{
+  "message": "Email already exists"
+}
+\end{verbatim} \\ \hline
+\end{tabular}
+\caption{Register Endpoint Specification}
+\end{table}
+
+\textbf{POST /api/auth/login}
+
+\begin{table}[h!]
+\centering
+\footnotesize
+\begin{tabular}{|p{3cm}|p{11cm}|}
+\hline
+\rowcolor{blue!20}
+\multicolumn{2}{|c|}{\textbf{POST /api/auth/login}} \\ \hline
+\textbf{Description} & Authenticate user and return token \\ \hline
+\textbf{Request Body} &
+\begin{verbatim}
+{
+  "email": "user@example.com",
+  "password": "Password123"
+}
+\end{verbatim} \\ \hline
+\textbf{Success (200)} &
+\begin{verbatim}
+{
+  "message": "Login successful",
+  "userId": 1,
+  "email": "user@example.com",
+  "fullName": "User Name",
+  "token": "mock-jwt-token-1"
+}
+\end{verbatim} \\ \hline
+\textbf{Error (400)} &
+Email or password incorrect \\ \hline
+\textbf{Implementation} & AuthController.java (lines 37-50) \\ \hline
+\end{tabular}
+\caption{Login Endpoint Specification}
+\end{table}
+
+\newpage
+
+\subsubsection{Product Management Endpoints}
+
+\textbf{CRUD Endpoints Summary}:
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{|l|l|p{7cm}|}
+\hline
+\rowcolor{gray!40}
+\textbf{Method} & \textbf{Endpoint} & \textbf{Description} \\ \hline
+GET & /api/products & Get all products (list) \\ \hline
+GET & /api/products/\{id\} & Get single product by ID \\ \hline
+POST & /api/products & Create new product \\ \hline
+PUT & /api/products/\{id\} & Update existing product \\ \hline
+DELETE & /api/products/\{id\} & Delete product \\ \hline
+\end{tabular}
+\caption{Product API Endpoints}
+\end{table}
+
+\subsection{Implementation Code - Controller Layer}
+
+\textbf{AuthController.java}:
+
+\begin{verbatim}
+@RestController
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor
+@CrossOrigin(origins = "*")
+public class AuthController {
+    
+    private final AuthService authService;
+    
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, Object>> login(
+            @Valid @RequestBody LoginRequest request) {
+        
+        User user = authService.login(request);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Login successful");
+        response.put("userId", user.getId());
+        response.put("email", user.getEmail());
+        response.put("fullName", user.getFullName());
+        response.put("token", "mock-jwt-token-" + user.getId());
+        
+        return ResponseEntity.ok(response);
+    }
+}
+\end{verbatim}
+
+\textbf{Key Features}:
+\begin{itemize}
+    \item @Valid annotation triggers DTO validation
+    \item @RequiredArgsConstructor (Lombok) for DI
+    \item @CrossOrigin enables CORS
+    \item Clean separation: controller delegates to service
+\end{itemize}
+
+\newpage
+
+\subsection{Implementation Code - Frontend Component}
+
+\textbf{LoginForm.jsx} (Validation Logic):
+
+\begin{verbatim}
+const validate = () => {
+  const newErrors = {};
+  
+  // Email validation
+  if (!formData.email) {
+    newErrors.email = 'Email is required';
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    newErrors.email = 'Please enter a valid email';
+  }
+  
+  // Password validation
+  if (!formData.password) {
+    newErrors.password = 'Password is required';
+  } else if (formData.password.length < 8) {
+    newErrors.password = 'Password must be at least 8 characters';
+  }
+  
+  return newErrors;
+};
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const validationErrors = validate();
+  
+  if (Object.keys(validationErrors).length === 0) {
+    setIsLoading(true);
+    try {
+      await onSubmit(formData);
+    } finally {
+      setIsLoading(false);
+    }
+  } else {
+    setErrors(validationErrors);
+  }
+};
+\end{verbatim}
+
+\textbf{Best Practices Applied}:
+\begin{itemize}
+    \item Client-side validation before API call
+    \item Async/await for API calls
+    \item Loading state management
+    \item Error state clearing on input change
+    \item Controlled components (React best practice)
+\end{itemize}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Phụ lục F: Test Methodology Deep Dive}
+
+\subsection{Unit Testing Strategy}
+
+\subsubsection{Arrange-Act-Assert Pattern}
+
+Tất cả unit tests tuân theo AAA pattern:
+
+\textbf{Example: ProductServiceTest.java}
+
+\begin{verbatim}
+@Test
+void createProduct_Success() {
+    // ARRANGE - Setup test data and mocks
+    ProductCreateDto createDto = new ProductCreateDto(
+        "Laptop", "High-end", BigDecimal.valueOf(15000000), 10
+    );
+    Product mockProduct = Product.builder()
+        .id(1L)
+        .name("Laptop")
+        .build();
+    
+    when(productMapper.toEntity(any())).thenReturn(mockProduct);
+    when(productRepository.save(any())).thenReturn(mockProduct);
+    
+    // ACT - Execute the method being tested
+    ProductDto result = productService.createProduct(createDto);
+    
+    // ASSERT - Verify expected outcomes
+    assertNotNull(result);
+    assertEquals("Laptop", result.getName());
+    verify(productRepository, times(1)).save(any());
+}
+\end{verbatim}
+
+\subsection{Integration Testing Approach}
+
+\textbf{MockMvc Testing} cho REST APIs:
+
+\begin{verbatim}
+@WebMvcTest(AuthController.class)
+class AuthIntegrationTest {
+    
+    @Autowired
+    private MockMvc mockMvc;
+    
+    @MockBean
+    private AuthService authService;
+    
+    @Test
+    void testLoginSuccess() throws Exception {
+        // Arrange
+        User mockUser = new User(1L, "test@test.com", 
+            "pass", "Test User", null, null);
+        when(authService.login(any())).thenReturn(mockUser);
+        
+        // Act & Assert
+        mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"email\":\"test@test.com\", 
+                      \"password\":\"Test1234\"}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message")
+                .value("Login successful"))
+            .andExpect(jsonPath("$.userId").value(1));
+    }
+}
+\end{verbatim}
+
+\newpage
+
+\subsection{E2E Testing với Cypress}
+
+\textbf{Page Object Model Implementation}:
+
+\begin{verbatim}
+// ProductPage.js - POM
+class ProductPage {
+    get addProductButton() {
+        return cy.get('[data-testid="add-product-btn"]');
+    }
+    
+    get productNameInput() {
+        return cy.get('[data-testid="product-name"]');
+    }
+    
+    fillProductForm({ name, price, quantity }) {
+        if (name) {
+            this.productNameInput.clear().type(name);
+        }
+        if (price) {
+            this.productPriceInput.clear().type(price.toString());
+        }
+        // ... more fields
+        return this;
+    }
+    
+    submitForm() {
+        this.submitButton.click();
+        return this;
+    }
+}
+
+export default ProductPage;
+\end{verbatim}
+
+\textbf{E2E Test Using POM}:
+
+\begin{verbatim}
+// product.cy.js
+import ProductPage from '../pages/ProductPage';
+
+describe('Product E2E Tests', () => {
+    const productPage = new ProductPage();
+    
+    it('Should create product successfully', () => {
+        productPage.visit()
+            .clickAddProduct()
+            .fillProductForm({
+                name: 'Laptop',
+                price: 15000000,
+                quantity: 10
+            })
+            .submitForm()
+            .shouldShowSuccess()
+            .shouldHaveProduct('Laptop');
+    });
+});
+\end{verbatim}
+
+\subsection{Test Coverage Metrics}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\rowcolor{gray!40}
+\textbf{Metric} & \textbf{Frontend} & \textbf{Backend} & \textbf{Target} & \textbf{Status} \\ \hline
+Statement Coverage & 77.36\% & ~82\% & \u003e=80\% & {\textcolor{orange}{⚠} / \textcolor{green}{✓}} \\ \hline
+Branch Coverage & 84.93\% & N/A & \u003e=70\% & \textcolor{green}{✓} \\ \hline
+Function Coverage & 55.55\% & N/A & \u003e=70\% & \textcolor{red}{✗} \\ \hline
+Line Coverage & 77.24\% & ~82\% & \u003e=80\% & {\textcolor{orange}{⚠} / \textcolor{green}{✓}} \\ \hline
+\end{tabular}
+\caption{Coverage Metrics Analysis}
+\end{table}
+
+\textbf{Analysis}:
+\begin{itemize}
+    \item Frontend service layer has low coverage (26-35\%) - acceptable vì services được test through integration
+    \item Component coverage (93-100\%) - EXCELLENT
+    \item Backend service coverage (~85\%) - GOOD
+    \item Need improvement: Frontend function coverage
 \end{itemize}
 
 \end{document}

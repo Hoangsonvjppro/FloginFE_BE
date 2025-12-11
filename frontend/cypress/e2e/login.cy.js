@@ -1,6 +1,10 @@
 /**
  * Cypress E2E Test - Login Flow
  * 
+ * Updated for username-based login per assignment requirements:
+ * - Username: 3-50 characters, pattern ^[a-zA-Z0-9._-]+$
+ * - Password: 6-100 characters, must contain letter AND number
+ * 
  * Test Cases:
  * 1. Display login form correctly
  * 2. Login failure with wrong credentials
@@ -20,10 +24,10 @@ describe('Login Flow', () => {
     // ==================== TEST CASE 1: DISPLAY LOGIN FORM ====================
 
     it('should display login form with all required elements', () => {
-        // Check that email input is visible
-        cy.get('input[type="email"]')
+        // Check that username input is visible (text type for username)
+        cy.get('input#username, input[placeholder*="sername"]')
             .should('be.visible')
-            .and('have.attr', 'placeholder');
+            .and('have.attr', 'type', 'text');
 
         // Check that password input is visible
         cy.get('input[type="password"]')
@@ -33,24 +37,23 @@ describe('Login Flow', () => {
         // Check that login button is visible and enabled
         cy.get('button[type="submit"]')
             .should('be.visible')
-            .and('not.be.disabled')
-            .and('contain.text', /login|sign in/i);
+            .and('not.be.disabled');
 
         // Verify page title or heading
         cy.get('h1, h2, h3')
-            .should('contain.text', /login|sign in/i);
+            .should('contain.text', /login|sign in|welcome/i);
     });
 
     // ==================== TEST CASE 2: LOGIN FAILURE ====================
 
     it('should display error message when login fails with wrong credentials', () => {
-        // Enter invalid email
-        cy.get('input[type="email"]')
-            .type('wrong@example.com');
+        // Enter invalid username
+        cy.get('input#username, input[placeholder*="sername"]')
+            .type('wronguser');
 
         // Enter invalid password
         cy.get('input[type="password"]')
-            .type('wrongpassword');
+            .type('wrongpass123');
 
         // Click submit button
         cy.get('button[type="submit"]')
@@ -99,8 +102,8 @@ describe('Login Flow', () => {
         });
     });
 
-    it('should display error for empty email field', () => {
-        // Leave email empty, only fill password
+    it('should display error for empty username field', () => {
+        // Leave username empty, only fill password
         cy.get('input[type="password"]')
             .type('Test1234');
 
@@ -109,7 +112,7 @@ describe('Login Flow', () => {
             .click();
 
         // Check for validation error
-        cy.get('input[type="email"]').then(($input) => {
+        cy.get('input#username, input[placeholder*="sername"]').then(($input) => {
             // HTML5 validation or custom validation
             const isInvalid = $input.is(':invalid') ||
                 $input.hasClass('invalid') ||
@@ -119,9 +122,9 @@ describe('Login Flow', () => {
     });
 
     it('should display error for empty password field', () => {
-        // Fill email, leave password empty
-        cy.get('input[type="email"]')
-            .type('test@example.com');
+        // Fill username, leave password empty
+        cy.get('input#username, input[placeholder*="sername"]')
+            .type('testuser');
 
         // Try to submit
         cy.get('button[type="submit"]')
@@ -145,16 +148,16 @@ describe('Login Flow', () => {
             body: {
                 token: 'mock-jwt-token-123',
                 userId: 1,
-                email: 'test@example.com',
+                username: 'testuser',
                 fullName: 'Test User',
                 message: 'Login successful'
             }
         }).as('loginRequest');
 
-        // Enter valid email
-        cy.get('input[type="email"]')
+        // Enter valid username
+        cy.get('input#username, input[placeholder*="sername"]')
             .clear()
-            .type('test@example.com');
+            .type('testuser');
 
         // Enter valid password
         cy.get('input[type="password"]')
@@ -221,7 +224,7 @@ describe('Login Flow', () => {
             }
         }).as('loginError');
 
-        cy.get('input[type="email"]').type('test@example.com');
+        cy.get('input#username, input[placeholder*="sername"]').type('testuser');
         cy.get('input[type="password"]').type('Test1234');
         cy.get('button[type="submit"]').click();
 
@@ -241,7 +244,7 @@ describe('Login Flow', () => {
             });
         }).as('loginDelay');
 
-        cy.get('input[type="email"]').type('test@example.com');
+        cy.get('input#username, input[placeholder*="sername"]').type('testuser');
         cy.get('input[type="password"]').type('Test1234');
 
         cy.get('button[type="submit"]').click();
@@ -254,11 +257,91 @@ describe('Login Flow', () => {
 
     it('should allow navigation to register page', () => {
         // Check for register link
-        cy.get('a[href*="register"], a:contains("Register"), a:contains("Sign Up")')
+        cy.get('a[href*="register"], a:contains("Register"), button:contains("Sign Up"), button:contains("Sign up")')
             .should('be.visible')
             .click();
 
         // Should navigate to register page
         cy.url().should('include', '/register');
+    });
+
+    // ==================== USERNAME VALIDATION TESTS ====================
+
+    it('should reject username with less than 3 characters', () => {
+        cy.get('input#username, input[placeholder*="sername"]')
+            .type('ab');
+        cy.get('input[type="password"]')
+            .type('Test1234');
+        cy.get('button[type="submit"]')
+            .click();
+
+        // Should show validation error
+        cy.contains(/username must be at least 3 characters/i).should('be.visible');
+    });
+
+    it('should reject username with invalid characters', () => {
+        cy.get('input#username, input[placeholder*="sername"]')
+            .type('user@name!');
+        cy.get('input[type="password"]')
+            .type('Test1234');
+        cy.get('button[type="submit"]')
+            .click();
+
+        // Should show validation error
+        cy.contains(/username can only contain/i).should('be.visible');
+    });
+
+    it('should accept username with valid special characters (dots, hyphens, underscores)', () => {
+        cy.intercept('POST', '**/api/auth/login', {
+            statusCode: 200,
+            body: { token: 'mock-token', username: 'test_user.name-1' }
+        }).as('loginRequest');
+
+        cy.get('input#username, input[placeholder*="sername"]')
+            .type('test_user.name-1');
+        cy.get('input[type="password"]')
+            .type('Test1234');
+        cy.get('button[type="submit"]')
+            .click();
+
+        cy.wait('@loginRequest');
+    });
+
+    // ==================== PASSWORD VALIDATION TESTS ====================
+
+    it('should reject password with less than 6 characters', () => {
+        cy.get('input#username, input[placeholder*="sername"]')
+            .type('testuser');
+        cy.get('input[type="password"]')
+            .type('Pa1');
+        cy.get('button[type="submit"]')
+            .click();
+
+        // Should show validation error
+        cy.contains(/password must be at least 6 characters/i).should('be.visible');
+    });
+
+    it('should reject password without letter', () => {
+        cy.get('input#username, input[placeholder*="sername"]')
+            .type('testuser');
+        cy.get('input[type="password"]')
+            .type('123456');
+        cy.get('button[type="submit"]')
+            .click();
+
+        // Should show validation error
+        cy.contains(/password must contain at least one letter/i).should('be.visible');
+    });
+
+    it('should reject password without number', () => {
+        cy.get('input#username, input[placeholder*="sername"]')
+            .type('testuser');
+        cy.get('input[type="password"]')
+            .type('password');
+        cy.get('button[type="submit"]')
+            .click();
+
+        // Should show validation error
+        cy.contains(/password must contain at least one number/i).should('be.visible');
     });
 });

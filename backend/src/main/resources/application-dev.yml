@@ -1,0 +1,45 @@
+# Application configuration for Development
+# Uses H2 file-based database for persistent local development
+
+server:
+  port: 8081
+
+spring:
+  application:
+    name: flogin-backend-dev
+
+  # H2 File-based Database for Development
+  datasource:
+    auth:
+      jdbc-url: jdbc:h2:file:./data/authdb;DB_CLOSE_DELAY=-1;MODE=Oracle;AUTO_SERVER=TRUE
+      username: sa
+      password: devpassword
+      driver-class-name: org.h2.Driver
+    product:
+      jdbc-url: jdbc:h2:file:./data/productdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;AUTO_SERVER=TRUE
+      username: sa
+      password: devpassword
+      driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  # H2 Console for debugging
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true
+
+logging:
+  level:
+    org.springframework: INFO
+    com.flogin: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

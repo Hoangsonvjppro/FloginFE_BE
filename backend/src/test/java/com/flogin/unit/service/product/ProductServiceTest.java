@@ -3,6 +3,7 @@ package com.flogin.unit.service.product;
 import com.flogin.dto.product.ProductMapper;
 import com.flogin.dto.product.ProductRequest;
 import com.flogin.dto.product.ProductResponse;
+import com.flogin.entity.product.Category;
 import com.flogin.entity.product.Product;
 import com.flogin.exception.NotFoundException;
 import com.flogin.repository.product.ProductRepository;
@@ -23,6 +24,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit Test placeholder trong unit package - 
+ * Tests chính đã được đưa vào com.flogin.service.product.ProductServiceTest
+ */
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
 
@@ -46,17 +51,20 @@ class ProductServiceTest {
         product.setName("Test Product");
         product.setPrice(new BigDecimal("100.00"));
         product.setQuantity(10);
+        product.setCategory(Category.ELECTRONICS);
 
         productRequest = new ProductRequest();
         productRequest.setName("Test Product");
         productRequest.setPrice(new BigDecimal("100.00"));
         productRequest.setQuantity(10);
+        productRequest.setCategory("ELECTRONICS");
 
         productResponse = ProductResponse.builder()
                 .id(1L)
                 .name("Test Product")
                 .price(new BigDecimal("100.00"))
                 .quantity(10)
+                .category("ELECTRONICS")
                 .build();
     }
 

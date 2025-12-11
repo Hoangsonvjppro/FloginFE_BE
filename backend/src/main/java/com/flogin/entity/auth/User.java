@@ -17,6 +17,12 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    /**
+     * Username theo assignment: 3-50 ký tự, chỉ chứa a-z, A-Z, 0-9, -, ., _
+     */
+    @Column(unique = true, nullable = false, length = 50)
+    private String username;
+    
     @Column(unique = true, nullable = false, length = 100)
     private String email;
     

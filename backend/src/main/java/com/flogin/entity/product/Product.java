@@ -18,17 +18,24 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, length = 100)
     private String name;
     
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 500)
     private String description;
     
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal price;
     
     @Column(nullable = false)
     private Integer quantity;
+    
+    /**
+     * Category theo assignment: Phải thuộc danh sách categories có sẵn
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Category category;
     
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

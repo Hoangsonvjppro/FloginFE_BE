@@ -7,8 +7,11 @@ import com.flogin.exception.BadRequestException;
 import com.flogin.repository.auth.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -24,10 +27,11 @@ import static org.mockito.Mockito.*;
 /**
  * Unit Test cho AuthService sử dụng JUnit 5 và Mockito.
  * 
- * Coverage:
- * - Login: Happy Path, Email không tồn tại, Password sai, Validation errors
- * - Register: Happy Path, Email đã tồn tại, Password validation, Email validation, FullName validation
- * - Edge cases: Email normalization, Trimming, Case sensitivity
+ * Validation Rules theo Assignment:
+ * - Username: 3-50 ký tự, chỉ chứa a-z, A-Z, 0-9, -, ., _
+ * - Password: 6-100 ký tự, phải có cả chữ VÀ số
+ * 
+ * Coverage Target: >= 85%
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("AuthService Unit Tests")
@@ -48,711 +52,1047 @@ class AuthServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Setup test user
+        // Setup test user với username
         testUser = new User();
         testUser.setId(1L);
+        testUser.setUsername("testuser");
         testUser.setEmail("test@example.com");
         testUser.setPassword("encodedPassword123");
         testUser.setFullName("Test User");
 
-        // Setup valid login request
+        // Setup valid login request với username
         validLoginRequest = new LoginRequest();
-        validLoginRequest.setEmail("test@example.com");
-        validLoginRequest.setPassword("password123");
+        validLoginRequest.setUsername("testuser");
+        validLoginRequest.setPassword("Pass123");
 
-        // Setup valid register request
+        // Setup valid register request với username
         validRegisterRequest = new RegisterRequest();
+        validRegisterRequest.setUsername("newuser");
         validRegisterRequest.setEmail("newuser@example.com");
-        validRegisterRequest.setPassword("password123");
+        validRegisterRequest.setPassword("Pass123");
         validRegisterRequest.setFullName("New User");
     }
 
     // ==================== LOGIN TESTS ====================
 
-    @Test
-    @DisplayName("Login - Happy Path: Login thành công với credentials đúng")
-    void login_WithValidCredentials_ShouldReturnUser() {
-        // Arrange
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(testUser));
-        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
+    @Nested
+    @DisplayName("Login Tests")
+    class LoginTests {
 
-        // Act
-        User result = authService.login(validLoginRequest);
+        @Test
+        @DisplayName("TC_LOGIN_001: Login thành công với credentials đúng")
+        void login_WithValidCredentials_ShouldReturnUser() {
+            // Arrange
+            when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
+            when(passwordEncoder.matches("Pass123", testUser.getPassword())).thenReturn(true);
 
-        // Assert
-        assertNotNull(result, "User không được null");
-        assertEquals(testUser.getEmail(), result.getEmail());
-        assertEquals(testUser.getId(), result.getId());
-        assertEquals(testUser.getFullName(), result.getFullName());
+            // Act
+            User result = authService.login(validLoginRequest);
 
-        // Verify interactions
-        verify(userRepository, times(1)).findByEmail("test@example.com");
-        verify(passwordEncoder, times(1)).matches("password123", testUser.getPassword());
-    }
+            // Assert
+            assertNotNull(result, "User không được null");
+            assertEquals(testUser.getUsername(), result.getUsername());
+            assertEquals(testUser.getId(), result.getId());
+            assertEquals(testUser.getFullName(), result.getFullName());
 
-    @Test
-    @DisplayName("Login Failure 1: Username/Email không tồn tại -> Ném BadRequestException")
-    void login_WithNonExistentEmail_ShouldThrowBadRequestException() {
-        // Arrange
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+            // Verify interactions
+            verify(userRepository, times(1)).findByUsername("testuser");
+            verify(passwordEncoder, times(1)).matches("Pass123", testUser.getPassword());
+        }
 
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> authService.login(validLoginRequest),
-            "Phải throw BadRequestException khi email không tồn tại"
-        );
+        @Test
+        @DisplayName("TC_LOGIN_002: Login thất bại - Username không tồn tại")
+        void login_WithNonExistentUsername_ShouldThrowBadRequestException() {
+            // Arrange
+            when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
 
-        assertEquals("Invalid email or password", exception.getMessage());
-        verify(userRepository, times(1)).findByEmail("test@example.com");
-        verify(passwordEncoder, never()).matches(anyString(), anyString());
-    }
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.login(validLoginRequest),
+                "Phải throw BadRequestException khi username không tồn tại"
+            );
 
-    @Test
-    @DisplayName("Login Failure 2: Password sai -> Ném BadRequestException")
-    void login_WithIncorrectPassword_ShouldThrowBadRequestException() {
-        // Arrange
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(testUser));
-        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
+            assertEquals("Invalid username or password", exception.getMessage());
+            verify(userRepository, times(1)).findByUsername("testuser");
+            verify(passwordEncoder, never()).matches(anyString(), anyString());
+        }
 
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> authService.login(validLoginRequest),
-            "Phải throw BadRequestException khi password sai"
-        );
+        @Test
+        @DisplayName("TC_LOGIN_003: Login thất bại - Password sai")
+        void login_WithIncorrectPassword_ShouldThrowBadRequestException() {
+            // Arrange
+            when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
+            when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
 
-        assertEquals("Invalid email or password", exception.getMessage());
-        verify(userRepository, times(1)).findByEmail("test@example.com");
-        verify(passwordEncoder, times(1)).matches("password123", testUser.getPassword());
-    }
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.login(validLoginRequest),
+                "Phải throw BadRequestException khi password sai"
+            );
 
-    @Test
-    @DisplayName("Login - Validation Error: Email rỗng -> Ném BadRequestException")
-    void login_WithEmptyEmail_ShouldThrowBadRequestException() {
-        // Arrange
-        LoginRequest request = new LoginRequest();
-        request.setEmail("");
-        request.setPassword("password123");
+            assertEquals("Invalid username or password", exception.getMessage());
+            verify(userRepository, times(1)).findByUsername("testuser");
+            verify(passwordEncoder, times(1)).matches("Pass123", testUser.getPassword());
+        }
 
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> authService.login(request),
-            "Phải throw BadRequestException khi email rỗng"
-        );
+        @Test
+        @DisplayName("TC_LOGIN_004: Validation - Username rỗng")
+        void login_WithEmptyUsername_ShouldThrowBadRequestException() {
+            // Arrange
+            LoginRequest request = new LoginRequest();
+            request.setUsername("");
+            request.setPassword("Pass123");
 
-        assertEquals("Email is required", exception.getMessage());
-        verify(userRepository, never()).findByEmail(anyString());
-    }
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.login(request)
+            );
 
-    @Test
-    @DisplayName("Login - Validation Error: Email null -> Ném BadRequestException")
-    void login_WithNullEmail_ShouldThrowBadRequestException() {
-        // Arrange
-        LoginRequest request = new LoginRequest();
-        request.setEmail(null);
-        request.setPassword("password123");
+            assertEquals("Username is required", exception.getMessage());
+            verify(userRepository, never()).findByUsername(anyString());
+        }
 
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> authService.login(request),
-            "Phải throw BadRequestException khi email null"
-        );
+        @Test
+        @DisplayName("TC_LOGIN_005: Validation - Username null")
+        void login_WithNullUsername_ShouldThrowBadRequestException() {
+            // Arrange
+            LoginRequest request = new LoginRequest();
+            request.setUsername(null);
+            request.setPassword("Pass123");
 
-        assertEquals("Email is required", exception.getMessage());
-        verify(userRepository, never()).findByEmail(anyString());
-    }
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.login(request)
+            );
 
-    @Test
-    @DisplayName("Login - Validation Error: Password rỗng -> Ném BadRequestException")
-    void login_WithEmptyPassword_ShouldThrowBadRequestException() {
-        // Arrange
-        LoginRequest request = new LoginRequest();
-        request.setEmail("test@example.com");
-        request.setPassword("");
+            assertEquals("Username is required", exception.getMessage());
+        }
 
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> authService.login(request),
-            "Phải throw BadRequestException khi password rỗng"
-        );
+        @Test
+        @DisplayName("TC_LOGIN_006: Validation - Username quá ngắn (< 3 ký tự)")
+        void login_WithTooShortUsername_ShouldThrowBadRequestException() {
+            // Arrange
+            LoginRequest request = new LoginRequest();
+            request.setUsername("ab");
+            request.setPassword("Pass123");
 
-        assertEquals("Password is required", exception.getMessage());
-        verify(userRepository, never()).findByEmail(anyString());
-    }
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.login(request)
+            );
 
-    @Test
-    @DisplayName("Login - Validation Error: Password null -> Ném BadRequestException")
-    void login_WithNullPassword_ShouldThrowBadRequestException() {
-        // Arrange
-        LoginRequest request = new LoginRequest();
-        request.setEmail("test@example.com");
-        request.setPassword(null);
+            assertEquals("Username must be at least 3 characters", exception.getMessage());
+        }
 
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> authService.login(request),
-            "Phải throw BadRequestException khi password null"
-        );
+        @Test
+        @DisplayName("TC_LOGIN_007: Validation - Username quá dài (> 50 ký tự)")
+        void login_WithTooLongUsername_ShouldThrowBadRequestException() {
+            // Arrange
+            LoginRequest request = new LoginRequest();
+            request.setUsername("a".repeat(51));
+            request.setPassword("Pass123");
 
-        assertEquals("Password is required", exception.getMessage());
-        verify(userRepository, never()).findByEmail(anyString());
-    }
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.login(request)
+            );
 
-    @Test
-    @DisplayName("Login - Email normalization: Uppercase email được chuyển thành lowercase")
-    void login_WithUppercaseEmail_ShouldNormalizeToLowercase() {
-        // Arrange
-        LoginRequest request = new LoginRequest();
-        request.setEmail("TEST@EXAMPLE.COM");
-        request.setPassword("password123");
+            assertEquals("Username must not exceed 50 characters", exception.getMessage());
+        }
 
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
-        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
+        @ParameterizedTest
+        @ValueSource(strings = {"user name", "user@name", "user#name", "user$name", "user%name"})
+        @DisplayName("TC_LOGIN_008: Validation - Username chứa ký tự không hợp lệ")
+        void login_WithInvalidUsernameCharacters_ShouldThrowBadRequestException(String invalidUsername) {
+            // Arrange
+            LoginRequest request = new LoginRequest();
+            request.setUsername(invalidUsername);
+            request.setPassword("Pass123");
 
-        // Act
-        User result = authService.login(request);
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.login(request)
+            );
 
-        // Assert
-        assertNotNull(result);
-        verify(userRepository, times(1)).findByEmail("test@example.com");
-    }
+            assertEquals("Username can only contain letters, numbers, dots, hyphens, and underscores", 
+                exception.getMessage());
+        }
 
-    @Test
-    @DisplayName("Login - Email trimming: Whitespace xung quanh email được trim")
-    void login_WithWhitespaceAroundEmail_ShouldTrimEmail() {
-        // Arrange
-        LoginRequest request = new LoginRequest();
-        request.setEmail("  test@example.com  ");
-        request.setPassword("password123");
+        @Test
+        @DisplayName("TC_LOGIN_009: Validation - Password rỗng")
+        void login_WithEmptyPassword_ShouldThrowBadRequestException() {
+            // Arrange
+            LoginRequest request = new LoginRequest();
+            request.setUsername("testuser");
+            request.setPassword("");
 
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
-        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.login(request)
+            );
 
-        // Act
-        User result = authService.login(request);
+            assertEquals("Password is required", exception.getMessage());
+        }
 
-        // Assert
-        assertNotNull(result);
-        verify(userRepository, times(1)).findByEmail("test@example.com");
+        @Test
+        @DisplayName("TC_LOGIN_010: Username trimming - Whitespace được loại bỏ")
+        void login_WithWhitespaceAroundUsername_ShouldTrimUsername() {
+            // Arrange
+            LoginRequest request = new LoginRequest();
+            request.setUsername("  testuser  ");
+            request.setPassword("Pass123");
+
+            when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
+            when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
+
+            // Act
+            User result = authService.login(request);
+
+            // Assert
+            assertNotNull(result);
+            verify(userRepository, times(1)).findByUsername("testuser");
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"abc", "user_name", "user.name", "user-name", "User123"})
+        @DisplayName("TC_LOGIN_011: Username hợp lệ với các ký tự cho phép")
+        void login_WithValidUsernameFormats_ShouldWork(String validUsername) {
+            // Arrange
+            LoginRequest request = new LoginRequest();
+            request.setUsername(validUsername);
+            request.setPassword("Pass123");
+
+            testUser.setUsername(validUsername);
+            when(userRepository.findByUsername(validUsername)).thenReturn(Optional.of(testUser));
+            when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
+
+            // Act
+            User result = authService.login(request);
+
+            // Assert
+            assertNotNull(result);
+        }
     }
 
     // ==================== REGISTER TESTS ====================
 
-    @Test
-    @DisplayName("Register - Happy Path: Đăng ký thành công với valid data")
-    void register_WithValidData_ShouldSaveAndReturnUser() {
-        // Arrange
-        when(userRepository.existsByEmail(anyString())).thenReturn(false);
-        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword123");
-        when(userRepository.save(any(User.class))).thenReturn(testUser);
+    @Nested
+    @DisplayName("Register Tests")
+    class RegisterTests {
 
-        // Act
-        User result = authService.register(validRegisterRequest);
+        @Test
+        @DisplayName("TC_REGISTER_001: Đăng ký thành công với valid data")
+        void register_WithValidData_ShouldSaveAndReturnUser() {
+            // Arrange
+            when(userRepository.existsByUsername(anyString())).thenReturn(false);
+            when(userRepository.existsByEmail(anyString())).thenReturn(false);
+            when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
+            when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
+                User savedUser = invocation.getArgument(0);
+                savedUser.setId(1L);
+                return savedUser;
+            });
 
-        // Assert
-        assertNotNull(result, "User không được null");
-        assertEquals(testUser.getId(), result.getId());
-        assertEquals(testUser.getEmail(), result.getEmail());
+            // Act
+            User result = authService.register(validRegisterRequest);
 
-        // Verify interactions
-        verify(userRepository, times(1)).existsByEmail("newuser@example.com");
-        verify(passwordEncoder, times(1)).encode("password123");
-        verify(userRepository, times(1)).save(any(User.class));
-    }
+            // Assert
+            assertNotNull(result);
+            assertEquals("newuser", result.getUsername());
+            assertEquals("newuser@example.com", result.getEmail());
+            assertEquals("encodedPassword", result.getPassword());
 
-    @Test
-    @DisplayName("Register Failure: Email đã tồn tại -> Ném BadRequestException với message 'Email already exists'")
-    void register_WithExistingEmail_ShouldThrowBadRequestException() {
-        // Arrange
-        when(userRepository.existsByEmail(anyString())).thenReturn(true);
+            verify(userRepository, times(1)).existsByUsername("newuser");
+            verify(userRepository, times(1)).existsByEmail("newuser@example.com");
+            verify(passwordEncoder, times(1)).encode("Pass123");
+            verify(userRepository, times(1)).save(any(User.class));
+        }
 
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> authService.register(validRegisterRequest),
-            "Phải throw BadRequestException khi email đã tồn tại"
-        );
+        @Test
+        @DisplayName("TC_REGISTER_002: Username đã tồn tại")
+        void register_WithExistingUsername_ShouldThrowBadRequestException() {
+            // Arrange
+            when(userRepository.existsByUsername("newuser")).thenReturn(true);
 
-        assertEquals("Email already exists", exception.getMessage());
-        verify(userRepository, times(1)).existsByEmail("newuser@example.com");
-        verify(userRepository, never()).save(any(User.class));
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(validRegisterRequest)
+            );
+
+            assertEquals("Username already exists", exception.getMessage());
+            verify(userRepository, never()).save(any(User.class));
+        }
+
+        @Test
+        @DisplayName("TC_REGISTER_003: Email đã tồn tại")
+        void register_WithExistingEmail_ShouldThrowBadRequestException() {
+            // Arrange
+            when(userRepository.existsByUsername(anyString())).thenReturn(false);
+            when(userRepository.existsByEmail("newuser@example.com")).thenReturn(true);
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(validRegisterRequest)
+            );
+
+            assertEquals("Email already exists", exception.getMessage());
+            verify(userRepository, never()).save(any(User.class));
+        }
+
+        @Test
+        @DisplayName("TC_REGISTER_004: Email format không hợp lệ")
+        void register_WithInvalidEmailFormat_ShouldThrowBadRequestException() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("newuser");
+            request.setEmail("invalid-email");
+            request.setPassword("Pass123");
+            request.setFullName("New User");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(request)
+            );
+
+            assertEquals("Invalid email format", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("TC_REGISTER_005: FullName rỗng")
+        void register_WithEmptyFullName_ShouldThrowBadRequestException() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("newuser");
+            request.setEmail("newuser@example.com");
+            request.setPassword("Pass123");
+            request.setFullName("");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(request)
+            );
+
+            assertEquals("Full name is required", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("TC_REGISTER_006: Username rỗng")
+        void register_WithEmptyUsername_ShouldThrowBadRequestException() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("");
+            request.setEmail("test@example.com");
+            request.setPassword("Pass123");
+            request.setFullName("Test User");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(request)
+            );
+
+            assertEquals("Username is required", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("TC_REGISTER_007: Username với ký tự không hợp lệ")
+        void register_WithInvalidUsernameChars_ShouldThrowBadRequestException() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("user@invalid");
+            request.setEmail("test@example.com");
+            request.setPassword("Pass123");
+            request.setFullName("Test User");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(request)
+            );
+
+            assertEquals("Username can only contain letters, numbers, dots, hyphens, and underscores", 
+                exception.getMessage());
+        }
     }
 
     // ==================== PASSWORD VALIDATION TESTS ====================
 
-    @Test
-    @DisplayName("Register - Password Validation: Password rỗng -> Ném BadRequestException")
-    void register_WithEmptyPassword_ShouldThrowBadRequestException() {
-        // Arrange
-        RegisterRequest request = new RegisterRequest();
-        request.setEmail("test@example.com");
-        request.setPassword("");
-        request.setFullName("Test User");
+    @Nested
+    @DisplayName("Password Validation Tests")
+    class PasswordValidationTests {
 
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> authService.register(request),
-            "Phải throw BadRequestException khi password rỗng"
-        );
+        @Test
+        @DisplayName("TC_PWD_001: Password rỗng")
+        void register_WithEmptyPassword_ShouldThrowBadRequestException() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("testuser");
+            request.setEmail("test@example.com");
+            request.setPassword("");
+            request.setFullName("Test User");
 
-        assertEquals("Password is required", exception.getMessage());
-        verify(userRepository, never()).existsByEmail(anyString());
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(request)
+            );
+
+            assertEquals("Password is required", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("TC_PWD_002: Password null")
+        void register_WithNullPassword_ShouldThrowBadRequestException() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("testuser");
+            request.setEmail("test@example.com");
+            request.setPassword(null);
+            request.setFullName("Test User");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(request)
+            );
+
+            assertEquals("Password is required", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("TC_PWD_003: Password quá ngắn (< 6 ký tự)")
+        void register_WithTooShortPassword_ShouldThrowBadRequestException() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("testuser");
+            request.setEmail("test@example.com");
+            request.setPassword("Pass1"); // 5 ký tự
+            request.setFullName("Test User");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(request)
+            );
+
+            assertEquals("Password must be at least 6 characters", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("TC_PWD_004: Password đúng 6 ký tự (boundary min) -> Thành công")
+        void register_WithMinimumValidPassword_ShouldSucceed() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("testuser");
+            request.setEmail("test@example.com");
+            request.setPassword("Pass12"); // 6 ký tự, có letter và number
+            request.setFullName("Test User");
+
+            when(userRepository.existsByUsername(anyString())).thenReturn(false);
+            when(userRepository.existsByEmail(anyString())).thenReturn(false);
+            when(passwordEncoder.encode(anyString())).thenReturn("encoded");
+            when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
+
+            // Act
+            User result = authService.register(request);
+
+            // Assert
+            assertNotNull(result);
+        }
+
+        @Test
+        @DisplayName("TC_PWD_005: Password 100 ký tự (boundary max) -> Thành công")
+        void register_WithMaximumValidPassword_ShouldSucceed() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("testuser");
+            request.setEmail("test@example.com");
+            request.setPassword("a".repeat(50) + "1".repeat(50)); // 100 ký tự
+            request.setFullName("Test User");
+
+            when(userRepository.existsByUsername(anyString())).thenReturn(false);
+            when(userRepository.existsByEmail(anyString())).thenReturn(false);
+            when(passwordEncoder.encode(anyString())).thenReturn("encoded");
+            when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
+
+            // Act
+            User result = authService.register(request);
+
+            // Assert
+            assertNotNull(result);
+        }
+
+        @Test
+        @DisplayName("TC_PWD_006: Password quá dài (> 100 ký tự)")
+        void register_WithTooLongPassword_ShouldThrowBadRequestException() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("testuser");
+            request.setEmail("test@example.com");
+            request.setPassword("a".repeat(50) + "1".repeat(51)); // 101 ký tự
+            request.setFullName("Test User");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(request)
+            );
+
+            assertEquals("Password must not exceed 100 characters", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("TC_PWD_007: Password không có chữ cái - chỉ có số")
+        void register_WithPasswordWithoutLetters_ShouldThrowBadRequestException() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("testuser");
+            request.setEmail("test@example.com");
+            request.setPassword("123456"); // Chỉ có số
+            request.setFullName("Test User");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(request)
+            );
+
+            assertEquals("Password must contain at least one letter", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("TC_PWD_008: Password không có số - chỉ có chữ")
+        void register_WithPasswordWithoutNumbers_ShouldThrowBadRequestException() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("testuser");
+            request.setEmail("test@example.com");
+            request.setPassword("Password"); // Chỉ có chữ
+            request.setFullName("Test User");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(request)
+            );
+
+            assertEquals("Password must contain at least one number", exception.getMessage());
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"Pass12", "abc123", "Test1234", "MyP@ss1"})
+        @DisplayName("TC_PWD_009: Password hợp lệ với nhiều format")
+        void register_WithValidPasswordFormats_ShouldSucceed(String validPassword) {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("testuser");
+            request.setEmail("test@example.com");
+            request.setPassword(validPassword);
+            request.setFullName("Test User");
+
+            when(userRepository.existsByUsername(anyString())).thenReturn(false);
+            when(userRepository.existsByEmail(anyString())).thenReturn(false);
+            when(passwordEncoder.encode(anyString())).thenReturn("encoded");
+            when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
+
+            // Act & Assert
+            assertDoesNotThrow(() -> authService.register(request));
+        }
     }
 
-    @Test
-    @DisplayName("Register - Password Validation: Password null -> Ném BadRequestException")
-    void register_WithNullPassword_ShouldThrowBadRequestException() {
-        // Arrange
-        RegisterRequest request = new RegisterRequest();
-        request.setEmail("test@example.com");
-        request.setPassword(null);
-        request.setFullName("Test User");
+    // ==================== USERNAME VALIDATION TESTS ====================
 
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> authService.register(request),
-            "Phải throw BadRequestException khi password null"
-        );
+    @Nested
+    @DisplayName("Username Validation Tests")
+    class UsernameValidationTests {
 
-        assertEquals("Password is required", exception.getMessage());
-        verify(userRepository, never()).existsByEmail(anyString());
-    }
+        @Test
+        @DisplayName("TC_USER_001: Username null")
+        void validateUsername_WithNull_ShouldThrowException() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername(null);
+            request.setEmail("test@example.com");
+            request.setPassword("Pass123");
+            request.setFullName("Test User");
 
-    @Test
-    @DisplayName("Register - Password Validation: Password < 8 ký tự -> Ném BadRequestException")
-    void register_WithShortPassword_ShouldThrowBadRequestException() {
-        // Arrange
-        RegisterRequest request = new RegisterRequest();
-        request.setEmail("test@example.com");
-        request.setPassword("pass12"); // Chỉ 6 ký tự
-        request.setFullName("Test User");
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(request)
+            );
+            assertEquals("Username is required", exception.getMessage());
+        }
 
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> authService.register(request),
-            "Phải throw BadRequestException khi password < 8 ký tự"
-        );
+        @Test
+        @DisplayName("TC_USER_002: Username rỗng")
+        void validateUsername_WithEmpty_ShouldThrowException() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("");
+            request.setEmail("test@example.com");
+            request.setPassword("Pass123");
+            request.setFullName("Test User");
 
-        assertEquals("Password must be at least 8 characters", exception.getMessage());
-        verify(userRepository, never()).existsByEmail(anyString());
-    }
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(request)
+            );
+            assertEquals("Username is required", exception.getMessage());
+        }
 
-    @Test
-    @DisplayName("Register - Password Validation: Password đúng 7 ký tự -> Ném BadRequestException")
-    void register_WithPasswordOf7Characters_ShouldThrowBadRequestException() {
-        // Arrange
-        RegisterRequest request = new RegisterRequest();
-        request.setEmail("test@example.com");
-        request.setPassword("pass123"); // Đúng 7 ký tự
-        request.setFullName("Test User");
+        @Test
+        @DisplayName("TC_USER_003: Username chỉ có whitespace")
+        void validateUsername_WithOnlyWhitespace_ShouldThrowException() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("   ");
+            request.setEmail("test@example.com");
+            request.setPassword("Pass123");
+            request.setFullName("Test User");
 
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> authService.register(request),
-            "Phải throw BadRequestException khi password = 7 ký tự"
-        );
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(request)
+            );
+            assertEquals("Username is required", exception.getMessage());
+        }
 
-        assertEquals("Password must be at least 8 characters", exception.getMessage());
-    }
+        @Test
+        @DisplayName("TC_USER_004: Username 2 ký tự (< 3, invalid)")
+        void validateUsername_WithTooShort_ShouldThrowException() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("ab");
+            request.setEmail("test@example.com");
+            request.setPassword("Pass123");
+            request.setFullName("Test User");
 
-    @Test
-    @DisplayName("Register - Password Validation: Password đúng 8 ký tự -> Thành công")
-    void register_WithPasswordOf8Characters_ShouldSucceed() {
-        // Arrange
-        RegisterRequest request = new RegisterRequest();
-        request.setEmail("test@example.com");
-        request.setPassword("12345678"); // Đúng 8 ký tự
-        request.setFullName("Test User");
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(request)
+            );
+            assertEquals("Username must be at least 3 characters", exception.getMessage());
+        }
 
-        when(userRepository.existsByEmail(anyString())).thenReturn(false);
-        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
-        when(userRepository.save(any(User.class))).thenReturn(testUser);
+        @Test
+        @DisplayName("TC_USER_005: Username 3 ký tự (boundary min)")
+        void validateUsername_WithMinimumLength_ShouldPass() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("abc");
+            request.setEmail("test@example.com");
+            request.setPassword("Pass123");
+            request.setFullName("Test User");
 
-        // Act
-        User result = authService.register(request);
+            when(userRepository.existsByUsername(anyString())).thenReturn(false);
+            when(userRepository.existsByEmail(anyString())).thenReturn(false);
+            when(passwordEncoder.encode(anyString())).thenReturn("encoded");
+            when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
 
-        // Assert
-        assertNotNull(result);
-        verify(userRepository, times(1)).save(any(User.class));
-    }
+            // Act & Assert
+            assertDoesNotThrow(() -> authService.register(request));
+        }
 
-    @Test
-    @DisplayName("Register - Password Validation: Password 100 ký tự -> Thành công")
-    void register_WithPasswordOf100Characters_ShouldSucceed() {
-        // Arrange
-        RegisterRequest request = new RegisterRequest();
-        request.setEmail("test@example.com");
-        // Generate 100 character password
-        request.setPassword("a".repeat(100));
-        request.setFullName("Test User");
+        @Test
+        @DisplayName("TC_USER_006: Username 50 ký tự (boundary max)")
+        void validateUsername_WithMaximumLength_ShouldPass() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("a".repeat(50));
+            request.setEmail("test@example.com");
+            request.setPassword("Pass123");
+            request.setFullName("Test User");
 
-        when(userRepository.existsByEmail(anyString())).thenReturn(false);
-        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
-        when(userRepository.save(any(User.class))).thenReturn(testUser);
+            when(userRepository.existsByUsername(anyString())).thenReturn(false);
+            when(userRepository.existsByEmail(anyString())).thenReturn(false);
+            when(passwordEncoder.encode(anyString())).thenReturn("encoded");
+            when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
 
-        // Act
-        User result = authService.register(request);
+            // Act & Assert
+            assertDoesNotThrow(() -> authService.register(request));
+        }
 
-        // Assert
-        assertNotNull(result);
-        verify(userRepository, times(1)).save(any(User.class));
+        @Test
+        @DisplayName("TC_USER_007: Username 51 ký tự (> 50, invalid)")
+        void validateUsername_WithTooLong_ShouldThrowException() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("a".repeat(51));
+            request.setEmail("test@example.com");
+            request.setPassword("Pass123");
+            request.setFullName("Test User");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(request)
+            );
+            assertEquals("Username must not exceed 50 characters", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("TC_USER_008: Username với dots, hyphens, underscores (valid chars)")
+        void validateUsername_WithAllowedSpecialChars_ShouldPass() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("user.name_test-123");
+            request.setEmail("test@example.com");
+            request.setPassword("Pass123");
+            request.setFullName("Test User");
+
+            when(userRepository.existsByUsername(anyString())).thenReturn(false);
+            when(userRepository.existsByEmail(anyString())).thenReturn(false);
+            when(passwordEncoder.encode(anyString())).thenReturn("encoded");
+            when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
+
+            // Act & Assert
+            assertDoesNotThrow(() -> authService.register(request));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"user@name", "user#name", "user$name", "user name", "user%name"})
+        @DisplayName("TC_USER_009: Username với ký tự đặc biệt không hợp lệ")
+        void validateUsername_WithInvalidChars_ShouldThrowException(String invalidUsername) {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername(invalidUsername);
+            request.setEmail("test@example.com");
+            request.setPassword("Pass123");
+            request.setFullName("Test User");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(request)
+            );
+            assertEquals("Username can only contain letters, numbers, dots, hyphens, and underscores", 
+                exception.getMessage());
+        }
     }
 
     // ==================== EMAIL VALIDATION TESTS ====================
 
-    @Test
-    @DisplayName("Register - Email Validation: Email rỗng -> Ném BadRequestException")
-    void register_WithEmptyEmail_ShouldThrowBadRequestException() {
-        // Arrange
-        RegisterRequest request = new RegisterRequest();
-        request.setEmail("");
-        request.setPassword("password123");
-        request.setFullName("Test User");
+    @Nested
+    @DisplayName("Email Validation Tests")
+    class EmailValidationTests {
 
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> authService.register(request),
-            "Phải throw BadRequestException khi email rỗng"
-        );
-
-        assertEquals("Email is required", exception.getMessage());
-        verify(userRepository, never()).existsByEmail(anyString());
-    }
-
-    @Test
-    @DisplayName("Register - Email Validation: Email null -> Ném BadRequestException")
-    void register_WithNullEmail_ShouldThrowBadRequestException() {
-        // Arrange
-        RegisterRequest request = new RegisterRequest();
-        request.setEmail(null);
-        request.setPassword("password123");
-        request.setFullName("Test User");
-
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> authService.register(request),
-            "Phải throw BadRequestException khi email null"
-        );
-
-        assertEquals("Email is required", exception.getMessage());
-        verify(userRepository, never()).existsByEmail(anyString());
-    }
-
-    @Test
-    @DisplayName("Register - Email Validation: Email sai định dạng (không có @) -> Ném BadRequestException")
-    void register_WithInvalidEmailFormat_ShouldThrowBadRequestException() {
-        // Arrange
-        RegisterRequest request = new RegisterRequest();
-        request.setEmail("invalid-email");
-        request.setPassword("password123");
-        request.setFullName("Test User");
-
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> authService.register(request),
-            "Phải throw BadRequestException khi email sai định dạng"
-        );
-
-        assertEquals("Invalid email format", exception.getMessage());
-        verify(userRepository, never()).existsByEmail(anyString());
-    }
-
-    @Test
-    @DisplayName("Register - Email Validation: Email không có domain -> Ném BadRequestException")
-    void register_WithEmailWithoutDomain_ShouldThrowBadRequestException() {
-        // Arrange
-        RegisterRequest request = new RegisterRequest();
-        request.setEmail("user@");
-        request.setPassword("password123");
-        request.setFullName("Test User");
-
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> authService.register(request),
-            "Phải throw BadRequestException khi email không có domain"
-        );
-
-        assertEquals("Invalid email format", exception.getMessage());
-    }
-
-    @Test
-    @DisplayName("Register - Email Validation: Email không có user -> Ném BadRequestException")
-    void register_WithEmailWithoutUser_ShouldThrowBadRequestException() {
-        // Arrange
-        RegisterRequest request = new RegisterRequest();
-        request.setEmail("@example.com");
-        request.setPassword("password123");
-        request.setFullName("Test User");
-
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> authService.register(request),
-            "Phải throw BadRequestException khi email không có user"
-        );
-
-        assertEquals("Invalid email format", exception.getMessage());
-    }
-
-    @Test
-    @DisplayName("Register - Email Validation: Các định dạng email hợp lệ -> Thành công")
-    void register_WithVariousValidEmailFormats_ShouldSucceed() {
-        // Test nhiều định dạng email hợp lệ
-        String[] validEmails = {
-            "user@example.com",
-            "user.name@example.com",
-            "user+tag@example.co.uk",
-            "user_name@example-domain.com",
-            "123@example.com",
-            "a@b.co"
-        };
-
-        when(userRepository.existsByEmail(anyString())).thenReturn(false);
-        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
-        when(userRepository.save(any(User.class))).thenReturn(testUser);
-
-        for (String email : validEmails) {
+        @Test
+        @DisplayName("TC_EMAIL_001: Email rỗng")
+        void register_WithEmptyEmail_ShouldThrowBadRequestException() {
+            // Arrange
             RegisterRequest request = new RegisterRequest();
-            request.setEmail(email);
-            request.setPassword("password123");
+            request.setUsername("testuser");
+            request.setEmail("");
+            request.setPassword("Pass123");
             request.setFullName("Test User");
 
-            // Không throw exception
-            assertDoesNotThrow(
-                () -> authService.register(request),
-                "Email hợp lệ phải được chấp nhận: " + email
-            );
-        }
-    }
-
-    @Test
-    @DisplayName("Register - Email Validation: Các định dạng email không hợp lệ -> Ném exception")
-    void register_WithVariousInvalidEmailFormats_ShouldThrowException() {
-        // Test nhiều định dạng email không hợp lệ
-        String[] invalidEmails = {
-            "notanemail",
-            "@example.com",
-            "user@",
-            "user@.com",
-            "user space@example.com",
-            "user@example"
-        };
-
-        for (String email : invalidEmails) {
-            RegisterRequest request = new RegisterRequest();
-            request.setEmail(email);
-            request.setPassword("password123");
-            request.setFullName("Test User");
-
-            assertThrows(
+            // Act & Assert
+            BadRequestException exception = assertThrows(
                 BadRequestException.class,
-                () -> authService.register(request),
-                "Email không hợp lệ phải bị từ chối: " + email
+                () -> authService.register(request)
             );
+
+            assertEquals("Email is required", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("TC_EMAIL_002: Email null")
+        void register_WithNullEmail_ShouldThrowBadRequestException() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("testuser");
+            request.setEmail(null);
+            request.setPassword("Pass123");
+            request.setFullName("Test User");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(request)
+            );
+
+            assertEquals("Email is required", exception.getMessage());
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"invalid-email", "@example.com", "user@", "user@.com", "user space@example.com"})
+        @DisplayName("TC_EMAIL_003: Email format không hợp lệ")
+        void register_WithInvalidEmailFormats_ShouldThrowException(String invalidEmail) {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("testuser");
+            request.setEmail(invalidEmail);
+            request.setPassword("Pass123");
+            request.setFullName("Test User");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(request)
+            );
+
+            assertEquals("Invalid email format", exception.getMessage());
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"user@example.com", "user.name@example.com", "user+tag@example.co.uk", "a@b.co"})
+        @DisplayName("TC_EMAIL_004: Email format hợp lệ")
+        void register_WithValidEmailFormats_ShouldSucceed(String validEmail) {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("testuser");
+            request.setEmail(validEmail);
+            request.setPassword("Pass123");
+            request.setFullName("Test User");
+
+            when(userRepository.existsByUsername(anyString())).thenReturn(false);
+            when(userRepository.existsByEmail(anyString())).thenReturn(false);
+            when(passwordEncoder.encode(anyString())).thenReturn("encoded");
+            when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
+
+            // Act & Assert
+            assertDoesNotThrow(() -> authService.register(request));
         }
     }
 
     // ==================== FULLNAME VALIDATION TESTS ====================
 
-    @Test
-    @DisplayName("Register - FullName Validation: FullName rỗng -> Ném BadRequestException")
-    void register_WithEmptyFullName_ShouldThrowBadRequestException() {
-        // Arrange
-        RegisterRequest request = new RegisterRequest();
-        request.setEmail("test@example.com");
-        request.setPassword("password123");
-        request.setFullName("");
+    @Nested
+    @DisplayName("FullName Validation Tests")
+    class FullNameValidationTests {
 
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> authService.register(request),
-            "Phải throw BadRequestException khi full name rỗng"
-        );
+        @Test
+        @DisplayName("TC_NAME_001: FullName rỗng")
+        void register_WithEmptyFullName_ShouldThrowBadRequestException() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("testuser");
+            request.setEmail("test@example.com");
+            request.setPassword("Pass123");
+            request.setFullName("");
 
-        assertEquals("Full name is required", exception.getMessage());
-        verify(userRepository, never()).existsByEmail(anyString());
-    }
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(request)
+            );
 
-    @Test
-    @DisplayName("Register - FullName Validation: FullName null -> Ném BadRequestException")
-    void register_WithNullFullName_ShouldThrowBadRequestException() {
-        // Arrange
-        RegisterRequest request = new RegisterRequest();
-        request.setEmail("test@example.com");
-        request.setPassword("password123");
-        request.setFullName(null);
+            assertEquals("Full name is required", exception.getMessage());
+        }
 
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> authService.register(request),
-            "Phải throw BadRequestException khi full name null"
-        );
+        @Test
+        @DisplayName("TC_NAME_002: FullName null")
+        void register_WithNullFullName_ShouldThrowBadRequestException() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("testuser");
+            request.setEmail("test@example.com");
+            request.setPassword("Pass123");
+            request.setFullName(null);
 
-        assertEquals("Full name is required", exception.getMessage());
-        verify(userRepository, never()).existsByEmail(anyString());
-    }
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(request)
+            );
 
-    @Test
-    @DisplayName("Register - FullName Validation: FullName chỉ chứa khoảng trắng -> Ném BadRequestException")
-    void register_WithWhitespaceOnlyFullName_ShouldThrowBadRequestException() {
-        // Arrange
-        RegisterRequest request = new RegisterRequest();
-        request.setEmail("test@example.com");
-        request.setPassword("password123");
-        request.setFullName("   ");
+            assertEquals("Full name is required", exception.getMessage());
+        }
 
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> authService.register(request),
-            "Phải throw BadRequestException khi full name chỉ chứa khoảng trắng"
-        );
+        @Test
+        @DisplayName("TC_NAME_003: FullName chỉ có whitespace")
+        void register_WithWhitespaceOnlyFullName_ShouldThrowBadRequestException() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("testuser");
+            request.setEmail("test@example.com");
+            request.setPassword("Pass123");
+            request.setFullName("   ");
 
-        assertEquals("Full name is required", exception.getMessage());
-        verify(userRepository, never()).existsByEmail(anyString());
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> authService.register(request)
+            );
+
+            assertEquals("Full name is required", exception.getMessage());
+        }
     }
 
     // ==================== DATA NORMALIZATION TESTS ====================
 
-    @Test
-    @DisplayName("Register - Email normalization: Uppercase email được chuyển thành lowercase")
-    void register_WithUppercaseEmail_ShouldNormalizeToLowercase() {
-        // Arrange
-        RegisterRequest request = new RegisterRequest();
-        request.setEmail("TEST@EXAMPLE.COM");
-        request.setPassword("password123");
-        request.setFullName("Test User");
+    @Nested
+    @DisplayName("Data Normalization Tests")
+    class DataNormalizationTests {
 
-        when(userRepository.existsByEmail("test@example.com")).thenReturn(false);
-        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
-        when(userRepository.save(any(User.class))).thenReturn(testUser);
+        @Test
+        @DisplayName("TC_NORM_001: Email uppercase -> normalize to lowercase")
+        void register_WithUppercaseEmail_ShouldNormalizeToLowercase() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("testuser");
+            request.setEmail("TEST@EXAMPLE.COM");
+            request.setPassword("Pass123");
+            request.setFullName("Test User");
 
-        // Act
-        User result = authService.register(request);
+            when(userRepository.existsByUsername(anyString())).thenReturn(false);
+            when(userRepository.existsByEmail("test@example.com")).thenReturn(false);
+            when(passwordEncoder.encode(anyString())).thenReturn("encoded");
+            when(userRepository.save(any(User.class))).thenAnswer(i -> {
+                User u = i.getArgument(0);
+                assertEquals("test@example.com", u.getEmail());
+                return u;
+            });
 
-        // Assert
-        assertNotNull(result);
-        verify(userRepository, times(1)).existsByEmail("test@example.com");
+            // Act
+            User result = authService.register(request);
+
+            // Assert
+            assertNotNull(result);
+            verify(userRepository, times(1)).existsByEmail("test@example.com");
+        }
+
+        @Test
+        @DisplayName("TC_NORM_002: Input trimming cho tất cả fields")
+        void register_WithWhitespaceAroundInputs_ShouldTrimInputs() {
+            // Arrange
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("  testuser  ");
+            request.setEmail("  test@example.com  ");
+            request.setPassword("Pass123");
+            request.setFullName("  Test User  ");
+
+            when(userRepository.existsByUsername("testuser")).thenReturn(false);
+            when(userRepository.existsByEmail("test@example.com")).thenReturn(false);
+            when(passwordEncoder.encode(anyString())).thenReturn("encoded");
+            when(userRepository.save(any(User.class))).thenAnswer(i -> {
+                User u = i.getArgument(0);
+                assertEquals("testuser", u.getUsername());
+                assertEquals("test@example.com", u.getEmail());
+                assertEquals("Test User", u.getFullName());
+                return u;
+            });
+
+            // Act
+            User result = authService.register(request);
+
+            // Assert
+            assertNotNull(result);
+        }
+
+        @Test
+        @DisplayName("TC_NORM_003: Password được encode trước khi lưu")
+        void register_ShouldEncodePasswordBeforeSaving() {
+            // Arrange
+            String rawPassword = "Pass123";
+            String encodedPassword = "encodedPassword123";
+
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername("testuser");
+            request.setEmail("test@example.com");
+            request.setPassword(rawPassword);
+            request.setFullName("Test User");
+
+            when(userRepository.existsByUsername(anyString())).thenReturn(false);
+            when(userRepository.existsByEmail(anyString())).thenReturn(false);
+            when(passwordEncoder.encode(rawPassword)).thenReturn(encodedPassword);
+            when(userRepository.save(any(User.class))).thenAnswer(i -> {
+                User u = i.getArgument(0);
+                assertEquals(encodedPassword, u.getPassword());
+                return u;
+            });
+
+            // Act
+            authService.register(request);
+
+            // Assert
+            verify(passwordEncoder, times(1)).encode(rawPassword);
+        }
     }
 
-    @Test
-    @DisplayName("Register - Input trimming: Khoảng trắng xung quanh inputs được trim")
-    void register_WithWhitespaceAroundInputs_ShouldTrimInputs() {
-        // Arrange
-        RegisterRequest request = new RegisterRequest();
-        request.setEmail("  test@example.com  ");
-        request.setPassword("password123");
-        request.setFullName("  Test User  ");
+    // ==================== COMPLETE WORKFLOW TESTS ====================
 
-        when(userRepository.existsByEmail("test@example.com")).thenReturn(false);
-        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
-        when(userRepository.save(any(User.class))).thenReturn(testUser);
+    @Nested
+    @DisplayName("Complete Workflow Tests")
+    class WorkflowTests {
 
-        // Act
-        User result = authService.register(request);
+        @Test
+        @DisplayName("TC_FLOW_001: Register complete workflow")
+        void register_CompleteWorkflow_ShouldExecuteAllSteps() {
+            // Arrange
+            String username = "newuser";
+            String email = "newuser@example.com";
+            String password = "Pass123";
+            String fullName = "New User";
+            
+            RegisterRequest request = new RegisterRequest();
+            request.setUsername(username);
+            request.setEmail(email);
+            request.setPassword(password);
+            request.setFullName(fullName);
 
-        // Assert
-        assertNotNull(result);
-        verify(userRepository, times(1)).existsByEmail("test@example.com");
-    }
+            when(userRepository.existsByUsername(username)).thenReturn(false);
+            when(userRepository.existsByEmail(email)).thenReturn(false);
+            when(passwordEncoder.encode(password)).thenReturn("hashedPassword");
+            when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
+                User savedUser = invocation.getArgument(0);
+                savedUser.setId(1L);
+                return savedUser;
+            });
 
-    @Test
-    @DisplayName("Register - Password encoding: Password phải được encode trước khi lưu")
-    void register_ShouldEncodePasswordBeforeSaving() {
-        // Arrange
-        String rawPassword = "plainPassword123";
-        String encodedPassword = "encodedPassword123";
+            // Act
+            User result = authService.register(request);
 
-        RegisterRequest request = new RegisterRequest();
-        request.setEmail("test@example.com");
-        request.setPassword(rawPassword);
-        request.setFullName("Test User");
+            // Assert
+            assertNotNull(result);
+            
+            // Verify tất cả các bước được thực hiện đúng thứ tự
+            verify(userRepository, times(1)).existsByUsername(username);
+            verify(userRepository, times(1)).existsByEmail(email);
+            verify(passwordEncoder, times(1)).encode(password);
+            verify(userRepository, times(1)).save(any(User.class));
+        }
 
-        when(userRepository.existsByEmail(anyString())).thenReturn(false);
-        when(passwordEncoder.encode(rawPassword)).thenReturn(encodedPassword);
-        when(userRepository.save(any(User.class))).thenReturn(testUser);
+        @Test
+        @DisplayName("TC_FLOW_002: Login complete workflow")
+        void login_CompleteWorkflow_ShouldExecuteAllSteps() {
+            // Arrange
+            String username = "testuser";
+            String password = "Pass123";
+            
+            LoginRequest request = new LoginRequest();
+            request.setUsername(username);
+            request.setPassword(password);
 
-        // Act
-        authService.register(request);
+            when(userRepository.findByUsername(username)).thenReturn(Optional.of(testUser));
+            when(passwordEncoder.matches(password, testUser.getPassword())).thenReturn(true);
 
-        // Assert
-        verify(passwordEncoder, times(1)).encode(rawPassword);
-        verify(userRepository, times(1)).save(any(User.class));
-    }
+            // Act
+            User result = authService.login(request);
 
-    // ==================== INTEGRATION-LIKE TESTS ====================
-
-    @Test
-    @DisplayName("Register - Toàn bộ workflow: Từ register request đến save database")
-    void register_CompleteWorkflow_ShouldExecuteAllSteps() {
-        // Arrange
-        String email = "newuser@example.com";
-        String password = "password123";
-        String fullName = "New User";
-        
-        RegisterRequest request = new RegisterRequest();
-        request.setEmail(email);
-        request.setPassword(password);
-        request.setFullName(fullName);
-
-        when(userRepository.existsByEmail(email)).thenReturn(false);
-        when(passwordEncoder.encode(password)).thenReturn("hashedPassword");
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
-            User savedUser = invocation.getArgument(0);
-            savedUser.setId(1L);
-            return savedUser;
-        });
-
-        // Act
-        User result = authService.register(request);
-
-        // Assert
-        assertNotNull(result);
-        
-        // Verify tất cả các bước được thực hiện đúng thứ tự
-        verify(userRepository, times(1)).existsByEmail(email);
-        verify(passwordEncoder, times(1)).encode(password);
-        verify(userRepository, times(1)).save(any(User.class));
-    }
-
-    @Test
-    @DisplayName("Login - Toàn bộ workflow: Từ login request đến return user")
-    void login_CompleteWorkflow_ShouldExecuteAllSteps() {
-        // Arrange
-        String email = "test@example.com";
-        String password = "password123";
-        
-        LoginRequest request = new LoginRequest();
-        request.setEmail(email);
-        request.setPassword(password);
-
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(testUser));
-        when(passwordEncoder.matches(password, testUser.getPassword())).thenReturn(true);
-
-        // Act
-        User result = authService.login(request);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(testUser.getId(), result.getId());
-        
-        // Verify tất cả các bước được thực hiện đúng thứ tự
-        verify(userRepository, times(1)).findByEmail(email);
-        verify(passwordEncoder, times(1)).matches(password, testUser.getPassword());
+            // Assert
+            assertNotNull(result);
+            assertEquals(testUser.getId(), result.getId());
+            
+            // Verify tất cả các bước được thực hiện đúng thứ tự
+            verify(userRepository, times(1)).findByUsername(username);
+            verify(passwordEncoder, times(1)).matches(password, testUser.getPassword());
+        }
     }
 }

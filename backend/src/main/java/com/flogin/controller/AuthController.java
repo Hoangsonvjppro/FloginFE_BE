@@ -13,6 +13,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Authentication Controller
+ * 
+ * Endpoints:
+ * - POST /api/auth/register - Đăng ký tài khoản mới
+ * - POST /api/auth/login - Đăng nhập bằng username/password
+ */
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -28,6 +35,7 @@ public class AuthController {
         Map<String, Object> response = new HashMap<>();
         response.put("message", "User registered successfully");
         response.put("userId", user.getId());
+        response.put("username", user.getUsername());
         response.put("email", user.getEmail());
         response.put("fullName", user.getFullName());
         
@@ -41,6 +49,7 @@ public class AuthController {
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Login successful");
         response.put("userId", user.getId());
+        response.put("username", user.getUsername());
         response.put("email", user.getEmail());
         response.put("fullName", user.getFullName());
         // TODO: Add JWT token generation here

@@ -3,14 +3,19 @@ package com.flogin.service.product;
 import com.flogin.dto.product.ProductMapper;
 import com.flogin.dto.product.ProductRequest;
 import com.flogin.dto.product.ProductResponse;
+import com.flogin.entity.product.Category;
 import com.flogin.entity.product.Product;
 import com.flogin.exception.BadRequestException;
 import com.flogin.exception.NotFoundException;
 import com.flogin.repository.product.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,15 +35,14 @@ import static org.mockito.Mockito.*;
 /**
  * Unit Test cho ProductService sử dụng JUnit 5 và Mockito.
  * 
- * Coverage:
- * - createProduct: Happy Path, Validation errors (price, quantity, name)
- * - getAllProducts: Danh sách rỗng, Danh sách có sản phẩm
- * - searchProducts: Tìm thấy, không tìm thấy
- * - getProductById: Tìm thấy, không tìm thấy (NotFoundException)
- * - updateProduct: Success, Not Found
- * - deleteProduct: Success, Not Found
+ * Validation Rules theo Assignment:
+ * - Name: 3-100 ký tự, required
+ * - Description: max 500 ký tự, optional
+ * - Price: > 0, <= 999,999,999
+ * - Quantity: >= 0, <= 99,999
+ * - Category: một trong 7 giá trị (ELECTRONICS, CLOTHING, FOOD, BOOKS, SPORTS, HOME, OTHER)
  * 
- * Target Coverage: >= 85%
+ * Coverage Target: >= 85%
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ProductService Unit Tests")
@@ -66,23 +70,26 @@ class ProductServiceTest {
         testProduct.setDescription("Test Description");
         testProduct.setPrice(new BigDecimal("99.99"));
         testProduct.setQuantity(100);
+        testProduct.setCategory(Category.ELECTRONICS);
         testProduct.setCreatedAt(LocalDateTime.now());
         testProduct.setUpdatedAt(LocalDateTime.now());
 
-        // Setup valid product request
+        // Setup valid product request với category
         validProductRequest = new ProductRequest();
         validProductRequest.setName("New Product");
         validProductRequest.setDescription("New Description");
         validProductRequest.setPrice(new BigDecimal("149.99"));
         validProductRequest.setQuantity(50);
+        validProductRequest.setCategory("ELECTRONICS");
 
-        // Setup product response
+        // Setup product response với category
         testProductResponse = ProductResponse.builder()
                 .id(1L)
                 .name("Test Product")
                 .description("Test Description")
                 .price(new BigDecimal("99.99"))
                 .quantity(100)
+                .category("ELECTRONICS")
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -90,263 +97,582 @@ class ProductServiceTest {
 
     // ==================== CREATE PRODUCT TESTS ====================
 
-    @Test
-    @DisplayName("Create Product - Success: Input hợp lệ -> Gọi save -> Trả về ProductResponse")
-    void createProduct_WithValidInput_ShouldSaveAndReturnResponse() {
-        // Arrange
-        when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(testProduct);
-        when(productRepository.save(any(Product.class))).thenReturn(testProduct);
-        when(productMapper.toResponse(any(Product.class))).thenReturn(testProductResponse);
+    @Nested
+    @DisplayName("Create Product Tests")
+    class CreateProductTests {
 
-        // Act
-        ProductResponse result = productService.createProduct(validProductRequest);
+        @Test
+        @DisplayName("TC_CREATE_001: Success với input hợp lệ")
+        void createProduct_WithValidInput_ShouldSaveAndReturnResponse() {
+            // Arrange
+            when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(testProduct);
+            when(productRepository.save(any(Product.class))).thenReturn(testProduct);
+            when(productMapper.toResponse(any(Product.class))).thenReturn(testProductResponse);
 
-        // Assert
-        assertNotNull(result, "ProductResponse không được null");
-        assertEquals(testProductResponse.getId(), result.getId());
-        assertEquals(testProductResponse.getName(), result.getName());
-        assertEquals(testProductResponse.getPrice(), result.getPrice());
+            // Act
+            ProductResponse result = productService.createProduct(validProductRequest);
 
-        // Verify interactions
-        verify(productMapper, times(1)).toEntity(any(ProductRequest.class));
-        verify(productRepository, times(1)).save(any(Product.class));
-        verify(productMapper, times(1)).toResponse(any(Product.class));
+            // Assert
+            assertNotNull(result, "ProductResponse không được null");
+            assertEquals(testProductResponse.getId(), result.getId());
+            assertEquals(testProductResponse.getName(), result.getName());
+            assertEquals(testProductResponse.getPrice(), result.getPrice());
+            assertEquals(testProductResponse.getCategory(), result.getCategory());
+
+            // Verify interactions
+            verify(productMapper, times(1)).toEntity(any(ProductRequest.class));
+            verify(productRepository, times(1)).save(any(Product.class));
+            verify(productMapper, times(1)).toResponse(any(Product.class));
+        }
     }
 
-    @Test
-    @DisplayName("Create Product - Validation Error: Name rỗng -> Ném BadRequestException")
-    void createProduct_WithEmptyName_ShouldThrowBadRequestException() {
-        // Arrange
-        ProductRequest request = new ProductRequest();
-        request.setName("");
-        request.setDescription("Description");
-        request.setPrice(new BigDecimal("99.99"));
-        request.setQuantity(10);
+    // ==================== NAME VALIDATION TESTS ====================
 
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> productService.createProduct(request),
-            "Phải throw BadRequestException khi name rỗng"
-        );
+    @Nested
+    @DisplayName("Name Validation Tests")
+    class NameValidationTests {
 
-        assertEquals("Product name is required", exception.getMessage());
-        verify(productRepository, never()).save(any(Product.class));
+        @Test
+        @DisplayName("TC_NAME_001: Name rỗng -> BadRequestException")
+        void createProduct_WithEmptyName_ShouldThrowBadRequestException() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("");
+            request.setDescription("Description");
+            request.setPrice(new BigDecimal("99.99"));
+            request.setQuantity(10);
+            request.setCategory("ELECTRONICS");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> productService.createProduct(request)
+            );
+
+            assertEquals("Product name is required", exception.getMessage());
+            verify(productRepository, never()).save(any(Product.class));
+        }
+
+        @Test
+        @DisplayName("TC_NAME_002: Name null -> BadRequestException")
+        void createProduct_WithNullName_ShouldThrowBadRequestException() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName(null);
+            request.setDescription("Description");
+            request.setPrice(new BigDecimal("99.99"));
+            request.setQuantity(10);
+            request.setCategory("ELECTRONICS");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> productService.createProduct(request)
+            );
+
+            assertEquals("Product name is required", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("TC_NAME_003: Name chỉ có whitespace -> BadRequestException")
+        void createProduct_WithWhitespaceOnlyName_ShouldThrowBadRequestException() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("   ");
+            request.setDescription("Description");
+            request.setPrice(new BigDecimal("99.99"));
+            request.setQuantity(10);
+            request.setCategory("ELECTRONICS");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> productService.createProduct(request)
+            );
+
+            assertEquals("Product name is required", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("TC_NAME_004: Name 2 ký tự (< 3, invalid)")
+        void createProduct_WithTooShortName_ShouldThrowBadRequestException() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("AB");
+            request.setDescription("Description");
+            request.setPrice(new BigDecimal("99.99"));
+            request.setQuantity(10);
+            request.setCategory("ELECTRONICS");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> productService.createProduct(request)
+            );
+
+            assertEquals("Product name must be at least 3 characters", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("TC_NAME_005: Name 3 ký tự (boundary min) -> Success")
+        void createProduct_WithMinimumNameLength_ShouldSucceed() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("ABC");
+            request.setDescription("Description");
+            request.setPrice(new BigDecimal("99.99"));
+            request.setQuantity(10);
+            request.setCategory("ELECTRONICS");
+
+            when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(testProduct);
+            when(productRepository.save(any(Product.class))).thenReturn(testProduct);
+            when(productMapper.toResponse(any(Product.class))).thenReturn(testProductResponse);
+
+            // Act & Assert
+            assertDoesNotThrow(() -> productService.createProduct(request));
+        }
+
+        @Test
+        @DisplayName("TC_NAME_006: Name 100 ký tự (boundary max) -> Success")
+        void createProduct_WithMaximumNameLength_ShouldSucceed() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("a".repeat(100));
+            request.setDescription("Description");
+            request.setPrice(new BigDecimal("99.99"));
+            request.setQuantity(10);
+            request.setCategory("ELECTRONICS");
+
+            when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(testProduct);
+            when(productRepository.save(any(Product.class))).thenReturn(testProduct);
+            when(productMapper.toResponse(any(Product.class))).thenReturn(testProductResponse);
+
+            // Act & Assert
+            assertDoesNotThrow(() -> productService.createProduct(request));
+        }
+
+        @Test
+        @DisplayName("TC_NAME_007: Name 101 ký tự (> 100, invalid)")
+        void createProduct_WithTooLongName_ShouldThrowBadRequestException() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("a".repeat(101));
+            request.setDescription("Description");
+            request.setPrice(new BigDecimal("99.99"));
+            request.setQuantity(10);
+            request.setCategory("ELECTRONICS");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> productService.createProduct(request)
+            );
+
+            assertEquals("Product name must not exceed 100 characters", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("TC_NAME_008: Name trimming")
+        void createProduct_WithWhitespaceAroundName_ShouldTrimName() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("  Product Name  ");
+            request.setDescription("Description");
+            request.setPrice(new BigDecimal("99.99"));
+            request.setQuantity(10);
+            request.setCategory("ELECTRONICS");
+
+            when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(testProduct);
+            when(productRepository.save(any(Product.class))).thenReturn(testProduct);
+            when(productMapper.toResponse(any(Product.class))).thenReturn(testProductResponse);
+
+            // Act
+            productService.createProduct(request);
+
+            // Assert
+            assertEquals("Product Name", request.getName());
+        }
     }
 
-    @Test
-    @DisplayName("Create Product - Validation Error: Name null -> Ném BadRequestException")
-    void createProduct_WithNullName_ShouldThrowBadRequestException() {
-        // Arrange
-        ProductRequest request = new ProductRequest();
-        request.setName(null);
-        request.setDescription("Description");
-        request.setPrice(new BigDecimal("99.99"));
-        request.setQuantity(10);
+    // ==================== CATEGORY VALIDATION TESTS ====================
 
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> productService.createProduct(request),
-            "Phải throw BadRequestException khi name null"
-        );
+    @Nested
+    @DisplayName("Category Validation Tests")
+    class CategoryValidationTests {
 
-        assertEquals("Product name is required", exception.getMessage());
-        verify(productRepository, never()).save(any(Product.class));
+        @ParameterizedTest
+        @ValueSource(strings = {"ELECTRONICS", "CLOTHING", "FOOD", "BOOKS", "SPORTS", "HOME", "OTHER"})
+        @DisplayName("TC_CAT_001: Valid category values")
+        void createProduct_WithValidCategory_ShouldSucceed(String category) {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("Product");
+            request.setDescription("Description");
+            request.setPrice(new BigDecimal("99.99"));
+            request.setQuantity(10);
+            request.setCategory(category);
+
+            when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(testProduct);
+            when(productRepository.save(any(Product.class))).thenReturn(testProduct);
+            when(productMapper.toResponse(any(Product.class))).thenReturn(testProductResponse);
+
+            // Act & Assert
+            assertDoesNotThrow(() -> productService.createProduct(request));
+        }
+
+        @Test
+        @DisplayName("TC_CAT_002: Invalid category -> BadRequestException")
+        void createProduct_WithInvalidCategory_ShouldThrowBadRequestException() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("Product");
+            request.setDescription("Description");
+            request.setPrice(new BigDecimal("99.99"));
+            request.setQuantity(10);
+            request.setCategory("INVALID_CATEGORY");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> productService.createProduct(request)
+            );
+
+            assertTrue(exception.getMessage().contains("Invalid category"));
+        }
+
+        @Test
+        @DisplayName("TC_CAT_003: Category null -> BadRequestException (required)")
+        void createProduct_WithNullCategory_ShouldThrowBadRequestException() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("Product");
+            request.setDescription("Description");
+            request.setPrice(new BigDecimal("99.99"));
+            request.setQuantity(10);
+            request.setCategory(null);
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> productService.createProduct(request)
+            );
+
+            assertEquals("Category is required", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("TC_CAT_004: Category lowercase -> convert to uppercase")
+        void createProduct_WithLowercaseCategory_ShouldConvertToUppercase() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("Product");
+            request.setDescription("Description");
+            request.setPrice(new BigDecimal("99.99"));
+            request.setQuantity(10);
+            request.setCategory("electronics");
+
+            when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(testProduct);
+            when(productRepository.save(any(Product.class))).thenReturn(testProduct);
+            when(productMapper.toResponse(any(Product.class))).thenReturn(testProductResponse);
+
+            // Act & Assert
+            assertDoesNotThrow(() -> productService.createProduct(request));
+        }
     }
 
-    @Test
-    @DisplayName("Create Product - Validation Error: Name chỉ chứa khoảng trắng -> Ném BadRequestException")
-    void createProduct_WithWhitespaceOnlyName_ShouldThrowBadRequestException() {
-        // Arrange
-        ProductRequest request = new ProductRequest();
-        request.setName("   ");
-        request.setDescription("Description");
-        request.setPrice(new BigDecimal("99.99"));
-        request.setQuantity(10);
+    // ==================== PRICE VALIDATION TESTS ====================
 
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> productService.createProduct(request),
-            "Phải throw BadRequestException khi name chỉ chứa khoảng trắng"
-        );
+    @Nested
+    @DisplayName("Price Validation Tests")
+    class PriceValidationTests {
 
-        assertEquals("Product name is required", exception.getMessage());
-        verify(productRepository, never()).save(any(Product.class));
+        @Test
+        @DisplayName("TC_PRICE_001: Price null -> BadRequestException")
+        void createProduct_WithNullPrice_ShouldThrowBadRequestException() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("Product Name");
+            request.setDescription("Description");
+            request.setPrice(null);
+            request.setQuantity(10);
+            request.setCategory("ELECTRONICS");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> productService.createProduct(request)
+            );
+
+            assertEquals("Price is required", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("TC_PRICE_002: Price = 0 -> BadRequestException")
+        void createProduct_WithZeroPrice_ShouldThrowBadRequestException() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("Product Name");
+            request.setDescription("Description");
+            request.setPrice(BigDecimal.ZERO);
+            request.setQuantity(10);
+            request.setCategory("ELECTRONICS");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> productService.createProduct(request)
+            );
+
+            assertEquals("Price must be greater than 0", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("TC_PRICE_003: Price < 0 -> BadRequestException")
+        void createProduct_WithNegativePrice_ShouldThrowBadRequestException() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("Product Name");
+            request.setDescription("Description");
+            request.setPrice(new BigDecimal("-10.00"));
+            request.setQuantity(10);
+            request.setCategory("ELECTRONICS");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> productService.createProduct(request)
+            );
+
+            assertEquals("Price must be greater than 0", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("TC_PRICE_004: Price = 0.01 (boundary min) -> Success")
+        void createProduct_WithMinimumValidPrice_ShouldSucceed() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("Product Name");
+            request.setDescription("Description");
+            request.setPrice(new BigDecimal("0.01"));
+            request.setQuantity(10);
+            request.setCategory("ELECTRONICS");
+
+            when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(testProduct);
+            when(productRepository.save(any(Product.class))).thenReturn(testProduct);
+            when(productMapper.toResponse(any(Product.class))).thenReturn(testProductResponse);
+
+            // Act & Assert
+            assertDoesNotThrow(() -> productService.createProduct(request));
+        }
+
+        @Test
+        @DisplayName("TC_PRICE_005: Price = 999,999,999 (boundary max) -> Success")
+        void createProduct_WithMaximumValidPrice_ShouldSucceed() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("Product Name");
+            request.setDescription("Description");
+            request.setPrice(new BigDecimal("999999999"));
+            request.setQuantity(10);
+            request.setCategory("ELECTRONICS");
+
+            when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(testProduct);
+            when(productRepository.save(any(Product.class))).thenReturn(testProduct);
+            when(productMapper.toResponse(any(Product.class))).thenReturn(testProductResponse);
+
+            // Act & Assert
+            assertDoesNotThrow(() -> productService.createProduct(request));
+        }
+
+        @Test
+        @DisplayName("TC_PRICE_006: Price > 999,999,999 -> BadRequestException")
+        void createProduct_WithPriceExceedingMax_ShouldThrowBadRequestException() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("Product Name");
+            request.setDescription("Description");
+            request.setPrice(new BigDecimal("1000000000")); // > 999,999,999
+            request.setQuantity(10);
+            request.setCategory("ELECTRONICS");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> productService.createProduct(request)
+            );
+
+            assertEquals("Price must not exceed 999,999,999", exception.getMessage());
+        }
     }
 
-    @Test
-    @DisplayName("Create Product - Validation Error: Price null -> Ném BadRequestException")
-    void createProduct_WithNullPrice_ShouldThrowBadRequestException() {
-        // Arrange
-        ProductRequest request = new ProductRequest();
-        request.setName("Product Name");
-        request.setDescription("Description");
-        request.setPrice(null);
-        request.setQuantity(10);
+    // ==================== QUANTITY VALIDATION TESTS ====================
 
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> productService.createProduct(request),
-            "Phải throw BadRequestException khi price null"
-        );
+    @Nested
+    @DisplayName("Quantity Validation Tests")
+    class QuantityValidationTests {
 
-        assertEquals("Price is required", exception.getMessage());
-        verify(productRepository, never()).save(any(Product.class));
+        @Test
+        @DisplayName("TC_QTY_001: Quantity null -> BadRequestException")
+        void createProduct_WithNullQuantity_ShouldThrowBadRequestException() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("Product Name");
+            request.setDescription("Description");
+            request.setPrice(new BigDecimal("99.99"));
+            request.setQuantity(null);
+            request.setCategory("ELECTRONICS");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> productService.createProduct(request)
+            );
+
+            assertEquals("Quantity is required", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("TC_QTY_002: Quantity < 0 -> BadRequestException")
+        void createProduct_WithNegativeQuantity_ShouldThrowBadRequestException() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("Product Name");
+            request.setDescription("Description");
+            request.setPrice(new BigDecimal("99.99"));
+            request.setQuantity(-1);
+            request.setCategory("ELECTRONICS");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> productService.createProduct(request)
+            );
+
+            assertEquals("Quantity must be greater than or equal to 0", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("TC_QTY_003: Quantity = 0 (boundary min) -> Success")
+        void createProduct_WithZeroQuantity_ShouldSucceed() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("Product Name");
+            request.setDescription("Description");
+            request.setPrice(new BigDecimal("99.99"));
+            request.setQuantity(0);
+            request.setCategory("ELECTRONICS");
+
+            when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(testProduct);
+            when(productRepository.save(any(Product.class))).thenReturn(testProduct);
+            when(productMapper.toResponse(any(Product.class))).thenReturn(testProductResponse);
+
+            // Act & Assert
+            assertDoesNotThrow(() -> productService.createProduct(request));
+        }
+
+        @Test
+        @DisplayName("TC_QTY_004: Quantity = 99,999 (boundary max) -> Success")
+        void createProduct_WithMaximumQuantity_ShouldSucceed() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("Product Name");
+            request.setDescription("Description");
+            request.setPrice(new BigDecimal("99.99"));
+            request.setQuantity(99999);
+            request.setCategory("ELECTRONICS");
+
+            when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(testProduct);
+            when(productRepository.save(any(Product.class))).thenReturn(testProduct);
+            when(productMapper.toResponse(any(Product.class))).thenReturn(testProductResponse);
+
+            // Act & Assert
+            assertDoesNotThrow(() -> productService.createProduct(request));
+        }
+
+        @Test
+        @DisplayName("TC_QTY_005: Quantity > 99,999 -> BadRequestException")
+        void createProduct_WithQuantityExceedingMax_ShouldThrowBadRequestException() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("Product Name");
+            request.setDescription("Description");
+            request.setPrice(new BigDecimal("99.99"));
+            request.setQuantity(100000);
+            request.setCategory("ELECTRONICS");
+
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> productService.createProduct(request)
+            );
+
+            assertEquals("Quantity must not exceed 99999", exception.getMessage());
+        }
     }
 
-    @Test
-    @DisplayName("Create Product - Validation Error: Price = 0 -> Ném BadRequestException")
-    void createProduct_WithZeroPrice_ShouldThrowBadRequestException() {
-        // Arrange
-        ProductRequest request = new ProductRequest();
-        request.setName("Product Name");
-        request.setDescription("Description");
-        request.setPrice(BigDecimal.ZERO);
-        request.setQuantity(10);
+    // ==================== DESCRIPTION VALIDATION TESTS ====================
 
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> productService.createProduct(request),
-            "Phải throw BadRequestException khi price = 0"
-        );
+    @Nested
+    @DisplayName("Description Validation Tests")
+    class DescriptionValidationTests {
 
-        assertEquals("Price must be greater than 0", exception.getMessage());
-        verify(productRepository, never()).save(any(Product.class));
-    }
+        @Test
+        @DisplayName("TC_DESC_001: Description null -> Success (optional)")
+        void createProduct_WithNullDescription_ShouldSucceed() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("Product Name");
+            request.setDescription(null);
+            request.setPrice(new BigDecimal("99.99"));
+            request.setQuantity(10);
+            request.setCategory("ELECTRONICS");
 
-    @Test
-    @DisplayName("Create Product - Validation Error: Price < 0 -> Ném BadRequestException")
-    void createProduct_WithNegativePrice_ShouldThrowBadRequestException() {
-        // Arrange
-        ProductRequest request = new ProductRequest();
-        request.setName("Product Name");
-        request.setDescription("Description");
-        request.setPrice(new BigDecimal("-10.00"));
-        request.setQuantity(10);
+            when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(testProduct);
+            when(productRepository.save(any(Product.class))).thenReturn(testProduct);
+            when(productMapper.toResponse(any(Product.class))).thenReturn(testProductResponse);
 
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> productService.createProduct(request),
-            "Phải throw BadRequestException khi price < 0"
-        );
+            // Act & Assert
+            assertDoesNotThrow(() -> productService.createProduct(request));
+        }
 
-        assertEquals("Price must be greater than 0", exception.getMessage());
-        verify(productRepository, never()).save(any(Product.class));
-    }
+        @Test
+        @DisplayName("TC_DESC_002: Description 500 ký tự (boundary max) -> Success")
+        void createProduct_WithMaxDescriptionLength_ShouldSucceed() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("Product Name");
+            request.setDescription("a".repeat(500));
+            request.setPrice(new BigDecimal("99.99"));
+            request.setQuantity(10);
+            request.setCategory("ELECTRONICS");
 
-    @Test
-    @DisplayName("Create Product - Validation: Price = 0.01 (giá trị nhỏ nhất hợp lệ) -> Thành công")
-    void createProduct_WithMinimumValidPrice_ShouldSucceed() {
-        // Arrange
-        ProductRequest request = new ProductRequest();
-        request.setName("Product Name");
-        request.setDescription("Description");
-        request.setPrice(new BigDecimal("0.01"));
-        request.setQuantity(10);
+            when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(testProduct);
+            when(productRepository.save(any(Product.class))).thenReturn(testProduct);
+            when(productMapper.toResponse(any(Product.class))).thenReturn(testProductResponse);
 
-        when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(testProduct);
-        when(productRepository.save(any(Product.class))).thenReturn(testProduct);
-        when(productMapper.toResponse(any(Product.class))).thenReturn(testProductResponse);
+            // Act & Assert
+            assertDoesNotThrow(() -> productService.createProduct(request));
+        }
 
-        // Act
-        ProductResponse result = productService.createProduct(request);
+        @Test
+        @DisplayName("TC_DESC_003: Description > 500 ký tự -> BadRequestException")
+        void createProduct_WithTooLongDescription_ShouldThrowBadRequestException() {
+            // Arrange
+            ProductRequest request = new ProductRequest();
+            request.setName("Product Name");
+            request.setDescription("a".repeat(501));
+            request.setPrice(new BigDecimal("99.99"));
+            request.setQuantity(10);
+            request.setCategory("ELECTRONICS");
 
-        // Assert
-        assertNotNull(result);
-        verify(productRepository, times(1)).save(any(Product.class));
-    }
+            // Act & Assert
+            BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> productService.createProduct(request)
+            );
 
-    @Test
-    @DisplayName("Create Product - Validation Error: Quantity null -> Ném BadRequestException")
-    void createProduct_WithNullQuantity_ShouldThrowBadRequestException() {
-        // Arrange
-        ProductRequest request = new ProductRequest();
-        request.setName("Product Name");
-        request.setDescription("Description");
-        request.setPrice(new BigDecimal("99.99"));
-        request.setQuantity(null);
-
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> productService.createProduct(request),
-            "Phải throw BadRequestException khi quantity null"
-        );
-
-        assertEquals("Quantity is required", exception.getMessage());
-        verify(productRepository, never()).save(any(Product.class));
-    }
-
-    @Test
-    @DisplayName("Create Product - Validation Error: Quantity < 0 -> Ném BadRequestException")
-    void createProduct_WithNegativeQuantity_ShouldThrowBadRequestException() {
-        // Arrange
-        ProductRequest request = new ProductRequest();
-        request.setName("Product Name");
-        request.setDescription("Description");
-        request.setPrice(new BigDecimal("99.99"));
-        request.setQuantity(-1);
-
-        // Act & Assert
-        BadRequestException exception = assertThrows(
-            BadRequestException.class,
-            () -> productService.createProduct(request),
-            "Phải throw BadRequestException khi quantity < 0"
-        );
-
-        assertEquals("Quantity must be greater than or equal to 0", exception.getMessage());
-        verify(productRepository, never()).save(any(Product.class));
-    }
-
-    @Test
-    @DisplayName("Create Product - Validation: Quantity = 0 -> Thành công")
-    void createProduct_WithZeroQuantity_ShouldSucceed() {
-        // Arrange
-        ProductRequest request = new ProductRequest();
-        request.setName("Product Name");
-        request.setDescription("Description");
-        request.setPrice(new BigDecimal("99.99"));
-        request.setQuantity(0);
-
-        when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(testProduct);
-        when(productRepository.save(any(Product.class))).thenReturn(testProduct);
-        when(productMapper.toResponse(any(Product.class))).thenReturn(testProductResponse);
-
-        // Act
-        ProductResponse result = productService.createProduct(request);
-
-        // Assert
-        assertNotNull(result);
-        verify(productRepository, times(1)).save(any(Product.class));
-    }
-
-    @Test
-    @DisplayName("Create Product - Name trimming: Khoảng trắng xung quanh name được trim")
-    void createProduct_WithWhitespaceAroundName_ShouldTrimName() {
-        // Arrange
-        ProductRequest request = new ProductRequest();
-        request.setName("  Product Name  ");
-        request.setDescription("Description");
-        request.setPrice(new BigDecimal("99.99"));
-        request.setQuantity(10);
-
-        when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(testProduct);
-        when(productRepository.save(any(Product.class))).thenReturn(testProduct);
-        when(productMapper.toResponse(any(Product.class))).thenReturn(testProductResponse);
-
-        // Act
-        ProductResponse result = productService.createProduct(request);
-
-        // Assert
-        assertNotNull(result);
-        // Verify name was trimmed
-        assertEquals("Product Name", request.getName());
-        verify(productRepository, times(1)).save(any(Product.class));
+            assertEquals("Description must not exceed 500 characters", exception.getMessage());
+        }
     }
 
     // ==================== GET ALL PRODUCTS TESTS ====================
@@ -518,6 +844,7 @@ class ProductServiceTest {
         updateRequest.setDescription("Updated Description");
         updateRequest.setPrice(new BigDecimal("199.99"));
         updateRequest.setQuantity(75);
+        updateRequest.setCategory("ELECTRONICS");
 
         Product updatedProduct = new Product();
         updatedProduct.setId(productId);
@@ -702,6 +1029,7 @@ class ProductServiceTest {
         request.setDescription("Complete Description");
         request.setPrice(new BigDecimal("299.99"));
         request.setQuantity(100);
+        request.setCategory("ELECTRONICS");
 
         when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(testProduct);
         when(productRepository.save(any(Product.class))).thenReturn(testProduct);
@@ -731,6 +1059,7 @@ class ProductServiceTest {
         request.setDescription("Updated Description");
         request.setPrice(new BigDecimal("399.99"));
         request.setQuantity(200);
+        request.setCategory("ELECTRONICS");
 
         when(productRepository.findById(productId)).thenReturn(Optional.of(testProduct));
         doNothing().when(productMapper).updateEntity(any(Product.class), any(ProductRequest.class));
@@ -761,6 +1090,7 @@ class ProductServiceTest {
         request.setDescription(null); // Description là optional
         request.setPrice(new BigDecimal("99.99"));
         request.setQuantity(10);
+        request.setCategory("ELECTRONICS");
 
         when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(testProduct);
         when(productRepository.save(any(Product.class))).thenReturn(testProduct);
@@ -783,6 +1113,7 @@ class ProductServiceTest {
         request.setDescription("Testing decimal precision");
         request.setPrice(new BigDecimal("123.45")); // 2 chữ số thập phân
         request.setQuantity(10);
+        request.setCategory("ELECTRONICS");
 
         when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(testProduct);
         when(productRepository.save(any(Product.class))).thenReturn(testProduct);
@@ -803,8 +1134,9 @@ class ProductServiceTest {
         ProductRequest request = new ProductRequest();
         request.setName("Expensive Product");
         request.setDescription("High-end item");
-        request.setPrice(new BigDecimal("999999999.99")); // Gần giới hạn
+        request.setPrice(new BigDecimal("999999999")); // Giới hạn max
         request.setQuantity(1);
+        request.setCategory("ELECTRONICS");
 
         when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(testProduct);
         when(productRepository.save(any(Product.class))).thenReturn(testProduct);
@@ -827,6 +1159,7 @@ class ProductServiceTest {
         request.setDescription("Large stock");
         request.setPrice(new BigDecimal("9.99"));
         request.setQuantity(99999); // Giới hạn
+        request.setCategory("ELECTRONICS");
 
         when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(testProduct);
         when(productRepository.save(any(Product.class))).thenReturn(testProduct);

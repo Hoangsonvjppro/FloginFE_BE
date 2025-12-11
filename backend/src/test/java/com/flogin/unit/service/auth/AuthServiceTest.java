@@ -21,6 +21,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit Test placeholder trong unit package - 
+ * Tests chính đã được đưa vào com.flogin.service.auth.AuthServiceTest
+ */
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
@@ -40,16 +44,18 @@ class AuthServiceTest {
     @BeforeEach
     void setUp() {
         registerRequest = new RegisterRequest();
+        registerRequest.setUsername("testuser");
         registerRequest.setEmail("test@example.com");
-        registerRequest.setPassword("Password123");
+        registerRequest.setPassword("Pass123");
         registerRequest.setFullName("Test User");
 
         loginRequest = new LoginRequest();
-        loginRequest.setEmail("test@example.com");
-        loginRequest.setPassword("Password123");
+        loginRequest.setUsername("testuser");
+        loginRequest.setPassword("Pass123");
 
         user = new User();
         user.setId(1L);
+        user.setUsername("testuser");
         user.setEmail("test@example.com");
         user.setPassword("encodedPassword");
         user.setFullName("Test User");
@@ -58,6 +64,7 @@ class AuthServiceTest {
     @Test
     @DisplayName("Register: Success - Should save user and return user object")
     void register_Success() {
+        when(userRepository.existsByUsername(anyString())).thenReturn(false);
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
         when(userRepository.save(any(User.class))).thenReturn(user);
@@ -65,14 +72,15 @@ class AuthServiceTest {
         User result = authService.register(registerRequest);
 
         assertNotNull(result);
+        assertEquals("testuser", result.getUsername());
         assertEquals("test@example.com", result.getEmail());
         verify(userRepository).save(any(User.class));
     }
 
     @Test
-    @DisplayName("Register: Failure - Email already exists")
-    void register_EmailExists() {
-        when(userRepository.existsByEmail(anyString())).thenReturn(true);
+    @DisplayName("Register: Failure - Username already exists")
+    void register_UsernameExists() {
+        when(userRepository.existsByUsername(anyString())).thenReturn(true);
 
         assertThrows(BadRequestException.class, () -> authService.register(registerRequest));
         verify(userRepository, never()).save(any(User.class));
@@ -81,19 +89,19 @@ class AuthServiceTest {
     @Test
     @DisplayName("Login: Success - Should return user when credentials are correct")
     void login_Success() {
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
 
         User result = authService.login(loginRequest);
 
         assertNotNull(result);
-        assertEquals("test@example.com", result.getEmail());
+        assertEquals("testuser", result.getUsername());
     }
 
     @Test
     @DisplayName("Login: Failure - Wrong password")
     void login_WrongPassword() {
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
 
         assertThrows(BadRequestException.class, () -> authService.login(loginRequest));
@@ -102,7 +110,7 @@ class AuthServiceTest {
     @Test
     @DisplayName("Login: Failure - User not found")
     void login_UserNotFound() {
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
 
         assertThrows(BadRequestException.class, () -> authService.login(loginRequest));
     }

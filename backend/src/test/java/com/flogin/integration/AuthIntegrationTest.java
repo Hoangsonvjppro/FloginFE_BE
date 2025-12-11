@@ -58,24 +58,26 @@ class AuthIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // Setup test user
+        // Setup test user với username
         testUser = new User();
         testUser.setId(1L);
+        testUser.setUsername("testuser");
         testUser.setEmail("test@example.com");
         testUser.setPassword("encodedPassword123"); // Mật khẩu đã được encode
         testUser.setFullName("Test User");
         testUser.setCreatedAt(LocalDateTime.now());
         testUser.setUpdatedAt(LocalDateTime.now());
 
-        // Setup valid login request
+        // Setup valid login request với username
         validLoginRequest = new LoginRequest();
-        validLoginRequest.setEmail("test@example.com");
+        validLoginRequest.setUsername("testuser");
         validLoginRequest.setPassword("Pass123");
 
-        // Setup valid register request
+        // Setup valid register request với username
         validRegisterRequest = new RegisterRequest();
+        validRegisterRequest.setUsername("newuser");
         validRegisterRequest.setEmail("newuser@example.com");
-        validRegisterRequest.setPassword("Password123");
+        validRegisterRequest.setPassword("Pass123");
         validRegisterRequest.setFullName("New User");
     }
 
@@ -110,7 +112,7 @@ class AuthIntegrationTest {
     void login_WithInvalidCredentials_ShouldReturn400() throws Exception {
         // Arrange
         when(authService.login(any(LoginRequest.class)))
-                .thenThrow(new BadRequestException("Invalid email or password"));
+                .thenThrow(new BadRequestException("Invalid username or password"));
 
         // Act & Assert
         mockMvc.perform(post("/api/auth/login")
@@ -119,17 +121,17 @@ class AuthIntegrationTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value(containsString("Invalid email or password")));
+                .andExpect(jsonPath("$.message").value(containsString("Invalid username or password")));
 
         verify(authService, times(1)).login(any(LoginRequest.class));
     }
 
     @Test
-    @DisplayName("POST /api/auth/login - Validation: Email rỗng -> 400 Bad Request")
-    void login_WithEmptyEmail_ShouldReturn400() throws Exception {
+    @DisplayName("POST /api/auth/login - Validation: Username rỗng -> 400 Bad Request")
+    void login_WithEmptyUsername_ShouldReturn400() throws Exception {
         // Arrange
         LoginRequest invalidRequest = new LoginRequest();
-        invalidRequest.setEmail(""); // Email rỗng
+        invalidRequest.setUsername(""); // Username rỗng
         invalidRequest.setPassword("Pass123");
 
         // Act & Assert
@@ -144,11 +146,11 @@ class AuthIntegrationTest {
     }
 
     @Test
-    @DisplayName("POST /api/auth/login - Validation: Email sai định dạng -> 400 Bad Request")
-    void login_WithInvalidEmailFormat_ShouldReturn400() throws Exception {
+    @DisplayName("POST /api/auth/login - Validation: Username sai định dạng -> 400 Bad Request")
+    void login_WithInvalidUsernameFormat_ShouldReturn400() throws Exception {
         // Arrange
         LoginRequest invalidRequest = new LoginRequest();
-        invalidRequest.setEmail("invalid-email"); // Không có @ và domain
+        invalidRequest.setUsername("invalid@user"); // Có ký tự @ không hợp lệ
         invalidRequest.setPassword("Pass123");
 
         // Act & Assert
@@ -166,7 +168,7 @@ class AuthIntegrationTest {
     void login_WithEmptyPassword_ShouldReturn400() throws Exception {
         // Arrange
         LoginRequest invalidRequest = new LoginRequest();
-        invalidRequest.setEmail("test@example.com");
+        invalidRequest.setUsername("testuser");
         invalidRequest.setPassword(""); // Password rỗng
 
         // Act & Assert
@@ -180,24 +182,19 @@ class AuthIntegrationTest {
     }
 
     @Test
-    @DisplayName("POST /api/auth/login - Email normalization: Uppercase email được xử lý")
-    void login_WithUppercaseEmail_ShouldNormalize() throws Exception {
-        // Arrange
-        LoginRequest uppercaseRequest = new LoginRequest();
-        uppercaseRequest.setEmail("TEST@EXAMPLE.COM");
-        uppercaseRequest.setPassword("Pass123");
+    @DisplayName("POST /api/auth/login - Username with whitespace: Invalid pattern")
+    void login_WithWhitespaceUsername_ShouldReturn400() throws Exception {
+        // Arrange - Username with whitespace doesn't match pattern
+        LoginRequest whitespaceRequest = new LoginRequest();
+        whitespaceRequest.setUsername("  testuser  ");
+        whitespaceRequest.setPassword("Pass123");
 
-        when(authService.login(any(LoginRequest.class))).thenReturn(testUser);
-
-        // Act & Assert
+        // Act & Assert - Pattern validation fails
         mockMvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(uppercaseRequest)))
+                .content(objectMapper.writeValueAsString(whitespaceRequest)))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Login successful"));
-
-        verify(authService, times(1)).login(any(LoginRequest.class));
+                .andExpect(status().isBadRequest());
     }
 
     // ==================== REGISTER TESTS ====================
