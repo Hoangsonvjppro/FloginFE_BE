@@ -8,7 +8,8 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
     email: '',
     password: '',
     confirmPassword: '',
-    fullName: ''
+    fullName: '',
+    username: ''
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -31,10 +32,13 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
   const validate = () => {
     const newErrors = {};
 
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Invalid email format';
+    // Username is required for both login and register
+    if (!formData.username || !formData.username.trim()) {
+      newErrors.username = 'Username is required';
+    } else if (formData.username.length < 3) {
+      newErrors.username = 'Username must be at least 3 characters';
+    } else if (!/^[a-zA-Z0-9._-]+$/.test(formData.username)) {
+      newErrors.username = 'Username can only contain letters, numbers, dots, hyphens, and underscores';
     }
 
     if (!formData.password) {
@@ -47,7 +51,13 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
       if (!formData.fullName || !formData.fullName.trim()) {
         newErrors.fullName = 'Full name is required';
       }
-      
+
+      if (!formData.email.trim()) {
+        newErrors.email = 'Email is required';
+      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+        newErrors.email = 'Invalid email format';
+      }
+
       if (!formData.confirmPassword) {
         newErrors.confirmPassword = 'Please confirm your password';
       } else if (formData.password !== formData.confirmPassword) {
@@ -61,33 +71,34 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validate()) return;
 
     setIsLoading(true);
     try {
       if (isLogin) {
-        await authService.login(formData.email, formData.password);
+        await authService.login(formData.username, formData.password);
         showToast('Login successful', 'success');
       } else {
-        await authService.register(formData.email, formData.password, formData.fullName);
+        await authService.register(formData.email, formData.password, formData.fullName, formData.username);
         showToast('Registration successful', 'success');
       }
-      
+
       // Reset form
       setFormData({
         email: '',
         password: '',
         confirmPassword: '',
-        fullName: ''
+        fullName: '',
+        username: ''
       });
       setErrors({});
-      
+
       // Call success callback
       if (onSuccess) {
         onSuccess();
       }
-      
+
       // Close modal
       onClose();
     } catch (error) {
@@ -103,7 +114,8 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
       email: '',
       password: '',
       confirmPassword: '',
-      fullName: ''
+      fullName: '',
+      username: ''
     });
     setErrors({});
   };
@@ -117,7 +129,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
           <h3>{isLogin ? 'Sign In' : 'Create Account'}</h3>
           <button className="btn-close" onClick={onClose}>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </button>
         </div>
@@ -125,11 +137,11 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
         <div className="modal-body">
           <div className="auth-modal-intro">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" strokeWidth="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" strokeWidth="2" strokeLinecap="round"/>
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" strokeWidth="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" strokeWidth="2" strokeLinecap="round" />
             </svg>
             <p>
-              {isLogin 
+              {isLogin
                 ? 'Sign in to access product management'
                 : 'Create an account to start managing products'}
             </p>
@@ -137,36 +149,55 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
 
           <form onSubmit={handleSubmit} className="auth-form-fields">
             {!isLogin && (
-              <div className="form-group">
-                <input
-                  type="text"
-                  name="fullName"
-                  placeholder="Full name"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  className={errors.fullName ? 'error' : ''}
-                  disabled={isLoading}
-                />
-                {errors.fullName && (
-                  <span className="error-message">{errors.fullName}</span>
-                )}
-              </div>
+              <>
+                <div className="form-group">
+                  <input
+                    type="text"
+                    name="fullName"
+                    placeholder="Full name"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    className={errors.fullName ? 'error' : ''}
+                    disabled={isLoading}
+                  />
+                  {errors.fullName && (
+                    <span className="error-message">{errors.fullName}</span>
+                  )}
+                </div>
+              </>
             )}
 
             <div className="form-group">
               <input
-                type="email"
-                name="email"
-                placeholder="Email address"
-                value={formData.email}
+                type="text"
+                name="username"
+                placeholder="Username"
+                value={formData.username}
                 onChange={handleChange}
-                className={errors.email ? 'error' : ''}
+                className={errors.username ? 'error' : ''}
                 disabled={isLoading}
               />
-              {errors.email && (
-                <span className="error-message">{errors.email}</span>
+              {errors.username && (
+                <span className="error-message">{errors.username}</span>
               )}
             </div>
+
+            {!isLogin && (
+              <div className="form-group">
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email address"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={errors.email ? 'error' : ''}
+                  disabled={isLoading}
+                />
+                {errors.email && (
+                  <span className="error-message">{errors.email}</span>
+                )}
+              </div>
+            )}
 
             <div className="form-group">
               <input
@@ -218,7 +249,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
             >
               {isLogin ? "Don't have an account?" : 'Already have an account?'}
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M6 12L10 8L6 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M6 12L10 8L6 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
           </div>

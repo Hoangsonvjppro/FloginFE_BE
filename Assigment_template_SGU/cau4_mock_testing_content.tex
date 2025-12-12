@@ -1,0 +1,537 @@
+% NỘI DUNG CÂU 4 - MOCK TESTING
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Mock Testing - Câu 4 (10 điểm)}
+
+Mock Testing cho phép cô lập và test các components riêng biệt bằng cách thay thế dependencies với mock objects. Điều này giúp test nhanh hơn và đáng tin cậy hơn.
+
+\subsection{Câu 4.1: Login - Mock Testing (5 điểm)}
+
+\subsubsection{Frontend Mocking (2.5 điểm)}
+
+\textbf{a) Mock authService.loginUser() (1 điểm)}:
+
+\textbf{File}: \texttt{src/tests/unit/LoginForm.test.jsx}
+
+\begin{verbatim}
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import LoginForm from '../../components/auth/LoginForm';
+import * as authService from '../../services/authApi';
+
+// Mock entire authApi module
+jest.mock('../../services/authApi', () => ({
+    authService: {
+        login: jest.fn(),
+        logout: jest.fn(),
+        isAuthenticated: jest.fn(),
+        getUser: jest.fn(),
+        setToken: jest.fn()
+    },
+    login: jest.fn(),
+    register: jest.fn()
+}));
+
+describe('Login Mock Tests', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        localStorage.clear();
+    });
+
+    // Mock successful login
+    test('Mock: Login thanh cong', async () => {
+        const mockResponse = {
+            token: 'jwt-token-123',
+            user: { id: 1, username: 'testuser', fullName: 'Test User' }
+        };
+        mockOnSubmit.mockResolvedValue(mockResponse);
+
+        render(
+            <LoginForm onSubmit={mockOnSubmit} />
+        );
+
+        fireEvent.change(screen.getByPlaceholderText(/username/i), {
+            target: { value: 'testuser' }
+        });
+        fireEvent.change(screen.getByPlaceholderText(/password/i), {
+            target: { value: 'Password123' }
+        });
+        fireEvent.click(getSubmitButton());
+
+        await waitFor(() => {
+            expect(mockOnSubmit).toHaveBeenCalledWith({
+                username: 'testuser',
+                password: 'Password123'
+            });
+        });
+    });
+});
+\end{verbatim}
+
+\textbf{b) Test với mocked successful/failed responses (1 điểm)}:
+
+\begin{verbatim}
+describe('Mocked API Responses', () => {
+    // Mock successful response
+    it('should call login API with correct credentials', async () => {
+        const credentials = { username: 'testuser', password: 'Password123' };
+        const mockResponse = { token: 'jwt-token', user: { id: 1 } };
+        login.mockResolvedValue(mockResponse);
+
+        const result = await login(credentials);
+
+        expect(login).toHaveBeenCalledWith(credentials);
+        expect(result).toEqual(mockResponse);
+    });
+
+    // Mock failed response  
+    it('should handle login API errors', async () => {
+        login.mockRejectedValue(new Error('Invalid credentials'));
+
+        await expect(login({ username: 'wrong', password: 'wrong' }))
+            .rejects.toThrow('Invalid credentials');
+    });
+
+    // Mock network error
+    it('should handle network errors', async () => {
+        login.mockRejectedValue(new Error('Network Error'));
+
+        await expect(login({ username: 'test', password: 'Pass123' }))
+            .rejects.toThrow('Network Error');
+    });
+});
+\end{verbatim}
+
+\textbf{c) Verify mock calls (0.5 điểm)}:
+
+\begin{verbatim}
+describe('Verify Mock Calls', () => {
+    it('should check authentication status', () => {
+        authService.isAuthenticated.mockReturnValue(true);
+
+        const isAuth = authService.isAuthenticated();
+
+        expect(isAuth).toBe(true);
+        expect(authService.isAuthenticated).toHaveBeenCalledTimes(1);
+    });
+
+    it('should get current user from authService', () => {
+        const mockUser = { id: 1, username: 'testuser' };
+        authService.getUser.mockReturnValue(mockUser);
+
+        const user = authService.getUser();
+
+        expect(user).toEqual(mockUser);
+        expect(authService.getUser).toHaveBeenCalled();
+    });
+
+    it('should logout and clear session', () => {
+        authService.logout.mockImplementation(() => {
+            localStorage.removeItem('token');
+        });
+
+        authService.logout();
+
+        expect(authService.logout).toHaveBeenCalledTimes(1);
+    });
+});
+\end{verbatim}
+
+\newpage
+
+\subsubsection{Backend Mocking (2.5 điểm)}
+
+\textbf{a) Mock AuthService với @MockBean (1 điểm)}:
+
+\textbf{File}: \texttt{AuthIntegrationTest.java}
+
+\begin{verbatim}
+@WebMvcTest(AuthController.class)
+@AutoConfigureMockMvc(addFilters = false)
+@DisplayName("AuthController Mock Tests")
+class AuthControllerMockTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean  // Spring Mock Bean - replaces real AuthService
+    private AuthService authService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private User testUser;
+    private LoginRequest validLoginRequest;
+
+    @BeforeEach
+    void setUp() {
+        // Setup test data
+        testUser = new User();
+        testUser.setId(1L);
+        testUser.setUsername("testuser");
+        testUser.setEmail("test@example.com");
+        testUser.setPassword("encodedPassword123");
+
+        validLoginRequest = new LoginRequest();
+        validLoginRequest.setUsername("testuser");
+        validLoginRequest.setPassword("Pass123");
+    }
+}
+\end{verbatim}
+
+\textbf{b) Test controller với mocked service (1 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("Mock: Controller with mocked AuthService - Success")
+void login_WithMockedService_ShouldReturn200() throws Exception {
+    // Arrange - Configure mock behavior
+    when(authService.login(any(LoginRequest.class)))
+        .thenReturn(testUser);
+
+    // Act & Assert
+    mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(validLoginRequest)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("Login successful"))
+            .andExpect(jsonPath("$.token").exists())
+            .andExpect(jsonPath("$.userId").value(testUser.getId()));
+}
+
+@Test
+@DisplayName("Mock: Controller with mocked AuthService - Failure")
+void login_WithMockedServiceFailure_ShouldReturn400() throws Exception {
+    // Arrange - Mock throws exception
+    when(authService.login(any(LoginRequest.class)))
+        .thenThrow(new BadRequestException("Invalid credentials"));
+
+    // Act & Assert
+    mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(validLoginRequest)))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message")
+                .value(containsString("Invalid")));
+}
+\end{verbatim}
+
+\textbf{c) Verify mock interactions (0.5 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("Verify: AuthService called exactly once")
+void login_ShouldCallAuthServiceOnce() throws Exception {
+    when(authService.login(any(LoginRequest.class)))
+        .thenReturn(testUser);
+
+    mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(validLoginRequest)));
+
+    // Verify service called exactly 1 time
+    verify(authService, times(1)).login(any(LoginRequest.class));
+}
+
+@Test
+@DisplayName("Verify: AuthService NOT called when validation fails")
+void login_WithInvalidRequest_ShouldNotCallService() throws Exception {
+    LoginRequest invalidRequest = new LoginRequest();
+    invalidRequest.setUsername(""); // Empty username
+    invalidRequest.setPassword("Pass123");
+
+    mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(invalidRequest)));
+
+    // Verify service NEVER called due to validation failure
+    verify(authService, never()).login(any(LoginRequest.class));
+}
+\end{verbatim}
+
+\newpage
+
+\subsection{Câu 4.2: Product - Mock Testing (5 điểm)}
+
+\subsubsection{Frontend Mocking (2.5 điểm)}
+
+\textbf{a) Mock CRUD operations (1.5 điểm)}:
+
+\textbf{File}: \texttt{src/tests/integration/ProductFlow.test.jsx}
+
+\begin{verbatim}
+import * as productService from '../../services/productApi';
+
+jest.mock('../../services/productApi');
+
+describe('Product Mock Tests', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    // Mock CREATE
+    test('Mock: Create product thanh cong', async () => {
+        const mockProduct = { id: 1, name: 'Laptop', price: 15000000 };
+        productService.createProduct.mockResolvedValue(mockProduct);
+
+        render(<ProductForm mode="create" />);
+        
+        fireEvent.change(screen.getByLabelText(/name/i), {
+            target: { value: 'Laptop' }
+        });
+        fireEvent.click(screen.getByText(/save/i));
+
+        await waitFor(() => {
+            expect(productService.createProduct).toHaveBeenCalledTimes(1);
+            expect(screen.getByText(/success/i)).toBeInTheDocument();
+        });
+    });
+
+    // Mock READ
+    test('Mock: Get products with mocked API', async () => {
+        const mockProducts = [
+            { id: 1, name: 'Laptop', price: 15000000 },
+            { id: 2, name: 'Mouse', price: 500000 }
+        ];
+        productService.getProducts.mockResolvedValue(mockProducts);
+
+        render(<ProductList />);
+
+        await waitFor(() => {
+            expect(screen.getByText('Laptop')).toBeInTheDocument();
+            expect(screen.getByText('Mouse')).toBeInTheDocument();
+        });
+
+        expect(productService.getProducts).toHaveBeenCalled();
+    });
+
+    // Mock UPDATE
+    test('Mock: Update product', async () => {
+        const updatedProduct = { id: 1, name: 'Updated Laptop' };
+        productService.updateProduct.mockResolvedValue(updatedProduct);
+
+        // Test update logic
+        expect(productService.updateProduct).toHaveBeenCalled();
+    });
+
+    // Mock DELETE
+    test('Mock: Delete product', async () => {
+        productService.deleteProduct.mockResolvedValue({ success: true });
+
+        // Test delete logic
+        expect(productService.deleteProduct).toHaveBeenCalledWith(1);
+    });
+});
+\end{verbatim}
+
+\textbf{b) Test success và failure scenarios (0.5 điểm)}:
+
+\begin{verbatim}
+describe('Success and Failure Scenarios', () => {
+    // Success scenario
+    test('Mock: API returns success', async () => {
+        productService.getProducts.mockResolvedValue([
+            { id: 1, name: 'Product 1' }
+        ]);
+
+        render(<ProductList />);
+        
+        await waitFor(() => {
+            expect(screen.getByText('Product 1')).toBeInTheDocument();
+        });
+    });
+
+    // Failure scenario
+    test('Mock: API returns error', async () => {
+        productService.getProducts.mockRejectedValue(
+            new Error('Server Error'));
+
+        render(<ProductList />);
+
+        await waitFor(() => {
+            expect(screen.getByText(/error/i)).toBeInTheDocument();
+        });
+    });
+
+    // Empty response
+    test('Mock: API returns empty array', async () => {
+        productService.getProducts.mockResolvedValue([]);
+
+        render(<ProductList />);
+
+        await waitFor(() => {
+            expect(screen.getByText(/no products/i)).toBeInTheDocument();
+        });
+    });
+});
+\end{verbatim}
+
+\textbf{c) Verify all mock calls (0.5 điểm)}:
+
+\begin{verbatim}
+describe('Verify Mock Calls', () => {
+    test('Verify: createProduct called with correct data', async () => {
+        const productData = { name: 'Laptop', price: 15000000, quantity: 10 };
+        productService.createProduct.mockResolvedValue({ id: 1, ...productData });
+
+        await productService.createProduct(productData);
+
+        expect(productService.createProduct).toHaveBeenCalledWith(productData);
+        expect(productService.createProduct).toHaveBeenCalledTimes(1);
+    });
+
+    test('Verify: getProductById called with ID', async () => {
+        productService.getProductById.mockResolvedValue({ id: 5 });
+
+        await productService.getProductById(5);
+
+        expect(productService.getProductById).toHaveBeenCalledWith(5);
+    });
+});
+\end{verbatim}
+
+\newpage
+
+\subsubsection{Backend Mocking (2.5 điểm)}
+
+\textbf{a) Mock ProductRepository (1 điểm)}:
+
+\textbf{File}: \texttt{ProductServiceTest.java}
+
+\begin{verbatim}
+@ExtendWith(MockitoExtension.class)
+class ProductServiceMockTest {
+
+    @Mock  // Mockito Mock - replaces real repository
+    private ProductRepository productRepository;
+
+    @Mock
+    private ProductMapper productMapper;
+
+    @InjectMocks  // Inject mocks into service
+    private ProductService productService;
+
+    private Product product;
+    private ProductRequest productRequest;
+    private ProductResponse productResponse;
+
+    @BeforeEach
+    void setUp() {
+        product = new Product();
+        product.setId(1L);
+        product.setName("Test Product");
+        product.setPrice(new BigDecimal("100.00"));
+        product.setQuantity(10);
+        product.setCategory(Category.ELECTRONICS);
+
+        productRequest = new ProductRequest();
+        productRequest.setName("Test Product");
+        productRequest.setPrice(new BigDecimal("100.00"));
+        productRequest.setQuantity(10);
+
+        productResponse = ProductResponse.builder()
+                .id(1L)
+                .name("Test Product")
+                .price(new BigDecimal("100.00"))
+                .quantity(10)
+                .build();
+    }
+}
+\end{verbatim}
+
+\textbf{b) Test service layer với mocked repository (1 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("Mock: GetProductById with mocked repository")
+void getProductById_WithMockedRepo_ShouldReturnProduct() {
+    // Arrange - Configure mock
+    when(productRepository.findById(1L))
+        .thenReturn(Optional.of(product));
+    when(productMapper.toResponse(any(Product.class)))
+        .thenReturn(productResponse);
+
+    // Act
+    ProductResponse result = productService.getProductById(1L);
+
+    // Assert
+    assertNotNull(result);
+    assertEquals(1L, result.getId());
+    assertEquals("Test Product", result.getName());
+}
+
+@Test
+@DisplayName("Mock: CreateProduct with mocked repository")
+void createProduct_WithMockedRepo_ShouldSaveProduct() {
+    when(productMapper.toEntity(any(ProductRequest.class)))
+        .thenReturn(product);
+    when(productRepository.save(any(Product.class)))
+        .thenReturn(product);
+    when(productMapper.toResponse(any(Product.class)))
+        .thenReturn(productResponse);
+
+    ProductResponse result = productService.createProduct(productRequest);
+
+    assertNotNull(result);
+    assertEquals("Test Product", result.getName());
+}
+
+@Test
+@DisplayName("Mock: GetProductById throws NotFoundException")
+void getProductById_NotFound_ShouldThrowException() {
+    when(productRepository.findById(99999L))
+        .thenReturn(Optional.empty());
+
+    assertThrows(NotFoundException.class, 
+        () -> productService.getProductById(99999L));
+}
+\end{verbatim}
+
+\textbf{c) Verify repository interactions (0.5 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("Verify: Repository.save called on create")
+void createProduct_ShouldCallRepositorySave() {
+    when(productMapper.toEntity(any())).thenReturn(product);
+    when(productRepository.save(any())).thenReturn(product);
+    when(productMapper.toResponse(any())).thenReturn(productResponse);
+
+    productService.createProduct(productRequest);
+
+    // Verify save was called exactly once
+    verify(productRepository, times(1)).save(any(Product.class));
+}
+
+@Test
+@DisplayName("Verify: Repository.deleteById called on delete")
+void deleteProduct_ShouldCallRepositoryDelete() {
+    when(productRepository.existsById(1L)).thenReturn(true);
+    doNothing().when(productRepository).deleteById(1L);
+
+    productService.deleteProduct(1L);
+
+    // Verify deleteById was called
+    verify(productRepository, times(1)).deleteById(1L);
+}
+
+@Test
+@DisplayName("Verify: Repository.findAll called on getAll")
+void getAllProducts_ShouldCallRepositoryFindAll() {
+    when(productRepository.findAll()).thenReturn(Arrays.asList(product));
+
+    productService.getAllProducts();
+
+    verify(productRepository, times(1)).findAll();
+}
+\end{verbatim}
+
+\textbf{Tổng kết Câu 4}:
+\begin{itemize}
+    \item \textbf{Frontend Login Mocking}: Mock authService, success/failure responses
+    \item \textbf{Backend Login Mocking}: @MockBean AuthService, verify interactions
+    \item \textbf{Frontend Product Mocking}: Mock CRUD operations, scenarios
+    \item \textbf{Backend Product Mocking}: @Mock ProductRepository, verify calls
+    \item \textbf{Key Patterns}: jest.mock(), @Mock, @MockBean, when(), verify()
+\end{itemize}
+
+\newpage

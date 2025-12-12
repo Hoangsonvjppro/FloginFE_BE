@@ -11,23 +11,30 @@ spring:
   # H2 File-based Database for Development
   datasource:
     auth:
-      jdbc-url: jdbc:h2:file:./data/authdb;DB_CLOSE_DELAY=-1;MODE=Oracle;AUTO_SERVER=TRUE
+      jdbc-url: jdbc:h2:file:./data/authdb;DB_CLOSE_DELAY=-1;AUTO_SERVER=TRUE
       username: sa
       password: devpassword
       driver-class-name: org.h2.Driver
     product:
-      jdbc-url: jdbc:h2:file:./data/productdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;AUTO_SERVER=TRUE
+      jdbc-url: jdbc:h2:file:./data/productdb;DB_CLOSE_DELAY=-1;AUTO_SERVER=TRUE
       username: sa
       password: devpassword
       driver-class-name: org.h2.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+    # H2 Dialect for both datasources
+    auth:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+    product:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
 
   # H2 Console for debugging
   h2:

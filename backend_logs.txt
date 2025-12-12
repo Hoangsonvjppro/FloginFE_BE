@@ -1,0 +1,1440 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2025-12-12T00:52:48.415Z  INFO 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : Starting Application v0.0.1-SNAPSHOT using Java 21.0.9 with PID 1 (/app/app.jar started by root in /app)
+2025-12-12T00:52:48.418Z DEBUG 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : Running with Spring Boot v3.5.7, Spring v6.2.12
+2025-12-12T00:52:48.419Z  INFO 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : The following 1 profile is active: "dev"
+2025-12-12T00:52:49.921Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-12T00:52:50.002Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 63 ms. Found 1 JPA repository interface.
+2025-12-12T00:52:50.005Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-12T00:52:50.015Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 7 ms. Found 1 JPA repository interface.
+2025-12-12T00:52:51.792Z  INFO 1 --- [flogin-backend-dev] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2025-12-12T00:52:51.818Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-12T00:52:51.818Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.48]
+2025-12-12T00:52:51.863Z  INFO 1 --- [flogin-backend-dev] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-12T00:52:51.865Z  INFO 1 --- [flogin-backend-dev] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3316 ms
+2025-12-12T00:52:52.286Z  INFO 1 --- [flogin-backend-dev] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: auth]
+2025-12-12T00:52:52.381Z  INFO 1 --- [flogin-backend-dev] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.33.Final
+2025-12-12T00:52:52.432Z  INFO 1 --- [flogin-backend-dev] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-12-12T00:52:52.863Z  INFO 1 --- [flogin-backend-dev] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-12T00:52:52.930Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-12-12T00:52:53.671Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/authdb user=SA
+2025-12-12T00:52:53.673Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-12-12T00:52:53.732Z  WARN 1 --- [flogin-backend-dev] [           main] org.hibernate.dialect.Dialect            : HHH000511: The 2.3.232 version for [org.hibernate.dialect.OracleDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 19.0.0. Check the community dialects project for available legacy versions.
+2025-12-12T00:52:53.739Z  WARN 1 --- [flogin-backend-dev] [           main] org.hibernate.orm.deprecation            : HHH90000025: OracleDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-12T00:52:53.764Z  INFO 1 --- [flogin-backend-dev] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-12-12T00:52:55.041Z  INFO 1 --- [flogin-backend-dev] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-12T00:52:55.081Z  WARN 1 --- [flogin-backend-dev] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 42104, SQLState: 42S04
+2025-12-12T00:52:55.081Z ERROR 1 --- [flogin-backend-dev] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]
+2025-12-12T00:52:55.089Z ERROR 1 --- [flogin-backend-dev] [           main] j.LocalContainerEntityManagerFactoryBean : Failed to initialize JPA EntityManagerFactory: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+2025-12-12T00:52:55.090Z  WARN 1 --- [flogin-backend-dev] [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authEntityManagerFactory' defined in class path resource [com/flogin/AuthDataSourceConfig.class]: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+2025-12-12T00:52:55.090Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-12-12T00:52:55.095Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-12-12T00:52:55.100Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2025-12-12T00:52:55.129Z  INFO 1 --- [flogin-backend-dev] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-12-12T00:52:55.156Z ERROR 1 --- [flogin-backend-dev] [           main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authEntityManagerFactory' defined in class path resource [com/flogin/AuthDataSourceConfig.class]: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1826) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:973) ~[spring-context-6.2.12.jar!/:6.2.12]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627) ~[spring-context-6.2.12.jar!/:6.2.12]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at com.flogin.Application.main(Application.java:9) ~[!/:0.0.1-SNAPSHOT]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source) ~[na:na]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:106) ~[app.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:64) ~[app.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.JarLauncher.main(JarLauncher.java:40) ~[app.jar:0.0.1-SNAPSHOT]
+Caused by: jakarta.persistence.PersistenceException: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:431) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:400) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1873) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1822) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	... 20 common frames omitted
+Caused by: org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.hibernate.exception.internal.SQLExceptionTypeDelegate.convert(SQLExceptionTypeDelegate.java:66) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:58) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:108) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:94) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:194) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:93) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:280) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.lambda$process$5(SchemaManagementToolCoordinator.java:144) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at java.base/java.util.HashMap.forEach(Unknown Source) ~[na:na]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:141) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.boot.internal.SessionFactoryObserverForSchemaExport.sessionFactoryCreated(SessionFactoryObserverForSchemaExport.java:37) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.internal.SessionFactoryObserverChain.sessionFactoryCreated(SessionFactoryObserverChain.java:35) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:324) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:463) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1517) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:66) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:419) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	... 24 common frames omitted
+Caused by: org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.get(DbException.java:223) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.get(DbException.java:199) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.getTableOrViewNotFoundDbException(Parser.java:7932) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.getTableOrViewNotFoundDbException(Parser.java:7916) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTableOrView(Parser.java:7895) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTablePrimary(Parser.java:1769) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTableReference(Parser.java:2249) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseSelectFromPart(Parser.java:2702) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseSelect(Parser.java:2810) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryPrimary(Parser.java:2692) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryTerm(Parser.java:2547) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpressionBody(Parser.java:2526) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpressionBodyAndEndOfQuery(Parser.java:2519) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpression(Parser.java:2512) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQuery(Parser.java:2479) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parsePrepared(Parser.java:610) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parse(Parser.java:581) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parse(Parser.java:556) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.prepareCommand(Parser.java:484) ~[h2-2.3.232.jar!/:na]
+	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:645) ~[h2-2.3.232.jar!/:na]
+	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:561) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1164) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcPreparedStatement.<init>(JdbcPreparedStatement.java:93) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcConnection.prepareStatement(JdbcConnection.java:315) ~[h2-2.3.232.jar!/:na]
+	at com.zaxxer.hikari.pool.ProxyConnection.prepareStatement(ProxyConnection.java:328) ~[HikariCP-6.3.3.jar!/:na]
+	at com.zaxxer.hikari.pool.HikariProxyConnection.prepareStatement(HikariProxyConnection.java) ~[HikariCP-6.3.3.jar!/:na]
+	at org.hibernate.tool.schema.extract.spi.ExtractionContext.getQueryResults(ExtractionContext.java:43) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.SequenceInformationExtractorLegacyImpl.extractMetadata(SequenceInformationExtractorLegacyImpl.java:39) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.initializeSequences(DatabaseInformationImpl.java:66) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.<init>(DatabaseInformationImpl.java:60) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:185) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	... 37 common frames omitted
+
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2025-12-12T00:52:58.242Z  INFO 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : Starting Application v0.0.1-SNAPSHOT using Java 21.0.9 with PID 1 (/app/app.jar started by root in /app)
+2025-12-12T00:52:58.245Z DEBUG 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : Running with Spring Boot v3.5.7, Spring v6.2.12
+2025-12-12T00:52:58.246Z  INFO 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : The following 1 profile is active: "dev"
+2025-12-12T00:52:59.541Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-12T00:52:59.724Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 113 ms. Found 1 JPA repository interface.
+2025-12-12T00:52:59.730Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-12T00:52:59.753Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 17 ms. Found 1 JPA repository interface.
+2025-12-12T00:53:01.492Z  INFO 1 --- [flogin-backend-dev] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2025-12-12T00:53:01.521Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-12T00:53:01.521Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.48]
+2025-12-12T00:53:01.584Z  INFO 1 --- [flogin-backend-dev] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-12T00:53:01.586Z  INFO 1 --- [flogin-backend-dev] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3260 ms
+2025-12-12T00:53:02.081Z  INFO 1 --- [flogin-backend-dev] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: auth]
+2025-12-12T00:53:02.201Z  INFO 1 --- [flogin-backend-dev] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.33.Final
+2025-12-12T00:53:02.263Z  INFO 1 --- [flogin-backend-dev] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-12-12T00:53:02.649Z  INFO 1 --- [flogin-backend-dev] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-12T00:53:02.697Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-12-12T00:53:03.374Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/authdb user=SA
+2025-12-12T00:53:03.377Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-12-12T00:53:03.433Z  WARN 1 --- [flogin-backend-dev] [           main] org.hibernate.dialect.Dialect            : HHH000511: The 2.3.232 version for [org.hibernate.dialect.OracleDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 19.0.0. Check the community dialects project for available legacy versions.
+2025-12-12T00:53:03.439Z  WARN 1 --- [flogin-backend-dev] [           main] org.hibernate.orm.deprecation            : HHH90000025: OracleDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-12T00:53:03.459Z  INFO 1 --- [flogin-backend-dev] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-12-12T00:53:04.743Z  INFO 1 --- [flogin-backend-dev] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-12T00:53:04.780Z  WARN 1 --- [flogin-backend-dev] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 42104, SQLState: 42S04
+2025-12-12T00:53:04.781Z ERROR 1 --- [flogin-backend-dev] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]
+2025-12-12T00:53:04.788Z ERROR 1 --- [flogin-backend-dev] [           main] j.LocalContainerEntityManagerFactoryBean : Failed to initialize JPA EntityManagerFactory: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+2025-12-12T00:53:04.789Z  WARN 1 --- [flogin-backend-dev] [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authEntityManagerFactory' defined in class path resource [com/flogin/AuthDataSourceConfig.class]: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+2025-12-12T00:53:04.790Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-12-12T00:53:04.795Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-12-12T00:53:04.800Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2025-12-12T00:53:04.823Z  INFO 1 --- [flogin-backend-dev] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-12-12T00:53:04.850Z ERROR 1 --- [flogin-backend-dev] [           main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authEntityManagerFactory' defined in class path resource [com/flogin/AuthDataSourceConfig.class]: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1826) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:973) ~[spring-context-6.2.12.jar!/:6.2.12]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627) ~[spring-context-6.2.12.jar!/:6.2.12]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at com.flogin.Application.main(Application.java:9) ~[!/:0.0.1-SNAPSHOT]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source) ~[na:na]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:106) ~[app.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:64) ~[app.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.JarLauncher.main(JarLauncher.java:40) ~[app.jar:0.0.1-SNAPSHOT]
+Caused by: jakarta.persistence.PersistenceException: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:431) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:400) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1873) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1822) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	... 20 common frames omitted
+Caused by: org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.hibernate.exception.internal.SQLExceptionTypeDelegate.convert(SQLExceptionTypeDelegate.java:66) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:58) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:108) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:94) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:194) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:93) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:280) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.lambda$process$5(SchemaManagementToolCoordinator.java:144) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at java.base/java.util.HashMap.forEach(Unknown Source) ~[na:na]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:141) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.boot.internal.SessionFactoryObserverForSchemaExport.sessionFactoryCreated(SessionFactoryObserverForSchemaExport.java:37) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.internal.SessionFactoryObserverChain.sessionFactoryCreated(SessionFactoryObserverChain.java:35) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:324) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:463) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1517) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:66) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:419) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	... 24 common frames omitted
+Caused by: org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.get(DbException.java:223) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.get(DbException.java:199) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.getTableOrViewNotFoundDbException(Parser.java:7932) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.getTableOrViewNotFoundDbException(Parser.java:7916) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTableOrView(Parser.java:7895) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTablePrimary(Parser.java:1769) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTableReference(Parser.java:2249) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseSelectFromPart(Parser.java:2702) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseSelect(Parser.java:2810) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryPrimary(Parser.java:2692) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryTerm(Parser.java:2547) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpressionBody(Parser.java:2526) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpressionBodyAndEndOfQuery(Parser.java:2519) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpression(Parser.java:2512) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQuery(Parser.java:2479) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parsePrepared(Parser.java:610) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parse(Parser.java:581) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parse(Parser.java:556) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.prepareCommand(Parser.java:484) ~[h2-2.3.232.jar!/:na]
+	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:645) ~[h2-2.3.232.jar!/:na]
+	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:561) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1164) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcPreparedStatement.<init>(JdbcPreparedStatement.java:93) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcConnection.prepareStatement(JdbcConnection.java:315) ~[h2-2.3.232.jar!/:na]
+	at com.zaxxer.hikari.pool.ProxyConnection.prepareStatement(ProxyConnection.java:328) ~[HikariCP-6.3.3.jar!/:na]
+	at com.zaxxer.hikari.pool.HikariProxyConnection.prepareStatement(HikariProxyConnection.java) ~[HikariCP-6.3.3.jar!/:na]
+	at org.hibernate.tool.schema.extract.spi.ExtractionContext.getQueryResults(ExtractionContext.java:43) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.SequenceInformationExtractorLegacyImpl.extractMetadata(SequenceInformationExtractorLegacyImpl.java:39) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.initializeSequences(DatabaseInformationImpl.java:66) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.<init>(DatabaseInformationImpl.java:60) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:185) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	... 37 common frames omitted
+
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2025-12-12T00:53:07.072Z  INFO 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : Starting Application v0.0.1-SNAPSHOT using Java 21.0.9 with PID 1 (/app/app.jar started by root in /app)
+2025-12-12T00:53:07.074Z DEBUG 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : Running with Spring Boot v3.5.7, Spring v6.2.12
+2025-12-12T00:53:07.075Z  INFO 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : The following 1 profile is active: "dev"
+2025-12-12T00:53:08.304Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-12T00:53:08.377Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 55 ms. Found 1 JPA repository interface.
+2025-12-12T00:53:08.379Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-12T00:53:08.385Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 4 ms. Found 1 JPA repository interface.
+2025-12-12T00:53:09.938Z  INFO 1 --- [flogin-backend-dev] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2025-12-12T00:53:09.962Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-12T00:53:09.962Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.48]
+2025-12-12T00:53:10.002Z  INFO 1 --- [flogin-backend-dev] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-12T00:53:10.005Z  INFO 1 --- [flogin-backend-dev] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2860 ms
+2025-12-12T00:53:10.438Z  INFO 1 --- [flogin-backend-dev] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: auth]
+2025-12-12T00:53:10.534Z  INFO 1 --- [flogin-backend-dev] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.33.Final
+2025-12-12T00:53:10.608Z  INFO 1 --- [flogin-backend-dev] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-12-12T00:53:11.075Z  INFO 1 --- [flogin-backend-dev] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-12T00:53:11.120Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-12-12T00:53:11.861Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/authdb user=SA
+2025-12-12T00:53:11.864Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-12-12T00:53:11.921Z  WARN 1 --- [flogin-backend-dev] [           main] org.hibernate.dialect.Dialect            : HHH000511: The 2.3.232 version for [org.hibernate.dialect.OracleDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 19.0.0. Check the community dialects project for available legacy versions.
+2025-12-12T00:53:11.927Z  WARN 1 --- [flogin-backend-dev] [           main] org.hibernate.orm.deprecation            : HHH90000025: OracleDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-12T00:53:11.960Z  INFO 1 --- [flogin-backend-dev] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-12-12T00:53:13.332Z  INFO 1 --- [flogin-backend-dev] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-12T00:53:13.361Z  WARN 1 --- [flogin-backend-dev] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 42104, SQLState: 42S04
+2025-12-12T00:53:13.362Z ERROR 1 --- [flogin-backend-dev] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]
+2025-12-12T00:53:13.367Z ERROR 1 --- [flogin-backend-dev] [           main] j.LocalContainerEntityManagerFactoryBean : Failed to initialize JPA EntityManagerFactory: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+2025-12-12T00:53:13.368Z  WARN 1 --- [flogin-backend-dev] [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authEntityManagerFactory' defined in class path resource [com/flogin/AuthDataSourceConfig.class]: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+2025-12-12T00:53:13.369Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-12-12T00:53:13.372Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-12-12T00:53:13.376Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2025-12-12T00:53:13.397Z  INFO 1 --- [flogin-backend-dev] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-12-12T00:53:13.421Z ERROR 1 --- [flogin-backend-dev] [           main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authEntityManagerFactory' defined in class path resource [com/flogin/AuthDataSourceConfig.class]: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1826) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:973) ~[spring-context-6.2.12.jar!/:6.2.12]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627) ~[spring-context-6.2.12.jar!/:6.2.12]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at com.flogin.Application.main(Application.java:9) ~[!/:0.0.1-SNAPSHOT]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source) ~[na:na]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:106) ~[app.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:64) ~[app.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.JarLauncher.main(JarLauncher.java:40) ~[app.jar:0.0.1-SNAPSHOT]
+Caused by: jakarta.persistence.PersistenceException: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:431) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:400) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1873) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1822) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	... 20 common frames omitted
+Caused by: org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.hibernate.exception.internal.SQLExceptionTypeDelegate.convert(SQLExceptionTypeDelegate.java:66) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:58) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:108) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:94) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:194) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:93) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:280) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.lambda$process$5(SchemaManagementToolCoordinator.java:144) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at java.base/java.util.HashMap.forEach(Unknown Source) ~[na:na]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:141) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.boot.internal.SessionFactoryObserverForSchemaExport.sessionFactoryCreated(SessionFactoryObserverForSchemaExport.java:37) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.internal.SessionFactoryObserverChain.sessionFactoryCreated(SessionFactoryObserverChain.java:35) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:324) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:463) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1517) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:66) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:419) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	... 24 common frames omitted
+Caused by: org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.get(DbException.java:223) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.get(DbException.java:199) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.getTableOrViewNotFoundDbException(Parser.java:7932) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.getTableOrViewNotFoundDbException(Parser.java:7916) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTableOrView(Parser.java:7895) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTablePrimary(Parser.java:1769) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTableReference(Parser.java:2249) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseSelectFromPart(Parser.java:2702) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseSelect(Parser.java:2810) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryPrimary(Parser.java:2692) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryTerm(Parser.java:2547) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpressionBody(Parser.java:2526) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpressionBodyAndEndOfQuery(Parser.java:2519) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpression(Parser.java:2512) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQuery(Parser.java:2479) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parsePrepared(Parser.java:610) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parse(Parser.java:581) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parse(Parser.java:556) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.prepareCommand(Parser.java:484) ~[h2-2.3.232.jar!/:na]
+	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:645) ~[h2-2.3.232.jar!/:na]
+	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:561) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1164) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcPreparedStatement.<init>(JdbcPreparedStatement.java:93) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcConnection.prepareStatement(JdbcConnection.java:315) ~[h2-2.3.232.jar!/:na]
+	at com.zaxxer.hikari.pool.ProxyConnection.prepareStatement(ProxyConnection.java:328) ~[HikariCP-6.3.3.jar!/:na]
+	at com.zaxxer.hikari.pool.HikariProxyConnection.prepareStatement(HikariProxyConnection.java) ~[HikariCP-6.3.3.jar!/:na]
+	at org.hibernate.tool.schema.extract.spi.ExtractionContext.getQueryResults(ExtractionContext.java:43) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.SequenceInformationExtractorLegacyImpl.extractMetadata(SequenceInformationExtractorLegacyImpl.java:39) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.initializeSequences(DatabaseInformationImpl.java:66) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.<init>(DatabaseInformationImpl.java:60) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:185) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	... 37 common frames omitted
+
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2025-12-12T00:53:15.866Z  INFO 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : Starting Application v0.0.1-SNAPSHOT using Java 21.0.9 with PID 1 (/app/app.jar started by root in /app)
+2025-12-12T00:53:15.869Z DEBUG 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : Running with Spring Boot v3.5.7, Spring v6.2.12
+2025-12-12T00:53:15.870Z  INFO 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : The following 1 profile is active: "dev"
+2025-12-12T00:53:17.185Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-12T00:53:17.250Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 50 ms. Found 1 JPA repository interface.
+2025-12-12T00:53:17.252Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-12T00:53:17.261Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 6 ms. Found 1 JPA repository interface.
+2025-12-12T00:53:18.724Z  INFO 1 --- [flogin-backend-dev] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2025-12-12T00:53:18.746Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-12T00:53:18.746Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.48]
+2025-12-12T00:53:18.789Z  INFO 1 --- [flogin-backend-dev] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-12T00:53:18.791Z  INFO 1 --- [flogin-backend-dev] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2850 ms
+2025-12-12T00:53:19.244Z  INFO 1 --- [flogin-backend-dev] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: auth]
+2025-12-12T00:53:19.369Z  INFO 1 --- [flogin-backend-dev] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.33.Final
+2025-12-12T00:53:19.419Z  INFO 1 --- [flogin-backend-dev] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-12-12T00:53:19.950Z  INFO 1 --- [flogin-backend-dev] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-12T00:53:20.033Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-12-12T00:53:20.686Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/authdb user=SA
+2025-12-12T00:53:20.689Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-12-12T00:53:20.739Z  WARN 1 --- [flogin-backend-dev] [           main] org.hibernate.dialect.Dialect            : HHH000511: The 2.3.232 version for [org.hibernate.dialect.OracleDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 19.0.0. Check the community dialects project for available legacy versions.
+2025-12-12T00:53:20.745Z  WARN 1 --- [flogin-backend-dev] [           main] org.hibernate.orm.deprecation            : HHH90000025: OracleDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-12T00:53:20.772Z  INFO 1 --- [flogin-backend-dev] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-12-12T00:53:22.121Z  INFO 1 --- [flogin-backend-dev] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-12T00:53:22.153Z  WARN 1 --- [flogin-backend-dev] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 42104, SQLState: 42S04
+2025-12-12T00:53:22.153Z ERROR 1 --- [flogin-backend-dev] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]
+2025-12-12T00:53:22.160Z ERROR 1 --- [flogin-backend-dev] [           main] j.LocalContainerEntityManagerFactoryBean : Failed to initialize JPA EntityManagerFactory: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+2025-12-12T00:53:22.161Z  WARN 1 --- [flogin-backend-dev] [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authEntityManagerFactory' defined in class path resource [com/flogin/AuthDataSourceConfig.class]: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+2025-12-12T00:53:22.161Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-12-12T00:53:22.165Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-12-12T00:53:22.169Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2025-12-12T00:53:22.195Z  INFO 1 --- [flogin-backend-dev] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-12-12T00:53:22.216Z ERROR 1 --- [flogin-backend-dev] [           main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authEntityManagerFactory' defined in class path resource [com/flogin/AuthDataSourceConfig.class]: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1826) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:973) ~[spring-context-6.2.12.jar!/:6.2.12]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627) ~[spring-context-6.2.12.jar!/:6.2.12]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at com.flogin.Application.main(Application.java:9) ~[!/:0.0.1-SNAPSHOT]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source) ~[na:na]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:106) ~[app.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:64) ~[app.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.JarLauncher.main(JarLauncher.java:40) ~[app.jar:0.0.1-SNAPSHOT]
+Caused by: jakarta.persistence.PersistenceException: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:431) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:400) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1873) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1822) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	... 20 common frames omitted
+Caused by: org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.hibernate.exception.internal.SQLExceptionTypeDelegate.convert(SQLExceptionTypeDelegate.java:66) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:58) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:108) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:94) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:194) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:93) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:280) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.lambda$process$5(SchemaManagementToolCoordinator.java:144) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at java.base/java.util.HashMap.forEach(Unknown Source) ~[na:na]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:141) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.boot.internal.SessionFactoryObserverForSchemaExport.sessionFactoryCreated(SessionFactoryObserverForSchemaExport.java:37) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.internal.SessionFactoryObserverChain.sessionFactoryCreated(SessionFactoryObserverChain.java:35) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:324) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:463) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1517) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:66) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:419) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	... 24 common frames omitted
+Caused by: org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.get(DbException.java:223) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.get(DbException.java:199) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.getTableOrViewNotFoundDbException(Parser.java:7932) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.getTableOrViewNotFoundDbException(Parser.java:7916) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTableOrView(Parser.java:7895) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTablePrimary(Parser.java:1769) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTableReference(Parser.java:2249) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseSelectFromPart(Parser.java:2702) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseSelect(Parser.java:2810) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryPrimary(Parser.java:2692) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryTerm(Parser.java:2547) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpressionBody(Parser.java:2526) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpressionBodyAndEndOfQuery(Parser.java:2519) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpression(Parser.java:2512) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQuery(Parser.java:2479) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parsePrepared(Parser.java:610) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parse(Parser.java:581) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parse(Parser.java:556) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.prepareCommand(Parser.java:484) ~[h2-2.3.232.jar!/:na]
+	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:645) ~[h2-2.3.232.jar!/:na]
+	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:561) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1164) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcPreparedStatement.<init>(JdbcPreparedStatement.java:93) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcConnection.prepareStatement(JdbcConnection.java:315) ~[h2-2.3.232.jar!/:na]
+	at com.zaxxer.hikari.pool.ProxyConnection.prepareStatement(ProxyConnection.java:328) ~[HikariCP-6.3.3.jar!/:na]
+	at com.zaxxer.hikari.pool.HikariProxyConnection.prepareStatement(HikariProxyConnection.java) ~[HikariCP-6.3.3.jar!/:na]
+	at org.hibernate.tool.schema.extract.spi.ExtractionContext.getQueryResults(ExtractionContext.java:43) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.SequenceInformationExtractorLegacyImpl.extractMetadata(SequenceInformationExtractorLegacyImpl.java:39) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.initializeSequences(DatabaseInformationImpl.java:66) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.<init>(DatabaseInformationImpl.java:60) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:185) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	... 37 common frames omitted
+
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2025-12-12T00:53:25.052Z  INFO 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : Starting Application v0.0.1-SNAPSHOT using Java 21.0.9 with PID 1 (/app/app.jar started by root in /app)
+2025-12-12T00:53:25.058Z DEBUG 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : Running with Spring Boot v3.5.7, Spring v6.2.12
+2025-12-12T00:53:25.060Z  INFO 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : The following 1 profile is active: "dev"
+2025-12-12T00:53:26.690Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-12T00:53:26.792Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 73 ms. Found 1 JPA repository interface.
+2025-12-12T00:53:26.794Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-12T00:53:26.804Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 7 ms. Found 1 JPA repository interface.
+2025-12-12T00:53:28.601Z  INFO 1 --- [flogin-backend-dev] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2025-12-12T00:53:28.634Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-12T00:53:28.636Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.48]
+2025-12-12T00:53:28.703Z  INFO 1 --- [flogin-backend-dev] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-12T00:53:28.707Z  INFO 1 --- [flogin-backend-dev] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3448 ms
+2025-12-12T00:53:29.400Z  INFO 1 --- [flogin-backend-dev] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: auth]
+2025-12-12T00:53:29.532Z  INFO 1 --- [flogin-backend-dev] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.33.Final
+2025-12-12T00:53:29.621Z  INFO 1 --- [flogin-backend-dev] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-12-12T00:53:30.252Z  INFO 1 --- [flogin-backend-dev] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-12T00:53:30.288Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-12-12T00:53:31.017Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/authdb user=SA
+2025-12-12T00:53:31.022Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-12-12T00:53:31.091Z  WARN 1 --- [flogin-backend-dev] [           main] org.hibernate.dialect.Dialect            : HHH000511: The 2.3.232 version for [org.hibernate.dialect.OracleDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 19.0.0. Check the community dialects project for available legacy versions.
+2025-12-12T00:53:31.097Z  WARN 1 --- [flogin-backend-dev] [           main] org.hibernate.orm.deprecation            : HHH90000025: OracleDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-12T00:53:31.118Z  INFO 1 --- [flogin-backend-dev] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-12-12T00:53:32.569Z  INFO 1 --- [flogin-backend-dev] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-12T00:53:32.611Z  WARN 1 --- [flogin-backend-dev] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 42104, SQLState: 42S04
+2025-12-12T00:53:32.611Z ERROR 1 --- [flogin-backend-dev] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]
+2025-12-12T00:53:32.621Z ERROR 1 --- [flogin-backend-dev] [           main] j.LocalContainerEntityManagerFactoryBean : Failed to initialize JPA EntityManagerFactory: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+2025-12-12T00:53:32.623Z  WARN 1 --- [flogin-backend-dev] [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authEntityManagerFactory' defined in class path resource [com/flogin/AuthDataSourceConfig.class]: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+2025-12-12T00:53:32.624Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-12-12T00:53:32.630Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-12-12T00:53:32.636Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2025-12-12T00:53:32.686Z  INFO 1 --- [flogin-backend-dev] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-12-12T00:53:32.734Z ERROR 1 --- [flogin-backend-dev] [           main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authEntityManagerFactory' defined in class path resource [com/flogin/AuthDataSourceConfig.class]: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1826) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:973) ~[spring-context-6.2.12.jar!/:6.2.12]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627) ~[spring-context-6.2.12.jar!/:6.2.12]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at com.flogin.Application.main(Application.java:9) ~[!/:0.0.1-SNAPSHOT]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source) ~[na:na]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:106) ~[app.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:64) ~[app.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.JarLauncher.main(JarLauncher.java:40) ~[app.jar:0.0.1-SNAPSHOT]
+Caused by: jakarta.persistence.PersistenceException: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:431) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:400) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1873) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1822) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	... 20 common frames omitted
+Caused by: org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.hibernate.exception.internal.SQLExceptionTypeDelegate.convert(SQLExceptionTypeDelegate.java:66) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:58) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:108) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:94) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:194) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:93) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:280) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.lambda$process$5(SchemaManagementToolCoordinator.java:144) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at java.base/java.util.HashMap.forEach(Unknown Source) ~[na:na]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:141) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.boot.internal.SessionFactoryObserverForSchemaExport.sessionFactoryCreated(SessionFactoryObserverForSchemaExport.java:37) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.internal.SessionFactoryObserverChain.sessionFactoryCreated(SessionFactoryObserverChain.java:35) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:324) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:463) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1517) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:66) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:419) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	... 24 common frames omitted
+Caused by: org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.get(DbException.java:223) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.get(DbException.java:199) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.getTableOrViewNotFoundDbException(Parser.java:7932) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.getTableOrViewNotFoundDbException(Parser.java:7916) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTableOrView(Parser.java:7895) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTablePrimary(Parser.java:1769) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTableReference(Parser.java:2249) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseSelectFromPart(Parser.java:2702) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseSelect(Parser.java:2810) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryPrimary(Parser.java:2692) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryTerm(Parser.java:2547) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpressionBody(Parser.java:2526) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpressionBodyAndEndOfQuery(Parser.java:2519) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpression(Parser.java:2512) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQuery(Parser.java:2479) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parsePrepared(Parser.java:610) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parse(Parser.java:581) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parse(Parser.java:556) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.prepareCommand(Parser.java:484) ~[h2-2.3.232.jar!/:na]
+	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:645) ~[h2-2.3.232.jar!/:na]
+	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:561) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1164) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcPreparedStatement.<init>(JdbcPreparedStatement.java:93) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcConnection.prepareStatement(JdbcConnection.java:315) ~[h2-2.3.232.jar!/:na]
+	at com.zaxxer.hikari.pool.ProxyConnection.prepareStatement(ProxyConnection.java:328) ~[HikariCP-6.3.3.jar!/:na]
+	at com.zaxxer.hikari.pool.HikariProxyConnection.prepareStatement(HikariProxyConnection.java) ~[HikariCP-6.3.3.jar!/:na]
+	at org.hibernate.tool.schema.extract.spi.ExtractionContext.getQueryResults(ExtractionContext.java:43) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.SequenceInformationExtractorLegacyImpl.extractMetadata(SequenceInformationExtractorLegacyImpl.java:39) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.initializeSequences(DatabaseInformationImpl.java:66) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.<init>(DatabaseInformationImpl.java:60) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:185) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	... 37 common frames omitted
+
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2025-12-12T00:53:36.158Z  INFO 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : Starting Application v0.0.1-SNAPSHOT using Java 21.0.9 with PID 1 (/app/app.jar started by root in /app)
+2025-12-12T00:53:36.161Z DEBUG 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : Running with Spring Boot v3.5.7, Spring v6.2.12
+2025-12-12T00:53:36.162Z  INFO 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : The following 1 profile is active: "dev"
+2025-12-12T00:53:37.315Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-12T00:53:37.384Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 53 ms. Found 1 JPA repository interface.
+2025-12-12T00:53:37.386Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-12T00:53:37.397Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 7 ms. Found 1 JPA repository interface.
+2025-12-12T00:53:38.838Z  INFO 1 --- [flogin-backend-dev] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2025-12-12T00:53:38.865Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-12T00:53:38.866Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.48]
+2025-12-12T00:53:38.924Z  INFO 1 --- [flogin-backend-dev] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-12T00:53:38.927Z  INFO 1 --- [flogin-backend-dev] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2695 ms
+2025-12-12T00:53:39.377Z  INFO 1 --- [flogin-backend-dev] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: auth]
+2025-12-12T00:53:39.456Z  INFO 1 --- [flogin-backend-dev] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.33.Final
+2025-12-12T00:53:39.497Z  INFO 1 --- [flogin-backend-dev] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-12-12T00:53:39.970Z  INFO 1 --- [flogin-backend-dev] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-12T00:53:40.009Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-12-12T00:53:40.635Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/authdb user=SA
+2025-12-12T00:53:40.638Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-12-12T00:53:40.700Z  WARN 1 --- [flogin-backend-dev] [           main] org.hibernate.dialect.Dialect            : HHH000511: The 2.3.232 version for [org.hibernate.dialect.OracleDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 19.0.0. Check the community dialects project for available legacy versions.
+2025-12-12T00:53:40.706Z  WARN 1 --- [flogin-backend-dev] [           main] org.hibernate.orm.deprecation            : HHH90000025: OracleDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-12T00:53:40.724Z  INFO 1 --- [flogin-backend-dev] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-12-12T00:53:41.960Z  INFO 1 --- [flogin-backend-dev] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-12T00:53:41.987Z  WARN 1 --- [flogin-backend-dev] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 42104, SQLState: 42S04
+2025-12-12T00:53:41.987Z ERROR 1 --- [flogin-backend-dev] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]
+2025-12-12T00:53:41.992Z ERROR 1 --- [flogin-backend-dev] [           main] j.LocalContainerEntityManagerFactoryBean : Failed to initialize JPA EntityManagerFactory: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+2025-12-12T00:53:41.993Z  WARN 1 --- [flogin-backend-dev] [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authEntityManagerFactory' defined in class path resource [com/flogin/AuthDataSourceConfig.class]: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+2025-12-12T00:53:41.994Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-12-12T00:53:41.997Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-12-12T00:53:42.000Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2025-12-12T00:53:42.022Z  INFO 1 --- [flogin-backend-dev] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-12-12T00:53:42.051Z ERROR 1 --- [flogin-backend-dev] [           main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authEntityManagerFactory' defined in class path resource [com/flogin/AuthDataSourceConfig.class]: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1826) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:973) ~[spring-context-6.2.12.jar!/:6.2.12]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627) ~[spring-context-6.2.12.jar!/:6.2.12]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at com.flogin.Application.main(Application.java:9) ~[!/:0.0.1-SNAPSHOT]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source) ~[na:na]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:106) ~[app.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:64) ~[app.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.JarLauncher.main(JarLauncher.java:40) ~[app.jar:0.0.1-SNAPSHOT]
+Caused by: jakarta.persistence.PersistenceException: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:431) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:400) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1873) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1822) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	... 20 common frames omitted
+Caused by: org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.hibernate.exception.internal.SQLExceptionTypeDelegate.convert(SQLExceptionTypeDelegate.java:66) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:58) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:108) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:94) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:194) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:93) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:280) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.lambda$process$5(SchemaManagementToolCoordinator.java:144) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at java.base/java.util.HashMap.forEach(Unknown Source) ~[na:na]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:141) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.boot.internal.SessionFactoryObserverForSchemaExport.sessionFactoryCreated(SessionFactoryObserverForSchemaExport.java:37) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.internal.SessionFactoryObserverChain.sessionFactoryCreated(SessionFactoryObserverChain.java:35) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:324) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:463) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1517) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:66) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:419) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	... 24 common frames omitted
+Caused by: org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.get(DbException.java:223) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.get(DbException.java:199) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.getTableOrViewNotFoundDbException(Parser.java:7932) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.getTableOrViewNotFoundDbException(Parser.java:7916) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTableOrView(Parser.java:7895) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTablePrimary(Parser.java:1769) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTableReference(Parser.java:2249) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseSelectFromPart(Parser.java:2702) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseSelect(Parser.java:2810) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryPrimary(Parser.java:2692) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryTerm(Parser.java:2547) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpressionBody(Parser.java:2526) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpressionBodyAndEndOfQuery(Parser.java:2519) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpression(Parser.java:2512) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQuery(Parser.java:2479) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parsePrepared(Parser.java:610) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parse(Parser.java:581) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parse(Parser.java:556) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.prepareCommand(Parser.java:484) ~[h2-2.3.232.jar!/:na]
+	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:645) ~[h2-2.3.232.jar!/:na]
+	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:561) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1164) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcPreparedStatement.<init>(JdbcPreparedStatement.java:93) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcConnection.prepareStatement(JdbcConnection.java:315) ~[h2-2.3.232.jar!/:na]
+	at com.zaxxer.hikari.pool.ProxyConnection.prepareStatement(ProxyConnection.java:328) ~[HikariCP-6.3.3.jar!/:na]
+	at com.zaxxer.hikari.pool.HikariProxyConnection.prepareStatement(HikariProxyConnection.java) ~[HikariCP-6.3.3.jar!/:na]
+	at org.hibernate.tool.schema.extract.spi.ExtractionContext.getQueryResults(ExtractionContext.java:43) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.SequenceInformationExtractorLegacyImpl.extractMetadata(SequenceInformationExtractorLegacyImpl.java:39) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.initializeSequences(DatabaseInformationImpl.java:66) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.<init>(DatabaseInformationImpl.java:60) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:185) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	... 37 common frames omitted
+
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2025-12-12T00:53:47.109Z  INFO 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : Starting Application v0.0.1-SNAPSHOT using Java 21.0.9 with PID 1 (/app/app.jar started by root in /app)
+2025-12-12T00:53:47.111Z DEBUG 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : Running with Spring Boot v3.5.7, Spring v6.2.12
+2025-12-12T00:53:47.112Z  INFO 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : The following 1 profile is active: "dev"
+2025-12-12T00:53:48.261Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-12T00:53:48.338Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 59 ms. Found 1 JPA repository interface.
+2025-12-12T00:53:48.341Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-12T00:53:48.348Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 4 ms. Found 1 JPA repository interface.
+2025-12-12T00:53:49.663Z  INFO 1 --- [flogin-backend-dev] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2025-12-12T00:53:49.684Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-12T00:53:49.684Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.48]
+2025-12-12T00:53:49.733Z  INFO 1 --- [flogin-backend-dev] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-12T00:53:49.735Z  INFO 1 --- [flogin-backend-dev] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2560 ms
+2025-12-12T00:53:50.199Z  INFO 1 --- [flogin-backend-dev] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: auth]
+2025-12-12T00:53:50.280Z  INFO 1 --- [flogin-backend-dev] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.33.Final
+2025-12-12T00:53:50.334Z  INFO 1 --- [flogin-backend-dev] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-12-12T00:53:50.764Z  INFO 1 --- [flogin-backend-dev] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-12T00:53:50.803Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-12-12T00:53:51.454Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/authdb user=SA
+2025-12-12T00:53:51.457Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-12-12T00:53:51.516Z  WARN 1 --- [flogin-backend-dev] [           main] org.hibernate.dialect.Dialect            : HHH000511: The 2.3.232 version for [org.hibernate.dialect.OracleDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 19.0.0. Check the community dialects project for available legacy versions.
+2025-12-12T00:53:51.529Z  WARN 1 --- [flogin-backend-dev] [           main] org.hibernate.orm.deprecation            : HHH90000025: OracleDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-12T00:53:51.548Z  INFO 1 --- [flogin-backend-dev] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-12-12T00:53:52.721Z  INFO 1 --- [flogin-backend-dev] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-12T00:53:52.774Z  WARN 1 --- [flogin-backend-dev] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 42104, SQLState: 42S04
+2025-12-12T00:53:52.774Z ERROR 1 --- [flogin-backend-dev] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]
+2025-12-12T00:53:52.782Z ERROR 1 --- [flogin-backend-dev] [           main] j.LocalContainerEntityManagerFactoryBean : Failed to initialize JPA EntityManagerFactory: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+2025-12-12T00:53:52.784Z  WARN 1 --- [flogin-backend-dev] [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authEntityManagerFactory' defined in class path resource [com/flogin/AuthDataSourceConfig.class]: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+2025-12-12T00:53:52.785Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-12-12T00:53:52.791Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-12-12T00:53:52.796Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2025-12-12T00:53:52.822Z  INFO 1 --- [flogin-backend-dev] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-12-12T00:53:52.844Z ERROR 1 --- [flogin-backend-dev] [           main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authEntityManagerFactory' defined in class path resource [com/flogin/AuthDataSourceConfig.class]: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1826) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:973) ~[spring-context-6.2.12.jar!/:6.2.12]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627) ~[spring-context-6.2.12.jar!/:6.2.12]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at com.flogin.Application.main(Application.java:9) ~[!/:0.0.1-SNAPSHOT]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source) ~[na:na]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:106) ~[app.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:64) ~[app.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.JarLauncher.main(JarLauncher.java:40) ~[app.jar:0.0.1-SNAPSHOT]
+Caused by: jakarta.persistence.PersistenceException: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:431) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:400) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1873) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1822) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	... 20 common frames omitted
+Caused by: org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.hibernate.exception.internal.SQLExceptionTypeDelegate.convert(SQLExceptionTypeDelegate.java:66) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:58) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:108) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:94) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:194) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:93) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:280) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.lambda$process$5(SchemaManagementToolCoordinator.java:144) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at java.base/java.util.HashMap.forEach(Unknown Source) ~[na:na]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:141) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.boot.internal.SessionFactoryObserverForSchemaExport.sessionFactoryCreated(SessionFactoryObserverForSchemaExport.java:37) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.internal.SessionFactoryObserverChain.sessionFactoryCreated(SessionFactoryObserverChain.java:35) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:324) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:463) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1517) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:66) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:419) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	... 24 common frames omitted
+Caused by: org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.get(DbException.java:223) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.get(DbException.java:199) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.getTableOrViewNotFoundDbException(Parser.java:7932) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.getTableOrViewNotFoundDbException(Parser.java:7916) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTableOrView(Parser.java:7895) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTablePrimary(Parser.java:1769) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTableReference(Parser.java:2249) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseSelectFromPart(Parser.java:2702) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseSelect(Parser.java:2810) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryPrimary(Parser.java:2692) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryTerm(Parser.java:2547) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpressionBody(Parser.java:2526) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpressionBodyAndEndOfQuery(Parser.java:2519) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpression(Parser.java:2512) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQuery(Parser.java:2479) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parsePrepared(Parser.java:610) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parse(Parser.java:581) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parse(Parser.java:556) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.prepareCommand(Parser.java:484) ~[h2-2.3.232.jar!/:na]
+	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:645) ~[h2-2.3.232.jar!/:na]
+	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:561) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1164) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcPreparedStatement.<init>(JdbcPreparedStatement.java:93) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcConnection.prepareStatement(JdbcConnection.java:315) ~[h2-2.3.232.jar!/:na]
+	at com.zaxxer.hikari.pool.ProxyConnection.prepareStatement(ProxyConnection.java:328) ~[HikariCP-6.3.3.jar!/:na]
+	at com.zaxxer.hikari.pool.HikariProxyConnection.prepareStatement(HikariProxyConnection.java) ~[HikariCP-6.3.3.jar!/:na]
+	at org.hibernate.tool.schema.extract.spi.ExtractionContext.getQueryResults(ExtractionContext.java:43) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.SequenceInformationExtractorLegacyImpl.extractMetadata(SequenceInformationExtractorLegacyImpl.java:39) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.initializeSequences(DatabaseInformationImpl.java:66) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.<init>(DatabaseInformationImpl.java:60) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:185) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	... 37 common frames omitted
+
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2025-12-12T00:54:01.269Z  INFO 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : Starting Application v0.0.1-SNAPSHOT using Java 21.0.9 with PID 1 (/app/app.jar started by root in /app)
+2025-12-12T00:54:01.272Z DEBUG 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : Running with Spring Boot v3.5.7, Spring v6.2.12
+2025-12-12T00:54:01.272Z  INFO 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : The following 1 profile is active: "dev"
+2025-12-12T00:54:02.813Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-12T00:54:02.891Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 50 ms. Found 1 JPA repository interface.
+2025-12-12T00:54:02.893Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-12T00:54:02.904Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 8 ms. Found 1 JPA repository interface.
+2025-12-12T00:54:04.474Z  INFO 1 --- [flogin-backend-dev] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2025-12-12T00:54:04.496Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-12T00:54:04.496Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.48]
+2025-12-12T00:54:04.544Z  INFO 1 --- [flogin-backend-dev] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-12T00:54:04.546Z  INFO 1 --- [flogin-backend-dev] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3181 ms
+2025-12-12T00:54:05.061Z  INFO 1 --- [flogin-backend-dev] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: auth]
+2025-12-12T00:54:05.147Z  INFO 1 --- [flogin-backend-dev] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.33.Final
+2025-12-12T00:54:05.204Z  INFO 1 --- [flogin-backend-dev] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-12-12T00:54:05.639Z  INFO 1 --- [flogin-backend-dev] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-12T00:54:05.684Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-12-12T00:54:06.461Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/authdb user=SA
+2025-12-12T00:54:06.463Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-12-12T00:54:06.513Z  WARN 1 --- [flogin-backend-dev] [           main] org.hibernate.dialect.Dialect            : HHH000511: The 2.3.232 version for [org.hibernate.dialect.OracleDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 19.0.0. Check the community dialects project for available legacy versions.
+2025-12-12T00:54:06.519Z  WARN 1 --- [flogin-backend-dev] [           main] org.hibernate.orm.deprecation            : HHH90000025: OracleDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-12T00:54:06.543Z  INFO 1 --- [flogin-backend-dev] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-12-12T00:54:08.145Z  INFO 1 --- [flogin-backend-dev] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-12T00:54:08.172Z  WARN 1 --- [flogin-backend-dev] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 42104, SQLState: 42S04
+2025-12-12T00:54:08.172Z ERROR 1 --- [flogin-backend-dev] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]
+2025-12-12T00:54:08.177Z ERROR 1 --- [flogin-backend-dev] [           main] j.LocalContainerEntityManagerFactoryBean : Failed to initialize JPA EntityManagerFactory: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+2025-12-12T00:54:08.178Z  WARN 1 --- [flogin-backend-dev] [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authEntityManagerFactory' defined in class path resource [com/flogin/AuthDataSourceConfig.class]: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+2025-12-12T00:54:08.179Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-12-12T00:54:08.183Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-12-12T00:54:08.187Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2025-12-12T00:54:08.213Z  INFO 1 --- [flogin-backend-dev] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-12-12T00:54:08.244Z ERROR 1 --- [flogin-backend-dev] [           main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authEntityManagerFactory' defined in class path resource [com/flogin/AuthDataSourceConfig.class]: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1826) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:973) ~[spring-context-6.2.12.jar!/:6.2.12]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627) ~[spring-context-6.2.12.jar!/:6.2.12]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at com.flogin.Application.main(Application.java:9) ~[!/:0.0.1-SNAPSHOT]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source) ~[na:na]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:106) ~[app.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:64) ~[app.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.JarLauncher.main(JarLauncher.java:40) ~[app.jar:0.0.1-SNAPSHOT]
+Caused by: jakarta.persistence.PersistenceException: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:431) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:400) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1873) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1822) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	... 20 common frames omitted
+Caused by: org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.hibernate.exception.internal.SQLExceptionTypeDelegate.convert(SQLExceptionTypeDelegate.java:66) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:58) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:108) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:94) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:194) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:93) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:280) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.lambda$process$5(SchemaManagementToolCoordinator.java:144) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at java.base/java.util.HashMap.forEach(Unknown Source) ~[na:na]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:141) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.boot.internal.SessionFactoryObserverForSchemaExport.sessionFactoryCreated(SessionFactoryObserverForSchemaExport.java:37) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.internal.SessionFactoryObserverChain.sessionFactoryCreated(SessionFactoryObserverChain.java:35) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:324) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:463) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1517) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:66) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:419) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	... 24 common frames omitted
+Caused by: org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.get(DbException.java:223) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.get(DbException.java:199) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.getTableOrViewNotFoundDbException(Parser.java:7932) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.getTableOrViewNotFoundDbException(Parser.java:7916) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTableOrView(Parser.java:7895) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTablePrimary(Parser.java:1769) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTableReference(Parser.java:2249) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseSelectFromPart(Parser.java:2702) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseSelect(Parser.java:2810) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryPrimary(Parser.java:2692) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryTerm(Parser.java:2547) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpressionBody(Parser.java:2526) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpressionBodyAndEndOfQuery(Parser.java:2519) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpression(Parser.java:2512) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQuery(Parser.java:2479) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parsePrepared(Parser.java:610) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parse(Parser.java:581) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parse(Parser.java:556) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.prepareCommand(Parser.java:484) ~[h2-2.3.232.jar!/:na]
+	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:645) ~[h2-2.3.232.jar!/:na]
+	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:561) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1164) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcPreparedStatement.<init>(JdbcPreparedStatement.java:93) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcConnection.prepareStatement(JdbcConnection.java:315) ~[h2-2.3.232.jar!/:na]
+	at com.zaxxer.hikari.pool.ProxyConnection.prepareStatement(ProxyConnection.java:328) ~[HikariCP-6.3.3.jar!/:na]
+	at com.zaxxer.hikari.pool.HikariProxyConnection.prepareStatement(HikariProxyConnection.java) ~[HikariCP-6.3.3.jar!/:na]
+	at org.hibernate.tool.schema.extract.spi.ExtractionContext.getQueryResults(ExtractionContext.java:43) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.SequenceInformationExtractorLegacyImpl.extractMetadata(SequenceInformationExtractorLegacyImpl.java:39) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.initializeSequences(DatabaseInformationImpl.java:66) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.<init>(DatabaseInformationImpl.java:60) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:185) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	... 37 common frames omitted
+
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2025-12-12T00:54:23.106Z  INFO 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : Starting Application v0.0.1-SNAPSHOT using Java 21.0.9 with PID 1 (/app/app.jar started by root in /app)
+2025-12-12T00:54:23.108Z DEBUG 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : Running with Spring Boot v3.5.7, Spring v6.2.12
+2025-12-12T00:54:23.109Z  INFO 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : The following 1 profile is active: "dev"
+2025-12-12T00:54:24.395Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-12T00:54:24.476Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 63 ms. Found 1 JPA repository interface.
+2025-12-12T00:54:24.480Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-12T00:54:24.489Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 6 ms. Found 1 JPA repository interface.
+2025-12-12T00:54:25.922Z  INFO 1 --- [flogin-backend-dev] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2025-12-12T00:54:25.945Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-12T00:54:25.946Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.48]
+2025-12-12T00:54:26.017Z  INFO 1 --- [flogin-backend-dev] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-12T00:54:26.021Z  INFO 1 --- [flogin-backend-dev] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2817 ms
+2025-12-12T00:54:26.588Z  INFO 1 --- [flogin-backend-dev] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: auth]
+2025-12-12T00:54:26.701Z  INFO 1 --- [flogin-backend-dev] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.33.Final
+2025-12-12T00:54:26.757Z  INFO 1 --- [flogin-backend-dev] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-12-12T00:54:27.265Z  INFO 1 --- [flogin-backend-dev] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-12T00:54:27.325Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-12-12T00:54:28.105Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/authdb user=SA
+2025-12-12T00:54:28.109Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-12-12T00:54:28.167Z  WARN 1 --- [flogin-backend-dev] [           main] org.hibernate.dialect.Dialect            : HHH000511: The 2.3.232 version for [org.hibernate.dialect.OracleDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 19.0.0. Check the community dialects project for available legacy versions.
+2025-12-12T00:54:28.175Z  WARN 1 --- [flogin-backend-dev] [           main] org.hibernate.orm.deprecation            : HHH90000025: OracleDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-12T00:54:28.196Z  INFO 1 --- [flogin-backend-dev] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-12-12T00:54:29.430Z  INFO 1 --- [flogin-backend-dev] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-12T00:54:29.457Z  WARN 1 --- [flogin-backend-dev] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 42104, SQLState: 42S04
+2025-12-12T00:54:29.458Z ERROR 1 --- [flogin-backend-dev] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]
+2025-12-12T00:54:29.463Z ERROR 1 --- [flogin-backend-dev] [           main] j.LocalContainerEntityManagerFactoryBean : Failed to initialize JPA EntityManagerFactory: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+2025-12-12T00:54:29.464Z  WARN 1 --- [flogin-backend-dev] [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authEntityManagerFactory' defined in class path resource [com/flogin/AuthDataSourceConfig.class]: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+2025-12-12T00:54:29.465Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-12-12T00:54:29.468Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-12-12T00:54:29.472Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2025-12-12T00:54:29.491Z  INFO 1 --- [flogin-backend-dev] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-12-12T00:54:29.512Z ERROR 1 --- [flogin-backend-dev] [           main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authEntityManagerFactory' defined in class path resource [com/flogin/AuthDataSourceConfig.class]: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1826) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:973) ~[spring-context-6.2.12.jar!/:6.2.12]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627) ~[spring-context-6.2.12.jar!/:6.2.12]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at com.flogin.Application.main(Application.java:9) ~[!/:0.0.1-SNAPSHOT]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source) ~[na:na]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:106) ~[app.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:64) ~[app.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.JarLauncher.main(JarLauncher.java:40) ~[app.jar:0.0.1-SNAPSHOT]
+Caused by: jakarta.persistence.PersistenceException: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:431) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:400) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1873) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1822) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	... 20 common frames omitted
+Caused by: org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.hibernate.exception.internal.SQLExceptionTypeDelegate.convert(SQLExceptionTypeDelegate.java:66) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:58) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:108) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:94) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:194) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:93) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:280) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.lambda$process$5(SchemaManagementToolCoordinator.java:144) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at java.base/java.util.HashMap.forEach(Unknown Source) ~[na:na]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:141) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.boot.internal.SessionFactoryObserverForSchemaExport.sessionFactoryCreated(SessionFactoryObserverForSchemaExport.java:37) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.internal.SessionFactoryObserverChain.sessionFactoryCreated(SessionFactoryObserverChain.java:35) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:324) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:463) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1517) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:66) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:419) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	... 24 common frames omitted
+Caused by: org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.get(DbException.java:223) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.get(DbException.java:199) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.getTableOrViewNotFoundDbException(Parser.java:7932) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.getTableOrViewNotFoundDbException(Parser.java:7916) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTableOrView(Parser.java:7895) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTablePrimary(Parser.java:1769) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTableReference(Parser.java:2249) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseSelectFromPart(Parser.java:2702) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseSelect(Parser.java:2810) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryPrimary(Parser.java:2692) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryTerm(Parser.java:2547) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpressionBody(Parser.java:2526) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpressionBodyAndEndOfQuery(Parser.java:2519) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpression(Parser.java:2512) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQuery(Parser.java:2479) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parsePrepared(Parser.java:610) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parse(Parser.java:581) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parse(Parser.java:556) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.prepareCommand(Parser.java:484) ~[h2-2.3.232.jar!/:na]
+	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:645) ~[h2-2.3.232.jar!/:na]
+	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:561) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1164) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcPreparedStatement.<init>(JdbcPreparedStatement.java:93) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcConnection.prepareStatement(JdbcConnection.java:315) ~[h2-2.3.232.jar!/:na]
+	at com.zaxxer.hikari.pool.ProxyConnection.prepareStatement(ProxyConnection.java:328) ~[HikariCP-6.3.3.jar!/:na]
+	at com.zaxxer.hikari.pool.HikariProxyConnection.prepareStatement(HikariProxyConnection.java) ~[HikariCP-6.3.3.jar!/:na]
+	at org.hibernate.tool.schema.extract.spi.ExtractionContext.getQueryResults(ExtractionContext.java:43) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.SequenceInformationExtractorLegacyImpl.extractMetadata(SequenceInformationExtractorLegacyImpl.java:39) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.initializeSequences(DatabaseInformationImpl.java:66) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.<init>(DatabaseInformationImpl.java:60) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:185) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	... 37 common frames omitted
+
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2025-12-12T00:54:57.198Z  INFO 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : Starting Application v0.0.1-SNAPSHOT using Java 21.0.9 with PID 1 (/app/app.jar started by root in /app)
+2025-12-12T00:54:57.200Z DEBUG 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : Running with Spring Boot v3.5.7, Spring v6.2.12
+2025-12-12T00:54:57.202Z  INFO 1 --- [flogin-backend-dev] [           main] com.flogin.Application                   : The following 1 profile is active: "dev"
+2025-12-12T00:54:58.496Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-12T00:54:58.567Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 55 ms. Found 1 JPA repository interface.
+2025-12-12T00:54:58.569Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-12T00:54:58.575Z  INFO 1 --- [flogin-backend-dev] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 4 ms. Found 1 JPA repository interface.
+2025-12-12T00:54:59.943Z  INFO 1 --- [flogin-backend-dev] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2025-12-12T00:54:59.970Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-12T00:54:59.970Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.48]
+2025-12-12T00:55:00.041Z  INFO 1 --- [flogin-backend-dev] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-12T00:55:00.045Z  INFO 1 --- [flogin-backend-dev] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2767 ms
+2025-12-12T00:55:00.647Z  INFO 1 --- [flogin-backend-dev] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: auth]
+2025-12-12T00:55:00.725Z  INFO 1 --- [flogin-backend-dev] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.33.Final
+2025-12-12T00:55:00.786Z  INFO 1 --- [flogin-backend-dev] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-12-12T00:55:01.364Z  INFO 1 --- [flogin-backend-dev] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-12T00:55:01.418Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-12-12T00:55:02.274Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/authdb user=SA
+2025-12-12T00:55:02.278Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-12-12T00:55:02.346Z  WARN 1 --- [flogin-backend-dev] [           main] org.hibernate.dialect.Dialect            : HHH000511: The 2.3.232 version for [org.hibernate.dialect.OracleDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 19.0.0. Check the community dialects project for available legacy versions.
+2025-12-12T00:55:02.353Z  WARN 1 --- [flogin-backend-dev] [           main] org.hibernate.orm.deprecation            : HHH90000025: OracleDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-12T00:55:02.373Z  INFO 1 --- [flogin-backend-dev] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-12-12T00:55:03.645Z  INFO 1 --- [flogin-backend-dev] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-12T00:55:03.671Z  WARN 1 --- [flogin-backend-dev] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 42104, SQLState: 42S04
+2025-12-12T00:55:03.671Z ERROR 1 --- [flogin-backend-dev] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]
+2025-12-12T00:55:03.676Z ERROR 1 --- [flogin-backend-dev] [           main] j.LocalContainerEntityManagerFactoryBean : Failed to initialize JPA EntityManagerFactory: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+2025-12-12T00:55:03.676Z  WARN 1 --- [flogin-backend-dev] [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authEntityManagerFactory' defined in class path resource [com/flogin/AuthDataSourceConfig.class]: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+2025-12-12T00:55:03.677Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-12-12T00:55:03.681Z  INFO 1 --- [flogin-backend-dev] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-12-12T00:55:03.684Z  INFO 1 --- [flogin-backend-dev] [           main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2025-12-12T00:55:03.703Z  INFO 1 --- [flogin-backend-dev] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-12-12T00:55:03.722Z ERROR 1 --- [flogin-backend-dev] [           main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authEntityManagerFactory' defined in class path resource [com/flogin/AuthDataSourceConfig.class]: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1826) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:973) ~[spring-context-6.2.12.jar!/:6.2.12]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627) ~[spring-context-6.2.12.jar!/:6.2.12]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.5.7.jar!/:3.5.7]
+	at com.flogin.Application.main(Application.java:9) ~[!/:0.0.1-SNAPSHOT]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source) ~[na:na]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:106) ~[app.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:64) ~[app.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.JarLauncher.main(JarLauncher.java:40) ~[app.jar:0.0.1-SNAPSHOT]
+Caused by: jakarta.persistence.PersistenceException: [PersistenceUnit: auth] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:431) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:400) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1873) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1822) ~[spring-beans-6.2.12.jar!/:6.2.12]
+	... 20 common frames omitted
+Caused by: org.hibernate.exception.SQLGrammarException: Unable to build DatabaseInformation [Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]] [n/a]
+	at org.hibernate.exception.internal.SQLExceptionTypeDelegate.convert(SQLExceptionTypeDelegate.java:66) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:58) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:108) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:94) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:194) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:93) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:280) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.lambda$process$5(SchemaManagementToolCoordinator.java:144) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at java.base/java.util.HashMap.forEach(Unknown Source) ~[na:na]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:141) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.boot.internal.SessionFactoryObserverForSchemaExport.sessionFactoryCreated(SessionFactoryObserverForSchemaExport.java:37) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.internal.SessionFactoryObserverChain.sessionFactoryCreated(SessionFactoryObserverChain.java:35) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:324) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:463) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1517) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:66) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:419) ~[spring-orm-6.2.12.jar!/:6.2.12]
+	... 24 common frames omitted
+Caused by: org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "ALL_SEQUENCES" not found (this database is empty); SQL statement:
+select * from all_sequences [42104-232]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.get(DbException.java:223) ~[h2-2.3.232.jar!/:na]
+	at org.h2.message.DbException.get(DbException.java:199) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.getTableOrViewNotFoundDbException(Parser.java:7932) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.getTableOrViewNotFoundDbException(Parser.java:7916) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTableOrView(Parser.java:7895) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTablePrimary(Parser.java:1769) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.readTableReference(Parser.java:2249) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseSelectFromPart(Parser.java:2702) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseSelect(Parser.java:2810) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryPrimary(Parser.java:2692) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryTerm(Parser.java:2547) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpressionBody(Parser.java:2526) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpressionBodyAndEndOfQuery(Parser.java:2519) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQueryExpression(Parser.java:2512) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parseQuery(Parser.java:2479) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parsePrepared(Parser.java:610) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parse(Parser.java:581) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.parse(Parser.java:556) ~[h2-2.3.232.jar!/:na]
+	at org.h2.command.Parser.prepareCommand(Parser.java:484) ~[h2-2.3.232.jar!/:na]
+	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:645) ~[h2-2.3.232.jar!/:na]
+	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:561) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1164) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcPreparedStatement.<init>(JdbcPreparedStatement.java:93) ~[h2-2.3.232.jar!/:na]
+	at org.h2.jdbc.JdbcConnection.prepareStatement(JdbcConnection.java:315) ~[h2-2.3.232.jar!/:na]
+	at com.zaxxer.hikari.pool.ProxyConnection.prepareStatement(ProxyConnection.java:328) ~[HikariCP-6.3.3.jar!/:na]
+	at com.zaxxer.hikari.pool.HikariProxyConnection.prepareStatement(HikariProxyConnection.java) ~[HikariCP-6.3.3.jar!/:na]
+	at org.hibernate.tool.schema.extract.spi.ExtractionContext.getQueryResults(ExtractionContext.java:43) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.SequenceInformationExtractorLegacyImpl.extractMetadata(SequenceInformationExtractorLegacyImpl.java:39) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.initializeSequences(DatabaseInformationImpl.java:66) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.<init>(DatabaseInformationImpl.java:60) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	at org.hibernate.tool.schema.internal.Helper.buildDatabaseInformation(Helper.java:185) ~[hibernate-core-6.6.33.Final.jar!/:6.6.33.Final]
+	... 37 common frames omitted
+

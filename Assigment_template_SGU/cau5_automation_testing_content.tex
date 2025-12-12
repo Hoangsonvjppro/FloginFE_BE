@@ -1,0 +1,717 @@
+% NỘI DUNG CÂU 5 - AUTOMATION TESTING VÀ CI/CD
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Automation Testing và CI/CD - Câu 5 (10 điểm)}
+
+\subsection{Câu 5.1: Login - E2E Automation Testing (5 điểm)}
+
+\subsubsection{Setup và Configuration (1 điểm)}
+
+\textbf{Cài đặt Cypress}:
+
+\begin{verbatim}
+# Install Cypress
+npm install --save-dev cypress @testing-library/cypress
+
+# Open Cypress Test Runner
+npx cypress open
+
+# Run tests headless
+npx cypress run
+\end{verbatim}
+
+\textbf{Cấu hình test environment} (\texttt{cypress.config.js}):
+
+\begin{verbatim}
+const { defineConfig } = require('cypress');
+
+module.exports = defineConfig({
+    e2e: {
+        baseUrl: 'http://localhost:3000',
+        viewportWidth: 1280,
+        viewportHeight: 720,
+        video: true,
+        screenshotOnRunFailure: true,
+        supportFile: 'cypress/support/e2e.js',
+        specPattern: 'cypress/e2e/**/*.cy.{js,jsx}',
+        env: {
+            apiUrl: 'http://localhost:8080/api'
+        }
+    }
+});
+\end{verbatim}
+
+\textbf{Setup Page Object Model} (\texttt{cypress/pages/LoginPage.js}):
+
+\begin{verbatim}
+class LoginPage {
+    // Selectors
+    usernameInput = '[data-testid="username-input"]';
+    passwordInput = '[data-testid="password-input"]';
+    loginButton = '[data-testid="login-button"]';
+    usernameError = '[data-testid="username-error"]';
+    loginMessage = '[data-testid="login-message"]';
+
+    visit() {
+        cy.visit('/login');
+    }
+
+    fillUsername(username) {
+        cy.get(this.usernameInput).clear().type(username);
+    }
+
+    fillPassword(password) {
+        cy.get(this.passwordInput).clear().type(password);
+    }
+
+    clickLogin() {
+        cy.get(this.loginButton).click();
+    }
+
+    login(username, password) {
+        this.fillUsername(username);
+        this.fillPassword(password);
+        this.clickLogin();
+    }
+
+    getErrorMessage() {
+        return cy.get(this.usernameError);
+    }
+
+    getSuccessMessage() {
+        return cy.get(this.loginMessage);
+    }
+}
+
+export default new LoginPage();
+\end{verbatim}
+
+\newpage
+
+\subsubsection{E2E Test Scenarios cho Login (2.5 điểm)}
+
+\textbf{File}: \texttt{cypress/e2e/login.cy.js}
+
+\textbf{a) Test complete login flow (1 điểm)}:
+
+\begin{verbatim}
+import LoginPage from '../pages/LoginPage';
+
+describe('Login E2E Tests', () => {
+    beforeEach(() => {
+        LoginPage.visit();
+    });
+
+    // Test complete login flow
+    it('should login successfully with valid credentials', () => {
+        cy.intercept('POST', '/api/auth/login', {
+            statusCode: 200,
+            body: { 
+                token: 'mock-jwt-token',
+                user: { username: 'testuser', fullName: 'Test User' }
+            }
+        }).as('loginRequest');
+
+        LoginPage.login('testuser', 'Password123');
+
+        cy.wait('@loginRequest');
+        cy.url().should('include', '/dashboard');
+        cy.get('[data-testid="welcome-message"]')
+            .should('contain', 'Test User');
+    });
+
+    it('should show loading state during login', () => {
+        cy.intercept('POST', '/api/auth/login', {
+            delay: 1000,
+            body: { token: 'token' }
+        });
+
+        LoginPage.login('testuser', 'Password123');
+
+        cy.get('[data-testid="login-button"]')
+            .should('be.disabled')
+            .and('contain', 'Signing in');
+    });
+});
+\end{verbatim}
+
+\textbf{b) Test validation messages (0.5 điểm)}:
+
+\begin{verbatim}
+describe('Login Validation', () => {
+    beforeEach(() => LoginPage.visit());
+
+    it('should show error for empty username', () => {
+        LoginPage.fillPassword('Password123');
+        LoginPage.clickLogin();
+
+        cy.get('[data-testid="username-error"]')
+            .should('be.visible')
+            .and('contain', 'Username is required');
+    });
+
+    it('should show error for username too short', () => {
+        LoginPage.login('ab', 'Password123');
+
+        cy.get('[data-testid="username-error"]')
+            .should('contain', 'at least 3 characters');
+    });
+
+    it('should show error for invalid username characters', () => {
+        LoginPage.login('user@name!', 'Password123');
+
+        cy.get('[data-testid="username-error"]')
+            .should('contain', 'can only contain');
+    });
+
+    it('should show error for password without number', () => {
+        LoginPage.login('testuser', 'Password');
+
+        cy.get('[data-testid="password-error"]')
+            .should('contain', 'at least one number');
+    });
+});
+\end{verbatim}
+
+\textbf{c) Test success/error flows (0.5 điểm)}:
+
+\begin{verbatim}
+describe('Login Success/Error Flows', () => {
+    it('should handle login API error', () => {
+        cy.intercept('POST', '/api/auth/login', {
+            statusCode: 400,
+            body: { message: 'Invalid username or password' }
+        }).as('loginFailed');
+
+        LoginPage.visit();
+        LoginPage.login('wronguser', 'wrongpass');
+
+        cy.wait('@loginFailed');
+        cy.get('[data-testid="error-message"]')
+            .should('be.visible')
+            .and('contain', 'Invalid');
+    });
+
+    it('should handle network error', () => {
+        cy.intercept('POST', '/api/auth/login', { 
+            forceNetworkError: true 
+        });
+
+        LoginPage.visit();
+        LoginPage.login('testuser', 'Password123');
+
+        cy.get('[data-testid="error-message"]')
+            .should('contain', 'Network error');
+    });
+
+    it('should redirect after successful login', () => {
+        cy.intercept('POST', '/api/auth/login', {
+            body: { token: 'valid-token' }
+        });
+
+        LoginPage.visit();
+        LoginPage.login('testuser', 'Password123');
+
+        cy.url().should('include', '/dashboard');
+    });
+});
+\end{verbatim}
+
+\textbf{d) Test UI elements interactions (0.5 điểm)}:
+
+\begin{verbatim}
+describe('UI Elements Interactions', () => {
+    beforeEach(() => LoginPage.visit());
+
+    it('should display all login form elements', () => {
+        cy.get('[data-testid="username-input"]').should('be.visible');
+        cy.get('[data-testid="password-input"]').should('be.visible');
+        cy.get('[data-testid="login-button"]').should('be.visible');
+    });
+
+    it('should toggle password visibility', () => {
+        cy.get('[data-testid="password-input"]')
+            .should('have.attr', 'type', 'password');
+        
+        cy.get('[data-testid="toggle-password"]').click();
+        
+        cy.get('[data-testid="password-input"]')
+            .should('have.attr', 'type', 'text');
+    });
+
+    it('should navigate to register page', () => {
+        cy.get('[data-testid="signup-link"]').click();
+        cy.url().should('include', '/register');
+    });
+
+    it('should clear errors on input change', () => {
+        LoginPage.clickLogin();
+        cy.get('[data-testid="username-error"]').should('be.visible');
+
+        LoginPage.fillUsername('a');
+        cy.get('[data-testid="username-error"]').should('not.exist');
+    });
+});
+\end{verbatim}
+
+\newpage
+
+\subsubsection{CI/CD Integration cho Login Tests (1.5 điểm)}
+
+\textbf{File}: \texttt{.github/workflows/login-tests.yml}
+
+\begin{verbatim}
+name: Login Tests CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-login:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run Login Unit Tests
+        run: |
+          cd frontend
+          npm test -- --testPathPattern=Login --coverage
+
+      - name: Run Login E2E Tests
+        uses: cypress-io/github-action@v5
+        with:
+          working-directory: frontend
+          start: npm start
+          wait-on: 'http://localhost:3000'
+          spec: cypress/e2e/login.cy.js
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: login-test-results
+          path: |
+            frontend/cypress/videos
+            frontend/cypress/screenshots
+            frontend/coverage
+\end{verbatim}
+
+\newpage
+
+\subsection{Câu 5.2: Product - E2E Automation Testing (5 điểm)}
+
+\subsubsection{Setup Page Object Model (1 điểm)}
+
+\textbf{File}: \texttt{cypress/pages/ProductPage.js}
+
+\begin{verbatim}
+class ProductPage {
+    // Selectors
+    addProductBtn = '[data-testid="add-product-btn"]';
+    productNameInput = '[data-testid="product-name"]';
+    productPriceInput = '[data-testid="product-price"]';
+    productQuantityInput = '[data-testid="product-quantity"]';
+    productCategorySelect = '[data-testid="product-category"]';
+    submitBtn = '[data-testid="submit-btn"]';
+    successMessage = '[data-testid="success-message"]';
+    productList = '[data-testid="product-list"]';
+    productItem = '[data-testid="product-item"]';
+    editBtn = '[data-testid="edit-btn"]';
+    deleteBtn = '[data-testid="delete-btn"]';
+    confirmDeleteBtn = '[data-testid="confirm-delete"]';
+    searchInput = '[data-testid="search-input"]';
+
+    visit() {
+        cy.visit('/products');
+    }
+
+    clickAddNew() {
+        cy.get(this.addProductBtn).click();
+    }
+
+    fillProductForm(product) {
+        if (product.name) {
+            cy.get(this.productNameInput).clear().type(product.name);
+        }
+        if (product.price) {
+            cy.get(this.productPriceInput).clear().type(product.price);
+        }
+        if (product.quantity) {
+            cy.get(this.productQuantityInput).clear().type(product.quantity);
+        }
+        if (product.category) {
+            cy.get(this.productCategorySelect).select(product.category);
+        }
+    }
+
+    submitForm() {
+        cy.get(this.submitBtn).click();
+    }
+
+    getSuccessMessage() {
+        return cy.get(this.successMessage);
+    }
+
+    getProductInList(name) {
+        return cy.contains(this.productItem, name);
+    }
+
+    searchProduct(query) {
+        cy.get(this.searchInput).clear().type(query);
+    }
+
+    deleteProduct(name) {
+        this.getProductInList(name).within(() => {
+            cy.get(this.deleteBtn).click();
+        });
+        cy.get(this.confirmDeleteBtn).click();
+    }
+}
+
+export default new ProductPage();
+\end{verbatim}
+
+\newpage
+
+\subsubsection{E2E Test Scenarios cho Product (2.5 điểm)}
+
+\textbf{File}: \texttt{cypress/e2e/product.cy.js}
+
+\textbf{a) Test Create product flow (0.5 điểm)}:
+
+\begin{verbatim}
+import ProductPage from '../pages/ProductPage';
+
+describe('Product E2E Tests', () => {
+    beforeEach(() => {
+        // Login before each test
+        cy.login('testuser', 'Password123');
+        ProductPage.visit();
+    });
+
+    // CREATE
+    it('should create a new product successfully', () => {
+        cy.intercept('POST', '/api/products', {
+            statusCode: 201,
+            body: { id: 1, name: 'Laptop Dell', price: 15000000 }
+        }).as('createProduct');
+
+        ProductPage.clickAddNew();
+        ProductPage.fillProductForm({
+            name: 'Laptop Dell',
+            price: '15000000',
+            quantity: '10',
+            category: 'ELECTRONICS'
+        });
+        ProductPage.submitForm();
+
+        cy.wait('@createProduct');
+        ProductPage.getSuccessMessage()
+            .should('contain', 'Product created successfully');
+        ProductPage.getProductInList('Laptop Dell')
+            .should('exist');
+    });
+
+    it('should show validation error for invalid product', () => {
+        ProductPage.clickAddNew();
+        ProductPage.fillProductForm({
+            name: 'ab',  // Too short
+            price: '-100',  // Negative
+            quantity: '10'
+        });
+        ProductPage.submitForm();
+
+        cy.get('[data-testid="name-error"]')
+            .should('contain', 'at least 3 characters');
+        cy.get('[data-testid="price-error"]')
+            .should('contain', 'greater than 0');
+    });
+});
+\end{verbatim}
+
+\textbf{b) Test Read/List products (0.5 điểm)}:
+
+\begin{verbatim}
+describe('Product List Tests', () => {
+    it('should display list of products', () => {
+        cy.intercept('GET', '/api/products', {
+            body: [
+                { id: 1, name: 'Laptop', price: 15000000, quantity: 10 },
+                { id: 2, name: 'Mouse', price: 500000, quantity: 50 }
+            ]
+        }).as('getProducts');
+
+        cy.login('testuser', 'Password123');
+        ProductPage.visit();
+
+        cy.wait('@getProducts');
+        cy.get('[data-testid="product-item"]').should('have.length', 2);
+        cy.contains('Laptop').should('be.visible');
+        cy.contains('Mouse').should('be.visible');
+    });
+
+    it('should show empty message when no products', () => {
+        cy.intercept('GET', '/api/products', { body: [] });
+        
+        cy.login('testuser', 'Password123');
+        ProductPage.visit();
+
+        cy.get('[data-testid="empty-message"]')
+            .should('contain', 'No products found');
+    });
+});
+\end{verbatim}
+
+\textbf{c) Test Update product (0.5 điểm)}:
+
+\begin{verbatim}
+describe('Product Update Tests', () => {
+    it('should update product successfully', () => {
+        cy.intercept('PUT', '/api/products/1', {
+            body: { id: 1, name: 'Updated Laptop', price: 14000000 }
+        }).as('updateProduct');
+
+        cy.login('testuser', 'Password123');
+        ProductPage.visit();
+
+        ProductPage.getProductInList('Laptop Dell').click();
+        cy.get('[data-testid="edit-btn"]').click();
+
+        ProductPage.fillProductForm({
+            name: 'Updated Laptop',
+            price: '14000000'
+        });
+        ProductPage.submitForm();
+
+        cy.wait('@updateProduct');
+        ProductPage.getSuccessMessage()
+            .should('contain', 'updated successfully');
+    });
+});
+\end{verbatim}
+
+\textbf{d) Test Delete product (0.5 điểm)}:
+
+\begin{verbatim}
+describe('Product Delete Tests', () => {
+    it('should delete product successfully', () => {
+        cy.intercept('DELETE', '/api/products/1', {
+            statusCode: 204
+        }).as('deleteProduct');
+
+        cy.login('testuser', 'Password123');
+        ProductPage.visit();
+
+        ProductPage.deleteProduct('Laptop Dell');
+
+        cy.wait('@deleteProduct');
+        ProductPage.getProductInList('Laptop Dell')
+            .should('not.exist');
+    });
+
+    it('should show confirmation dialog before delete', () => {
+        cy.login('testuser', 'Password123');
+        ProductPage.visit();
+
+        ProductPage.getProductInList('Laptop Dell')
+            .find('[data-testid="delete-btn"]').click();
+
+        cy.get('[data-testid="confirm-dialog"]')
+            .should('be.visible')
+            .and('contain', 'Are you sure');
+    });
+});
+\end{verbatim}
+
+\textbf{e) Test Search/Filter functionality (0.5 điểm)}:
+
+\begin{verbatim}
+describe('Product Search/Filter Tests', () => {
+    it('should filter products by search query', () => {
+        cy.login('testuser', 'Password123');
+        ProductPage.visit();
+
+        ProductPage.searchProduct('Laptop');
+
+        cy.get('[data-testid="product-item"]')
+            .should('have.length', 1)
+            .and('contain', 'Laptop');
+    });
+
+    it('should filter products by category', () => {
+        cy.login('testuser', 'Password123');
+        ProductPage.visit();
+
+        cy.get('[data-testid="category-filter"]')
+            .select('ELECTRONICS');
+
+        cy.get('[data-testid="product-item"]')
+            .each(($el) => {
+                cy.wrap($el).should('contain', 'Electronics');
+            });
+    });
+
+    it('should show no results for non-matching search', () => {
+        cy.login('testuser', 'Password123');
+        ProductPage.visit();
+
+        ProductPage.searchProduct('NonExistentProduct');
+
+        cy.get('[data-testid="no-results"]')
+            .should('be.visible');
+    });
+});
+\end{verbatim}
+
+\newpage
+
+\subsubsection{CI/CD Integration (1.5 điểm)}
+
+\textbf{File}: \texttt{.github/workflows/ci.yml}
+
+\begin{verbatim}
+name: Complete CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  NODE_VERSION: '18'
+  JAVA_VERSION: '17'
+
+jobs:
+  # Backend Tests
+  backend-tests:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_DB: testdb
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run Backend Tests
+        run: |
+          cd backend
+          ./mvnw clean test -Dspring.profiles.active=test
+
+      - name: Generate Coverage Report
+        run: |
+          cd backend
+          ./mvnw jacoco:report
+
+      - name: Upload Backend Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: backend/target/site/jacoco/jacoco.xml
+          flags: backend
+
+  # Frontend Tests
+  frontend-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run Unit Tests
+        run: |
+          cd frontend
+          npm test -- --coverage --watchAll=false
+
+      - name: Upload Frontend Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: frontend/coverage/lcov.info
+          flags: frontend
+
+  # E2E Tests
+  e2e-tests:
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-tests]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Run E2E Tests
+        uses: cypress-io/github-action@v5
+        with:
+          working-directory: frontend
+          start: npm start
+          wait-on: 'http://localhost:3000'
+          browser: chrome
+          record: false
+
+      - name: Upload E2E Artifacts
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: e2e-artifacts
+          path: |
+            frontend/cypress/videos
+            frontend/cypress/screenshots
+\end{verbatim}
+
+\textbf{Tổng kết Câu 5}:
+\begin{itemize}
+    \item \textbf{Login E2E}: Complete login flow, validation, success/error, UI interactions
+    \item \textbf{Product E2E}: CRUD operations, search/filter với Page Object Model
+    \item \textbf{CI/CD Pipeline}: GitHub Actions với parallel jobs, coverage upload
+    \item \textbf{Tools}: Cypress, GitHub Actions, Codecov
+\end{itemize}
+
+\newpage

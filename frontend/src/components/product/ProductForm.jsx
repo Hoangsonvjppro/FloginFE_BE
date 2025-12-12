@@ -6,8 +6,11 @@ export default function ProductForm({ onSubmit, onCancel, initialData, isOpen })
     name: '',
     description: '',
     price: '',
-    quantity: ''
+    quantity: '',
+    category: ''
   });
+
+  const categories = ['Electronics', 'Clothing', 'Food', 'Books', 'Home', 'Sports', 'Toys', 'Other'];
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -16,45 +19,51 @@ export default function ProductForm({ onSubmit, onCancel, initialData, isOpen })
         name: initialData.name || '',
         description: initialData.description || '',
         price: initialData.price?.toString() || '',
-        quantity: initialData.quantity?.toString() || ''
+        quantity: initialData.quantity?.toString() || '',
+        category: initialData.category || ''
       });
     } else {
-      setFormData({ name: '', description: '', price: '', quantity: '' });
+      setFormData({ name: '', description: '', price: '', quantity: '', category: '' });
     }
   }, [initialData, isOpen]);
 
   const validate = () => {
     const newErrors = {};
-    
+
     if (!formData.name?.trim()) {
       newErrors.name = 'Product name is required';
     }
-    
+
     if (!formData.price) {
       newErrors.price = 'Price is required';
     } else if (parseFloat(formData.price) <= 0) {
       newErrors.price = 'Price must be greater than 0';
     }
-    
+
     if (!formData.quantity && formData.quantity !== '0') {
       newErrors.quantity = 'Quantity is required';
     } else if (parseInt(formData.quantity) < 0) {
       newErrors.quantity = 'Quantity must be greater than or equal to 0';
     }
-    
+
+    if (!formData.category) {
+      newErrors.category = 'Category is required';
+    }
+
     return newErrors;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const validationErrors = validate();
-    
+
     if (Object.keys(validationErrors).length === 0) {
       onSubmit({
         name: formData.name.trim(),
         description: formData.description?.trim() || '',
         price: parseFloat(formData.price),
-        quantity: parseInt(formData.quantity)
+        quantity: parseInt(formData.quantity),
+        category: formData.category
       });
     } else {
       setErrors(validationErrors);
@@ -77,7 +86,7 @@ export default function ProductForm({ onSubmit, onCancel, initialData, isOpen })
           <h3>{initialData ? 'Edit Product' : 'Add New Product'}</h3>
           <button className="btn-close" onClick={onCancel} type="button">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </button>
         </div>
@@ -95,7 +104,7 @@ export default function ProductForm({ onSubmit, onCancel, initialData, isOpen })
               />
               {errors.name && <span className="error-message">{errors.name}</span>}
             </div>
-            
+
             <div className="form-group">
               <textarea
                 id="description"
@@ -105,7 +114,7 @@ export default function ProductForm({ onSubmit, onCancel, initialData, isOpen })
                 rows="4"
               />
             </div>
-            
+
             <div className="form-row">
               <div className="form-group">
                 <input
@@ -119,7 +128,7 @@ export default function ProductForm({ onSubmit, onCancel, initialData, isOpen })
                 />
                 {errors.price && <span className="error-message">{errors.price}</span>}
               </div>
-              
+
               <div className="form-group">
                 <input
                   id="quantity"
@@ -131,6 +140,21 @@ export default function ProductForm({ onSubmit, onCancel, initialData, isOpen })
                 />
                 {errors.quantity && <span className="error-message">{errors.quantity}</span>}
               </div>
+            </div>
+
+            <div className="form-group">
+              <select
+                id="category"
+                value={formData.category}
+                onChange={(e) => handleChange('category', e.target.value)}
+                className={errors.category ? 'error' : ''}
+              >
+                <option value="">Select Category *</option>
+                {categories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+              {errors.category && <span className="error-message">{errors.category}</span>}
             </div>
           </div>
 

@@ -1,49 +1,56 @@
+# NOTE: Oracle and PostgreSQL commented out - using H2 for lightweight testing
+# Uncomment database services if you need production-like environment
+
 services:
-  # Oracle Database for Authentication
-  oracle-db:
-    image: container-registry.oracle.com/database/express:21.3.0-xe
-    container_name: flogin-oracle
-    ports:
-      - "1521:1521"
-      - "5500:5500"
-    environment:
-      - ORACLE_PWD=OraclePassword123
-      - ORACLE_CHARACTERSET=AL32UTF8
-    volumes:
-      - oracle-data:/opt/oracle/oradata
-      - ./init-scripts/oracle:/opt/oracle/scripts/startup
-    healthcheck:
-      test: ["CMD", "sqlplus", "-L", "sys/OraclePassword123@//localhost:1521/XE as sysdba", "@/dev/null"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
-    networks:
-      - flogin-network
+  # ============================================
+  # ORACLE DATABASE - COMMENTED OUT FOR H2 USAGE
+  # ============================================
+  # oracle-db:
+  #   image: container-registry.oracle.com/database/express:21.3.0-xe
+  #   container_name: flogin-oracle
+  #   ports:
+  #     - "1521:1521"
+  #     - "5500:5500"
+  #   environment:
+  #     - ORACLE_PWD=OraclePassword123
+  #     - ORACLE_CHARACTERSET=AL32UTF8
+  #   volumes:
+  #     - oracle-data:/opt/oracle/oradata
+  #     - ./init-scripts/oracle:/opt/oracle/scripts/startup
+  #   healthcheck:
+  #     test: ["CMD", "sqlplus", "-L", "sys/OraclePassword123@//localhost:1521/XE as sysdba", "@/dev/null"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 5
+  #     start_period: 60s
+  #   networks:
+  #     - flogin-network
 
-  # PostgreSQL Database for Products
-  postgres-db:
-    image: postgres:16-alpine
-    container_name: flogin-postgres
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=product_user
-      - POSTGRES_PASSWORD=ProductPassword123
-      - POSTGRES_DB=products
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-      - ./init-scripts/postgres:/docker-entrypoint-initdb.d
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U product_user -d products"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-    networks:
-      - flogin-network
+  # ================================================
+  # POSTGRESQL DATABASE - COMMENTED OUT FOR H2 USAGE
+  # ================================================
+  # postgres-db:
+  #   image: postgres:16-alpine
+  #   container_name: flogin-postgres
+  #   ports:
+  #     - "5432:5432"
+  #   environment:
+  #     - POSTGRES_USER=product_user
+  #     - POSTGRES_PASSWORD=ProductPassword123
+  #     - POSTGRES_DB=products
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #     - ./init-scripts/postgres:/docker-entrypoint-initdb.d
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U product_user -d products"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 10s
+  #   networks:
+  #     - flogin-network
 
-  # Backend Spring Boot Application
+  # Backend Spring Boot Application (using H2 in-memory database)
   backend:
     build:
       context: ./backend
@@ -52,24 +59,14 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - AUTH_DB_URL=jdbc:oracle:thin:@oracle-db:1521/XEPDB1
-      - AUTH_DB_USERNAME=auth_user
-      - AUTH_DB_PASSWORD=AuthPassword123
-      - PRODUCT_DB_URL=jdbc:postgresql://postgres-db:5432/products
-      - PRODUCT_DB_USERNAME=product_user
-      - PRODUCT_DB_PASSWORD=ProductPassword123
-    depends_on:
-      oracle-db:
-        condition: service_healthy
-      postgres-db:
-        condition: service_healthy
+      - SPRING_PROFILES_ACTIVE=dev  # Using H2 database instead of Oracle/PostgreSQL
+    # No database dependencies needed - using H2 in-memory
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 60s
+      start_period: 30s  # Faster startup without waiting for databases
     networks:
       - flogin-network
     restart: unless-stopped
@@ -95,11 +92,11 @@ services:
       - flogin-network
     restart: unless-stopped
 
-volumes:
-  oracle-data:
-    driver: local
-  postgres-data:
-    driver: local
+# volumes:
+#   oracle-data:
+#     driver: local
+#   postgres-data:
+#     driver: local
 
 networks:
   flogin-network:

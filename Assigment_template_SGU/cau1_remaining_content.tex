@@ -1,0 +1,598 @@
+% INSERT NỘI DUNG NÀY VÀO ASSIGNMENT_REPORT.TEX TẠI LINE 376
+% (sau "\newpage" và trước "%%%%%%%%% Unit Testing - Câu 2")
+
+\subsubsection{Thiết kế Test Cases Chi tiết (5 điểm)}
+
+\textbf{TC\_LOGIN\_001: Login Success - Happy Path}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_001 \\ \hline
+\textbf{Test Name} & Đăng nhập thành công với username và password hợp lệ \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Feature} & Authentication - Login \\ \hline
+\textbf{Preconditions} & 
+\begin{itemize}
+    \item User account đã tồ tại: username=\texttt{testuser}, password=\texttt{Test123}
+    \item Backend API running on port 8081
+    \item Frontend running on port 8080
+    \item Database Oracle accessible
+\end{itemize} \\ \hline
+\textbf{Test Data} & Username: \texttt{testuser} \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{http://localhost:8080/login}
+    \item Trong username field, input: \texttt{testuser}
+    \item Trong password field, input: \texttt{Test123}
+    \item Click "Sign In" button
+    \item Wait for API response (max 3 seconds)
+    \item Verify localStorage has token
+    \item Verify URL changed to \texttt{/} or \texttt{/home}
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & 
+\begin{itemize}
+    \item API POST \texttt{/api/auth/login} returns HTTP 200 OK
+    \item Response body contains: \texttt{\{message, userId, username, fullName, token\}}
+    \item Token được lưu vào \texttt{localStorage.getItem('token')}
+    \item Browser redirect đến home page (\texttt{/})
+    \item User menu/avatar visible ở header
+    \item No error messages displayed
+\end{itemize} \\ \hline
+\textbf{Actual Result} & (Để trống - chạy test mới điền) \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{Test Case TC\_LOGIN\_001}
+\end{table}
+
+\vspace{0.5cm}
+
+\textbf{TC\_LOGIN\_003: Validation Error - Username Empty}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_003 \\ \hline
+\textbf{Test Name} & Validation error khi username để trống \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Preconditions} & 
+\begin{itemize}
+    \item Frontend running
+    \item Login page accessible
+\end{itemize} \\ \hline
+\textbf{Test Data} & Username: (empty) \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to login page
+    \item Leave username field empty (do not type anything)
+    \item Input password: \texttt{Test123}
+    \item Click "Sign In" button
+    \item Observer error message below username field
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & 
+\begin{itemize}
+    \item Client-side validation blocks form submission
+    \item Error message hiển thị: "Username is required"
+    \item Message xuất hiện dưới username input field
+    \item Error message có màu đỏ (error styling)
+    \item API \texttt{/api/auth/login} KHÔNG được gọi (verify trong Network tab)
+    \item User vẫn ở trang login (không redirect)
+\end{itemize} \\ \hline
+\textbf{Actual Result} & (Để trống) \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{Test Case TC\_LOGIN\_003}
+\end{table}
+
+\newpage
+
+\textbf{TC\_LOGIN\_010: Validation Error - Password Empty}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_010 \\ \hline
+\textbf{Test Name} & Validation error khi password để trống \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Username: \texttt{testuser} \newline Password: (empty) \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to login page
+    \item Input username: \texttt{testuser}
+    \item Leave password field empty
+    \item Click "Sign In" button
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & 
+\begin{itemize}
+    \item Validation error: "Password is required"
+    \item Error displayed below password field
+    \item Form submission blocked
+    \item API not called
+\end{itemize} \\ \hline
+\textbf{Actual Result} & (Để trống) \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{Test Case TC\_LOGIN\_010}
+\end{table}
+
+\vspace{0.5cm}
+
+\textbf{TC\_LOGIN\_017: Authentication Failure - Username Not Found}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_017 \\ \hline
+\textbf{Test Name} & Authentication failed - Username không tồn tại trong database \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Preconditions} & 
+\begin{itemize}
+    \item Backend API running và connected tới Oracle DB
+    \item Username \texttt{nonexistentuser} KHÔNG tồn tại trong DB
+\end{itemize} \\ \hline
+\textbf{Test Data} & Username: \texttt{nonexistentuser} \newline Password: \texttt{Any123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to login page
+    \item Input username: \texttt{nonexistentuser}
+    \item Input password: \texttt{Any123}
+    \item Click "Sign In" button
+    \item Wait for API response
+    \item Observe error message
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & 
+\begin{itemize}
+    \item API POST \texttt{/api/auth/login} returns HTTP 401 Unauthorized
+    \item Response body contains error: "Invalid credentials" (không reveal cụ thể username hay password sai - security best practice)
+    \item Error message displayed trên UI
+    \item localStorage KHÔNG có token
+    \item User vẫn ở trang login
+\end{itemize} \\ \hline
+\textbf{Actual Result} & (Để trống) \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{Test Case TC\_LOGIN\_017}
+\end{table}
+
+\newpage
+
+\textbf{TC\_LOGIN\_008: Validation Error - Username Invalid Characters}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_008 \\ \hline
+\textbf{Test Name} & Validation error - Username chứa ký tự không hợp lệ \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Username: \texttt{test@user} (có ký tự @) \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to login page
+    \item Input username: \texttt{test@user}
+    \item Input password: \texttt{Test123}
+    \item Click "Sign In" button
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & 
+\begin{itemize}
+    \item Client validation error: "Username can only contain letters, numbers, dots, hyphens, and underscores"
+    \item Error message hiển thị dưới username field
+    \item Form submission blocked
+    \item API not called
+\end{itemize} \\ \hline
+\textbf{Actual Result} & (Để trống) \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{Test Case TC\_LOGIN\_008}
+\end{table}
+
+\textbf{Tổng kết Câu 1.1}:
+\begin{itemize}
+    \item \textbf{Requirements analysis}: ✓ Đầy đủ (validation rules, auth flow, error handling)
+    \item \textbf{Test scenarios}: ✓ 20 scenarios (vượt yêu cầu 10+)
+    \item \textbf{Priority classification}: ✓ Critical/High/Medium/Low với giải thích rõ ràng
+    \item \textbf{Detailed test cases}: ✓ 5 test cases chi tiết theo template
+\end{itemize}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Câu 1.2: Product Management - Phân tích và Thiết kế Test Cases (10 điểm)}
+
+\subsubsection{Phân tích Yêu cầu Chức năng (2 điểm)}
+
+\textbf{A. CRUD Operations}
+
+Hệ thống Product Management hỗ trợ đầy đủ CRUD operations qua REST API:
+
+\textbf{CREATE - Tạo sản phẩm mới}:
+\begin{itemize}
+    \item Endpoint: \texttt{POST /api/products}
+    \item Request body: \texttt{ProductRequest} DTO với các fields: name, description, price, quantity, category
+    \item Response: HTTP 201 Created với \texttt{ProductResponse} chứa product vừa tạo (bao gồm generated ID)
+    \item Validation: Jakarta Validation trên tất cả required fields
+\end{itemize}
+
+\textbf{READ - Đọc sản phẩm}:
+\begin{itemize}
+    \item \texttt{GET /api/products}: Lấy tất cả products (trả về List\textless{}ProductResponse\textgreater{})
+    \item \texttt{GET /api/products/\{id\}}: Lấy 1 product theo ID
+    \item Response: HTTP 200 OK hoặc HTTP 404 Not Found nếu ID không tồn tại
+\end{itemize}
+
+\textbf{UPDATE - Cập nhật sản phẩm}:
+\begin{itemize}
+    \item Endpoint: \texttt{PUT /api/products/\{id\}}
+    \item Request body: \texttt{ProductRequest} với dữ liệu mới
+    \item Response: HTTP 200 OK với updated product, hoặc HTTP 404 nếu ID không tồn tại
+\end{itemize}
+
+\textbf{DELETE - Xóa sản phẩm}:
+\begin{itemize}
+    \item Endpoint: \texttt{DELETE /api/products/\{id\}}
+    \item Response: HTTP 204 No Content nếu thành công, HTTP 404 nếu ID không tồn tại
+\end{itemize}
+
+\textbf{B. Validation Rules}
+
+Dựa trên \texttt{ProductRequest.java} và \texttt{validators.js}:
+
+\textbf{Product Name}:
+\begin{itemize}
+    \item \textbf{Required}: @NotBlank - không được null/empty/whitespace
+    \item \textbf{Length}: Min 3 chars, Max 100 chars (sau khi trim)
+    \item \textbf{Validation}: \texttt{@Size(min = 3, max = 100)}
+\end{itemize}
+
+\textbf{Description}:
+\begin{itemize}
+    \item \textbf{Optional}: Có thể null hoặc empty
+    \item \textbf{Max length}: 500 ký tự
+    \item \textbf{Validation}: \texttt{@Size(max = 500)}
+\end{itemize}
+
+\textbf{Price}:
+\begin{itemize}
+    \item \textbf{Type}: BigDecimal (để tránh floating-point errors)
+    \item \textbf{Required}: @NotNull
+    \item \textbf{Min}: \textgreater{} 0 (\texttt{@DecimalMin("0.01")})
+    \item \textbf{Max}: \textless{}= 999,999,999 (\texttt{@DecimalMax("999999999")})
+\end{itemize}
+
+\textbf{Quantity}:
+\begin{itemize}
+    \item \textbf{Type}: Integer
+    \item \textbf{Required}: @NotNull
+    \item \textbf{Min}: \textgreater{}= 0 (\texttt{@Min(0)})
+    \item \textbf{Max}: \textless{}= 99,999 (\texttt{@Max(99999)})
+\end{itemize}
+
+\textbf{Category}:
+\begin{itemize}
+    \item \textbf{Required}: @NotBlank
+    \item \textbf{Note}: Theo đề bài phải thuộc danh sách categories có sẵn (trong implement thực tế có thể dùng Enum hoặc validate against DB)
+\end{itemize}
+
+\newpage
+
+\subsubsection{Test Scenarios và Phân loại Priority (2 + 1 điểm)}
+
+Tổng cộng: \textbf{27 test scenarios}
+
+\textbf{Priority Distribution}:
+\begin{itemize}
+    \item \textbf{Critical} (8 scenarios): Core CRUD operations happy paths
+    \item \textbf{High} (11 scenarios): Validation errors, common failures
+    \item \textbf{Medium} (8 scenarios): Boundary tests, edge cases
+\end{itemize}
+
+\begin{table}[h!]
+\centering
+\tiny
+\begin{tabular}{|p{2cm}|p{4.5cm}|p{1.5cm}|p{4.5cm}|}
+\hline
+\textbf{Scenario ID} & \textbf{Mô tả} & \textbf{Priority} & \textbf{Expected Result} \\ \hline
+
+\multicolumn{4}{|c|}{\textbf{CREATE - HAPPY PATH}} \\ \hline
+TS\_PROD\_001 & Create product với tất cả fields hợp lệ & Critical & HTTP 201, product created \\ \hline
+TS\_PROD\_002 & Create product với description rỗng (optional) & Medium & HTTP 201, description = "" \\ \hline
+
+\multicolumn{4}{|c|}{\textbf{CREATE - VALIDATION ERRORS}} \\ \hline
+TS\_PROD\_003 & Name rỗng/null & High & HTTP 400, "Name is required" \\ \hline
+TS\_PROD\_004 & Name \textless{} 3 chars (e.g. "AB") & High & HTTP 400, "Min 3 characters" \\ \hline
+TS\_PROD\_005 & Name = 3 chars (boundary min) & Medium & HTTP 201, validation pass \\ \hline
+TS\_PROD\_006 & Name = 100 chars (boundary max) & Medium & HTTP 201, validation pass \\ \hline
+TS\_PROD\_007 & Name \textgreater{} 100 chars (101 chars) & High & HTTP 400, "Max 100 characters" \\ \hline
+TS\_PROD\_008 & Price = 0 & High & HTTP 400, "Price must \textgreater{} 0" \\ \hline
+TS\_PROD\_009 & Price negative (-100) & High & HTTP 400, "Price must \textgreater{} 0" \\ \hline
+TS\_PROD\_010 & Price = 0.01 (boundary min) & Medium & HTTP 201, validation pass \\ \hline
+TS\_PROD\_011 & Price = 999,999,999 (max) & Medium & HTTP 201, validation pass \\ \hline
+TS\_PROD\_012 & Price \textgreater{} 999,999,999 (1B) & High & HTTP 400, "Max 999,999,999" \\ \hline
+TS\_PROD\_013 & Quantity negative (-1) & High & HTTP 400, "Min 0" \\ \hline
+TS\_PROD\_014 & Quantity = 0 (boundary min) & Medium & HTTP 201, out of stock OK \\ \hline
+TS\_PROD\_015 & Quantity = 99,999 (max) & Medium & HTTP 201, validation pass \\ \hline
+TS\_PROD\_016 & Quantity \textgreater{} 99,999 (100k) & High & HTTP 400, "Max 99,999" \\ \hline
+TS\_PROD\_017 & Description \textgreater{} 500 chars & High & HTTP 400, "Max 500 chars" \\ \hline
+TS\_PROD\_018 & Category rỗng/null & High & HTTP 400, "Category required" \\ \hline
+
+\multicolumn{4}{|c|}{\textbf{READ OPERATIONS}} \\ \hline
+TS\_PROD\_019 & GET all products - list có data & Critical & HTTP 200, array of products \\ \hline
+TS\_PROD\_020 & GET all products - empty list & Medium & HTTP 200, empty array [] \\ \hline
+TS\_PROD\_021 & GET product by ID - ID tồn tại & Critical & HTTP 200, product object \\ \hline
+TS\_PROD\_022 & GET product by ID - ID không tồn tại & Critical & HTTP 404, "Product not found" \\ \hline
+
+\multicolumn{4}{|c|}{\textbf{UPDATE OPERATIONS}} \\ \hline
+TS\_PROD\_023 & Update product với dữ liệu hợp lệ & Critical & HTTP 200, updated product \\ \hline
+TS\_PROD\_024 & Update product không tồn tại (ID invalid) & Critical & HTTP 404, "Not found" \\ \hline
+TS\_PROD\_025 & Update với validation error (name empty) & High & HTTP 400, validation error \\ \hline
+
+\multicolumn{4}{|c|}{\textbf{DELETE OPERATIONS}} \\ \hline
+TS\_PROD\_026 & Delete product thành công & Critical & HTTP 204, no content \\ \hline
+TS\_PROD\_027 & Delete product không tồn tại & Critical & HTTP 404, "Not found" \\ \hline
+
+\end{tabular}
+\caption{Product Management Test Scenarios}
+\end{table}
+
+\textbf{Giải thích Phân loại Priority}:
+\begin{itemize}
+    \item \textbf{Critical}: CRUD operations happy paths và error handling cơ bản (404). Đây là core functionality.
+    \item \textbf{High}: Validation errors mà user thường gặp (required fields, min/max violations).
+    \item \textbf{Medium}: Boundary conditions và edge cases để đảm bảo robustness.
+\end{itemize}
+
+\newpage
+
+\subsubsection{Thiết kế Test Cases Chi tiết (5 điểm)}
+
+\textbf{TC\_PRODUCT\_001: CREATE Product Success}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_001 \\ \hline
+\textbf{Test Name} & Tạo sản phẩm mới thành công với đầy đủ thông tin hợp lệ \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Feature} & Product Management - CREATE \\ \hline
+\textbf{Preconditions} & 
+\begin{itemize}
+    \item User đã đăng nhập (có token)
+    \item Backend API running (port 8081)
+    \item PostgreSQL database accessible
+    \item Frontend running (port 8080)
+\end{itemize} \\ \hline
+\textbf{Test Data} & 
+Name: \texttt{Laptop Dell XPS 15} \newline
+Description: \texttt{High-end laptop for developers with 32GB RAM} \newline
+Price: \texttt{35000000} (35 triệu VND) \newline
+Quantity: \texttt{10} \newline
+Category: \texttt{Electronics} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to Products page (\texttt{/products})
+    \item Click "Add New Product" button
+    \item Modal/Form hiển thị
+    \item Input Name: \texttt{Laptop Dell XPS 15}
+    \item Input Description: \texttt{High-end laptop for developers with 32GB RAM}
+    \item Input Price: \texttt{35000000}
+    \item Input Quantity: \texttt{10}
+    \item Select Category: \texttt{Electronics}
+    \item Click "Create Product" / "Save" button
+    \item Wait for API response
+    \item Verify product xuất hiện trong danh sách
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & 
+\begin{itemize}
+    \item API POST \texttt{/api/products} returns HTTP 201 Created
+    \item Response body chứa product vừa tạo với generated ID
+    \item Success notification hiển thị: "Product created successfully"
+    \item Modal/Form đóng lại
+    \item Product xuất hiện trong product list
+    \item Tất cả thông tin hiển thị đúng (name, price, quantity)
+\end{itemize} \\ \hline
+\textbf{Actual Result} & (Để trống) \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{Test Case TC\_PRODUCT\_001}
+\end{table}
+
+\newpage
+
+\textbf{TC\_PRODUCT\_021: READ Product by ID Success}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_021 \\ \hline
+\textbf{Test Name} & Lấy thông tin chi tiết sản phẩm theo ID thành công \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Feature} & Product Management - READ \\ \hline
+\textbf{Preconditions} & 
+\begin{itemize}
+    \item Product với ID = 1 đã tồn tại trong database
+    \item Backend API running
+\end{itemize} \\ \hline
+\textbf{Test Data} & Product ID: \texttt{1} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Gửi GET request đến \texttt{/api/products/1}
+    \item Hoặc: Click vào product trong danh sách để xem details
+    \item Wait for API response
+    \item Verify response data
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & 
+\begin{itemize}
+    \item API GET \texttt{/api/products/1} returns HTTP 200 OK
+    \item Response body chứa product object với:
+    \begin{itemize}
+        \item \texttt{id: 1}
+        \item \texttt{name}: Tên product
+        \item \texttt{description}: Mô tả (có thể empty)
+        \item \texttt{price}: Giá hợp lệ
+        \item \texttt{quantity}: Số lượng
+        \item \texttt{category}: Category name
+    \end{itemize}
+    \item Tất cả fields đều có giá trị đúng type
+\end{itemize} \\ \hline
+\textbf{Actual Result} & (Để trống) \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{Test Case TC\_PRODUCT\_021}
+\end{table}
+
+\vspace{0.5cm}
+
+\textbf{TC\_PRODUCT\_023: UPDATE Product Success}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_023 \\ \hline
+\textbf{Test Name} & Cập nhật thông tin sản phẩm thành công \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Feature} & Product Management - UPDATE \\ \hline
+\textbf{Preconditions} & 
+\begin{itemize}
+    \item Product với ID = 5 exists: \{name: "Old Name", price: 1000000, quantity: 5\}
+    \item User đã login
+\end{itemize} \\ \hline
+\textbf{Test Data} & 
+Product ID: \texttt{5} \newline
+Updated fields: \newline
+\quad Name: \texttt{Updated Product Name} \newline
+\quad Price: \texttt{1500000} \newline
+\quad Quantity: \texttt{20} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to product list
+    \item Click "Edit" button cho product ID = 5
+    \item Edit form hiển thị với current values
+    \item Change name to \texttt{Updated Product Name}
+    \item Change price to \texttt{1500000}
+    \item Change quantity to \texttt{20}
+    \item Click "Update" / "Save" button
+    \item Wait for API response
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & 
+\begin{itemize}
+    \item API PUT \texttt{/api/products/5} returns HTTP 200 OK
+    \item Response chứa updated product
+    \item Success message: "Product updated successfully"
+    \item Form đóng lại
+    \item Product trong list hiển thị thông tin mới (name, price, quantity updated)
+\end{itemize} \\ \hline
+\textbf{Actual Result} & (Để trống) \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{Test Case TC\_PRODUCT\_023}
+\end{table}
+
+\newpage
+
+\textbf{TC\_PRODUCT\_026: DELETE Product Success}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_026 \\ \hline
+\textbf{Test Name} & Xóa sản phẩm thành công \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Feature} & Product Management - DELETE \\ \hline
+\textbf{Preconditions} & 
+\begin{itemize}
+    \item Product với ID = 10 tồn tại trong database
+    \item User có quyền delete product
+\end{itemize} \\ \hline
+\textbf{Test Data} & Product ID: \texttt{10} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to products page
+    \item Locate product với ID = 10 trong danh sách
+    \item Click "Delete" button cho product này
+    \item Confirmation dialog xuất hiện
+    \item Click "Confirm" / "Yes" để xác nhận xóa
+    \item Wait for API response
+    \item Verify product biến mất khỏi danh sách
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & 
+\begin{itemize}
+    \item API DELETE \texttt{/api/products/10} returns HTTP 204 No Content
+    \item Success message: "Product deleted successfully"
+    \item Product ID = 10 không còn trong danh sách
+    \item Nếu GET \texttt{/api/products/10} sẽ trả về HTTP 404 Not Found
+\end{itemize} \\ \hline
+\textbf{Actual Result} & (Để trống) \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{Test Case TC\_PRODUCT\_026}
+\end{table}
+
+\vspace{0.5cm}
+
+\textbf{TC\_PRODUCT\_008: Validation Error - Price Invalid (\textless{}= 0)}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_008 \\ \hline
+\textbf{Test Name} & Validation error khi price = 0 hoặc negative \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Feature} & Product Management - CREATE Validation \\ \hline
+\textbf{Test Data} & 
+Name: \texttt{Test Product} \newline
+Price: \texttt{0} (hoặc \texttt{-100}) \newline
+Quantity: \texttt{10} \newline
+Category: \texttt{Electronics} \\ \hline
+\textbf{Test Steps} &  
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input name: \texttt{Test Product}
+    \item Input price: \texttt{0}
+    \item Input quantity: \texttt{10}
+    \item Select category: \texttt{Electronics}
+    \item Click "Create Product"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & 
+\begin{itemize}
+    \item Client validation (nếu có) hoặc API validation triggers
+    \item Error message: "Price must be greater than 0"
+    \item Error hiển thị dưới/gần price field
+    \item Form submission blocked (hoặc API returns HTTP 400)
+    \item Product KHÔNG được tạo
+\end{itemize} \\ \hline
+\textbf{Actual Result} & (Để trống) \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{Test Case TC\_PRODUCT\_008}
+\end{table}
+
+\textbf{Tổng kết Câu 1.2}:
+\begin{itemize}
+    \item \textbf{CRUD analysis}: ✓ Đầy đủ (CREATE, READ, UPDATE, DELETE + validation rules)
+    \item \textbf{Test scenarios}: ✓ 27 scenarios (vượt yêu cầu 10+)
+    \item \textbf{Priority classification}: ✓ Critical/High/Medium với giải thích
+    \item \textbf{Detailed test cases}: ✓ 5 test cases covering all CRUD operations
+\end{itemize}
+
+\newpage
+
+% KẾT THÚC NỘI DUNG CHÈN - Phần tiếp theo là section Unit Testing - Câu 2

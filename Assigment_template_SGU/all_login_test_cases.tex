@@ -1,0 +1,451 @@
+% PHẦN 1: TẤT CẢ 20 LOGIN DETAILED TEST CASES
+% Insert vào sau dòng "\subsubsection{Thiết kế Test Cases Chi tiết (5 điểm)}" của Login
+
+\textbf{TC\_LOGIN\_001: Login Success - Happy Path}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_001 \\ \hline
+\textbf{Test Name} & Đăng nhập thành công với username và password hợp lệ \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Username: \texttt{testuser} \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input username: \texttt{testuser}
+    \item Input password: \texttt{Test123}
+    \item Click "Sign In" button
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 200 OK, token returned, redirect to home page \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_001}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_002 \\ \hline
+\textbf{Test Name} & Login với username có ký tự đặc biệt hợp lệ \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Username: \texttt{test.user\_name-123} \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input username với dots, underscores, hyphens
+    \item Input valid password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 200 OK, login success \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_002}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_003 \\ \hline
+\textbf{Test Name} & Username rỗng (empty string) \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Username: (empty) \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Leave username empty
+    \item Input password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation error: "Username is required" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_003}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_004 \\ \hline
+\textbf{Test Name} & Username = 2 chars (boundary min-1) \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Username: \texttt{ab} \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input 2-character username
+    \item Input valid password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation error: "Username must be at least 3 characters" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_004}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_005 \\ \hline
+\textbf{Test Name} & Username = 3 chars (boundary min valid) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Username: \texttt{abc} \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input 3-character username
+    \item Input valid password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation pass, proceed to authentication \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_005}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_006 \\ \hline
+\textbf{Test Name} & Username = 50 chars (boundary max valid) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Username: 50 ký tự hợp lệ \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input 50-character username
+    \item Input valid password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation pass, proceed to authentication \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_006}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_007 \\ \hline
+\textbf{Test Name} & Username = 51 chars (boundary max+1) \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Username: 51 ký tự \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input 51-character username
+    \item Input valid password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation error: "Username must not exceed 50 characters" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_007}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_008 \\ \hline
+\textbf{Test Name} & Username chứa ký tự không hợp lệ (@, \#, space) \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Username: \texttt{test@user} \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input username với ký tự @
+    \item Input valid password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation error: "Username can only contain letters, numbers, dots, hyphens, and underscores" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_008}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_009 \\ \hline
+\textbf{Test Name} & Username có khoảng trắng đầu/cuối \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Username: \texttt{  testuser  } \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input username với spaces đầu/cuối
+    \item Input valid password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Username được trim, validation pass (nếu sau trim còn hợp lệ) \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_009}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_010 \\ \hline
+\textbf{Test Name} & Password rỗng (empty) \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Username: \texttt{testuser} \newline Password: (empty) \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input valid username
+    \item Leave password empty
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation error: "Password is required" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_010}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_011 \\ \hline
+\textbf{Test Name} & Password = 5 chars (boundary min-1) \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Username: \texttt{testuser} \newline Password: \texttt{Ab1cd} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input valid username
+    \item Input 5-character password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation error: "Password must be at least 6 characters" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_011}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_012 \\ \hline
+\textbf{Test Name} & Password = 6 chars hợp lệ (has letter+number) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Username: \texttt{testuser} \newline Password: \texttt{Test12} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input valid username
+    \item Input 6-character password với letter+number
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation pass \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_012}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_013 \\ \hline
+\textbf{Test Name} & Password = 100 chars hợp lệ (boundary max) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Username: \texttt{testuser} \newline Password: 100 ký tự với letter+number \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input valid username
+    \item Input 100-character password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation pass \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_013}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_014 \\ \hline
+\textbf{Test Name} & Password = 101 chars (boundary max+1) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Username: \texttt{testuser} \newline Password: 101 ký tự \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input valid username
+    \item Input 101-character password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation error: "Password must not exceed 100 characters" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_014}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_015 \\ \hline
+\textbf{Test Name} & Password chỉ có chữ, không có số \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Username: \texttt{testuser} \newline Password: \texttt{abcdefgh} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input valid username
+    \item Input password only letters
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation error: "Password must contain at least one number" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_015}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_016 \\ \hline
+\textbf{Test Name} & Password chỉ có số, không có chữ \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Username: \texttt{testuser} \newline Password: \texttt{12345678} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input valid username
+    \item Input password only numbers
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation error: "Password must contain at least one letter" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_016}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_017 \\ \hline
+\textbf{Test Name} & Username không tồn tại trong database \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Username: \texttt{nonexistentuser} \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input non-existent username
+    \item Input any password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 401, "Invalid credentials" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_017}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_018 \\ \hline
+\textbf{Test Name} & Password sai (username đúng) \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Username: \texttt{testuser} \newline Password: \texttt{WrongPass1} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input existing username
+    \item Input wrong password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 401, "Invalid credentials" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_018}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_019 \\ \hline
+\textbf{Test Name} & Cả username và password đều rỗng \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Username: (empty) \newline Password: (empty) \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Leave both fields empty
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Multiple validation errors shown for both fields \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_019}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_020 \\ \hline
+\textbf{Test Name} & SQL Injection attempt trong username \\ \hline
+\textbf{Priority} & Low \\ \hline
+\textbf{Test Data} & Username: \texttt{' OR '1'='1} \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input SQL injection string
+    \item Input any password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Input sanitized, no DB exploit, validation error hoặc auth failed \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_020}
+\end{table}
+
+\newpage

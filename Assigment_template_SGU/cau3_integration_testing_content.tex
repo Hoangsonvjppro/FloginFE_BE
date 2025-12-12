@@ -1,0 +1,549 @@
+% NỘI DUNG CÂU 3 - INTEGRATION TESTING
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Integration Testing - Câu 3 (20 điểm)}
+
+\subsection{Câu 3.1: Login - Integration Testing (10 điểm)}
+
+\subsubsection{Frontend Component Integration (5 điểm)}
+
+\textbf{a) Test rendering và user interactions (2 điểm)}:
+
+\textbf{File}: \texttt{src/tests/integration/LoginFlow.test.jsx} (553 dòng)
+
+\begin{verbatim}
+describe('User Interaction Flow', () => {
+    // Test switching to register form
+    it('should switch to register form when clicking sign up', () => {
+        render(
+            <LoginForm
+                onSubmit={mockOnSubmit}
+                onSwitchToRegister={mockOnSwitchToRegister}
+            />
+        );
+
+        const signUpButton = screen.getByRole('button', 
+            { name: /sign up/i });
+        fireEvent.click(signUpButton);
+
+        expect(mockOnSwitchToRegister).toHaveBeenCalledTimes(1);
+    });
+
+    // Test Google login
+    it('should trigger Google login when clicking Google button', () => {
+        render(
+            <LoginForm
+                onSubmit={mockOnSubmit}
+                onGoogleLogin={mockOnGoogleLogin}
+            />
+        );
+
+        const googleButton = screen.getByRole('button', 
+            { name: /sign in with google/i });
+        fireEvent.click(googleButton);
+
+        expect(mockOnGoogleLogin).toHaveBeenCalledTimes(1);
+    });
+
+    // Test error clearing when user types
+    it('should clear validation errors when user types', async () => {
+        render(<LoginForm onSubmit={mockOnSubmit} />);
+
+        // Trigger error
+        fireEvent.click(getSubmitButton());
+        await waitFor(() => {
+            expect(screen.getByText(/username is required/i))
+                .toBeInTheDocument();
+        });
+
+        // Start typing - error should clear
+        fireEvent.change(screen.getByPlaceholderText(/username/i), {
+            target: { value: 'a' }
+        });
+
+        await waitFor(() => {
+            expect(screen.queryByText(/username is required/i))
+                .not.toBeInTheDocument();
+        });
+    });
+});
+\end{verbatim}
+
+\textbf{b) Test form submission và API calls (2 điểm)}:
+
+\begin{verbatim}
+describe('Successful Login Flow', () => {
+    it('should complete login flow with valid credentials', async () => {
+        const mockResponse = {
+            token: 'jwt-token-123',
+            user: { id: 1, username: 'testuser', fullName: 'Test User' }
+        };
+        mockOnSubmit.mockResolvedValue(mockResponse);
+
+        render(
+            <LoginForm
+                onSubmit={mockOnSubmit}
+                onSwitchToRegister={mockOnSwitchToRegister}
+            />
+        );
+
+        // Fill in credentials
+        fireEvent.change(screen.getByPlaceholderText(/username/i), {
+            target: { value: 'testuser' }
+        });
+        fireEvent.change(screen.getByPlaceholderText(/password/i), {
+            target: { value: 'Password123' }
+        });
+
+        // Submit
+        fireEvent.click(getSubmitButton());
+
+        await waitFor(() => {
+            expect(mockOnSubmit).toHaveBeenCalledWith({
+                username: 'testuser',
+                password: 'Password123'
+            });
+        });
+    });
+
+    it('should show loading state during login', async () => {
+        mockOnSubmit.mockImplementation(() => 
+            new Promise(resolve => setTimeout(() => 
+                resolve({ token: 'token' }), 100))
+        );
+
+        render(<LoginForm onSubmit={mockOnSubmit} />);
+
+        fireEvent.change(screen.getByPlaceholderText(/username/i), {
+            target: { value: 'testuser' }
+        });
+        fireEvent.change(screen.getByPlaceholderText(/password/i), {
+            target: { value: 'Password123' }
+        });
+
+        fireEvent.click(getSubmitButton());
+
+        // Should show loading state
+        await waitFor(() => {
+            expect(getSubmitButton()).toBeDisabled();
+            expect(getSubmitButton()).toHaveTextContent(/signing in/i);
+        });
+    });
+});
+\end{verbatim}
+
+\textbf{c) Test error handling và success messages (1 điểm)}:
+
+\begin{verbatim}
+describe('Login Validation Flow', () => {
+    it('should block submission with empty username', async () => {
+        render(<LoginForm onSubmit={mockOnSubmit} />);
+
+        fireEvent.change(screen.getByPlaceholderText(/password/i), {
+            target: { value: 'Password123' }
+        });
+        fireEvent.click(getSubmitButton());
+
+        await waitFor(() => {
+            expect(screen.getByText(/username is required/i))
+                .toBeInTheDocument();
+        });
+        expect(mockOnSubmit).not.toHaveBeenCalled();
+    });
+
+    it('should validate password must contain letter and number', 
+        async () => {
+        render(<LoginForm onSubmit={mockOnSubmit} />);
+
+        fireEvent.change(screen.getByPlaceholderText(/username/i), {
+            target: { value: 'testuser' }
+        });
+        fireEvent.change(screen.getByPlaceholderText(/password/i), {
+            target: { value: 'password' } // No number
+        });
+
+        fireEvent.click(getSubmitButton());
+
+        await waitFor(() => {
+            expect(screen.getByText(/must contain at least one number/i))
+                .toBeInTheDocument();
+        });
+        expect(mockOnSubmit).not.toHaveBeenCalled();
+    });
+});
+\end{verbatim}
+
+\newpage
+
+\subsubsection{Backend API Integration (5 điểm)}
+
+\textbf{a) Test POST /api/auth/login endpoint (3 điểm)}:
+
+\textbf{File}: \texttt{AuthIntegrationTest.java} (414 dòng, 16 test cases)
+
+\begin{verbatim}
+@WebMvcTest(AuthController.class)
+@AutoConfigureMockMvc(addFilters = false)
+@DisplayName("AuthController Integration Tests")
+class AuthIntegrationTest {
+
+    @Autowired private MockMvc mockMvc;
+    @MockBean private AuthService authService;
+    @Autowired private ObjectMapper objectMapper;
+
+    @Test
+    @DisplayName("POST /api/auth/login - Success: 200 OK with token")
+    void login_WithValidCredentials_ShouldReturn200() throws Exception {
+        when(authService.login(any(LoginRequest.class)))
+            .thenReturn(testUser);
+
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(validLoginRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Login successful"))
+                .andExpect(jsonPath("$.token").exists())
+                .andExpect(jsonPath("$.userId").value(testUser.getId()));
+
+        verify(authService, times(1)).login(any(LoginRequest.class));
+    }
+
+    @Test
+    @DisplayName("POST /api/auth/login - Failed: 400 Bad Request")
+    void login_WithInvalidCredentials_ShouldReturn400() throws Exception {
+        when(authService.login(any(LoginRequest.class)))
+            .thenThrow(new BadRequestException("Invalid credentials"));
+
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(validLoginRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                    .value(containsString("Invalid")));
+    }
+
+    @Test
+    @DisplayName("POST /api/auth/login - Validation: Empty username")
+    void login_WithEmptyUsername_ShouldReturn400() throws Exception {
+        LoginRequest invalidRequest = new LoginRequest();
+        invalidRequest.setUsername("");
+        invalidRequest.setPassword("Pass123");
+
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest());
+
+        verify(authService, never()).login(any(LoginRequest.class));
+    }
+}
+\end{verbatim}
+
+\textbf{b) Test response structure và status codes (1 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("POST /api/auth/register - Success: 201 Created")
+void register_WithValidData_ShouldReturn201() throws Exception {
+    when(authService.register(any(RegisterRequest.class)))
+        .thenReturn(newUser);
+
+    mockMvc.perform(post("/api/auth/register")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(validRegisterRequest)))
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.message")
+                .value("User registered successfully"))
+            .andExpect(jsonPath("$.userId").value(newUser.getId()))
+            .andExpect(jsonPath("$.email").value(newUser.getEmail()));
+}
+\end{verbatim}
+
+\textbf{c) Test CORS và headers (1 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("POST /api/auth/login - Edge Case: Malformed JSON")
+void login_WithMalformedJson_ShouldReturn400() throws Exception {
+    mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{invalid json"))
+            .andExpect(status().isBadRequest());
+}
+
+@Test
+@DisplayName("POST - Edge Case: Wrong Content-Type -> 415")
+void register_WithWrongContentType_ShouldReturn415() throws Exception {
+    mockMvc.perform(post("/api/auth/register")
+            .contentType(MediaType.TEXT_PLAIN)
+            .content(objectMapper.writeValueAsString(validRegisterRequest)))
+            .andExpect(status().isUnsupportedMediaType());
+}
+\end{verbatim}
+
+\newpage
+
+\subsection{Câu 3.2: Product - Integration Testing (10 điểm)}
+
+\subsubsection{Frontend Component Integration (5 điểm)}
+
+\textbf{a) Test ProductList component với API (2 điểm)}:
+
+\textbf{File}: \texttt{src/tests/integration/ProductFlow.test.jsx}
+
+\begin{verbatim}
+describe('ProductList Component Integration', () => {
+    it('should fetch and display products from API', async () => {
+        const mockProducts = [
+            { id: 1, name: 'Laptop Dell', price: 15000000, quantity: 10 },
+            { id: 2, name: 'Mouse Logitech', price: 500000, quantity: 50 }
+        ];
+        
+        productService.getProducts.mockResolvedValue(mockProducts);
+
+        render(<ProductList />);
+
+        await waitFor(() => {
+            expect(screen.getByText('Laptop Dell')).toBeInTheDocument();
+            expect(screen.getByText('Mouse Logitech')).toBeInTheDocument();
+        });
+
+        expect(productService.getProducts).toHaveBeenCalled();
+    });
+
+    it('should show loading state while fetching', async () => {
+        productService.getProducts.mockImplementation(() => 
+            new Promise(resolve => setTimeout(resolve, 100)));
+
+        render(<ProductList />);
+
+        expect(screen.getByText(/loading/i)).toBeInTheDocument();
+    });
+
+    it('should show empty message when no products', async () => {
+        productService.getProducts.mockResolvedValue([]);
+
+        render(<ProductList />);
+
+        await waitFor(() => {
+            expect(screen.getByText(/no products/i)).toBeInTheDocument();
+        });
+    });
+});
+\end{verbatim}
+
+\textbf{b) Test ProductForm component (create/edit) (2 điểm)}:
+
+\begin{verbatim}
+describe('ProductForm Integration Tests', () => {
+    it('should create new product successfully', async () => {
+        const mockProduct = { id: 1, name: 'Laptop', price: 15000000 };
+        productService.createProduct.mockResolvedValue(mockProduct);
+
+        render(<ProductForm mode="create" />);
+
+        fireEvent.change(screen.getByLabelText(/name/i), {
+            target: { value: 'Laptop Dell' }
+        });
+        fireEvent.change(screen.getByLabelText(/price/i), {
+            target: { value: '15000000' }
+        });
+        fireEvent.change(screen.getByLabelText(/quantity/i), {
+            target: { value: '10' }
+        });
+
+        fireEvent.click(screen.getByText(/save/i));
+
+        await waitFor(() => {
+            expect(screen.getByText(/success/i)).toBeInTheDocument();
+        });
+        expect(productService.createProduct).toHaveBeenCalled();
+    });
+
+    it('should update existing product', async () => {
+        const existingProduct = { id: 5, name: 'Old Name', price: 100 };
+        productService.updateProduct.mockResolvedValue({
+            ...existingProduct, name: 'New Name'
+        });
+
+        render(<ProductForm mode="edit" product={existingProduct} />);
+
+        fireEvent.change(screen.getByLabelText(/name/i), {
+            target: { value: 'New Name' }
+        });
+        fireEvent.click(screen.getByText(/update/i));
+
+        await waitFor(() => {
+            expect(productService.updateProduct).toHaveBeenCalledWith(
+                5, expect.objectContaining({ name: 'New Name' })
+            );
+        });
+    });
+});
+\end{verbatim}
+
+\textbf{c) Test ProductDetail component (1 điểm)}:
+
+\begin{verbatim}
+describe('ProductDetail Component', () => {
+    it('should fetch and display product details', async () => {
+        const mockProduct = {
+            id: 1, name: 'Laptop Dell XPS', price: 35000000,
+            quantity: 5, description: 'High-end laptop'
+        };
+        productService.getProductById.mockResolvedValue(mockProduct);
+
+        render(<ProductDetail productId={1} />);
+
+        await waitFor(() => {
+            expect(screen.getByText('Laptop Dell XPS')).toBeInTheDocument();
+            expect(screen.getByText('35,000,000')).toBeInTheDocument();
+        });
+    });
+
+    it('should show error for non-existent product', async () => {
+        productService.getProductById.mockRejectedValue(
+            new Error('Product not found'));
+
+        render(<ProductDetail productId={99999} />);
+
+        await waitFor(() => {
+            expect(screen.getByText(/not found/i)).toBeInTheDocument();
+        });
+    });
+});
+\end{verbatim}
+
+\newpage
+
+\subsubsection{Backend API Integration (5 điểm)}
+
+\textbf{File}: \texttt{ProductIntegrationTest.java}
+
+\textbf{a) Test POST /api/products (Create) (1 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("POST /api/products - Create product successfully")
+void createProduct_WithValidData_ShouldReturn201() throws Exception {
+    ProductRequest request = new ProductRequest();
+    request.setName("Laptop Dell");
+    request.setPrice(new BigDecimal("15000000"));
+    request.setQuantity(10);
+    request.setCategory("ELECTRONICS");
+
+    when(productService.createProduct(any()))
+        .thenReturn(productResponse);
+
+    mockMvc.perform(post("/api/products")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.name").value("Laptop Dell"));
+}
+\end{verbatim}
+
+\textbf{b) Test GET /api/products (Read all) (1 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("GET /api/products - Get all products")
+void getAllProducts_ShouldReturn200WithList() throws Exception {
+    List<ProductResponse> products = Arrays.asList(
+        ProductResponse.builder().id(1L).name("Laptop").build(),
+        ProductResponse.builder().id(2L).name("Mouse").build()
+    );
+
+    when(productService.getAllProducts()).thenReturn(products);
+
+    mockMvc.perform(get("/api/products"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(2)))
+            .andExpect(jsonPath("$[0].name").value("Laptop"))
+            .andExpect(jsonPath("$[1].name").value("Mouse"));
+}
+\end{verbatim}
+
+\textbf{c) Test GET /api/products/\{id\} (Read one) (1 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("GET /api/products/{id} - Get product by ID")
+void getProductById_ExistingId_ShouldReturn200() throws Exception {
+    when(productService.getProductById(1L)).thenReturn(productResponse);
+
+    mockMvc.perform(get("/api/products/1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.name").value("Test Product"));
+}
+
+@Test
+@DisplayName("GET /api/products/{id} - Not Found")
+void getProductById_NonExistingId_ShouldReturn404() throws Exception {
+    when(productService.getProductById(99999L))
+        .thenThrow(new NotFoundException("Product not found"));
+
+    mockMvc.perform(get("/api/products/99999"))
+            .andExpect(status().isNotFound());
+}
+\end{verbatim}
+
+\textbf{d) Test PUT /api/products/\{id\} (Update) (1 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("PUT /api/products/{id} - Update product")
+void updateProduct_WithValidData_ShouldReturn200() throws Exception {
+    ProductRequest updateRequest = new ProductRequest();
+    updateRequest.setName("Updated Laptop");
+    updateRequest.setPrice(new BigDecimal("16000000"));
+
+    when(productService.updateProduct(eq(1L), any()))
+        .thenReturn(ProductResponse.builder()
+            .id(1L).name("Updated Laptop").build());
+
+    mockMvc.perform(put("/api/products/1")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(updateRequest)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.name").value("Updated Laptop"));
+}
+\end{verbatim}
+
+\textbf{e) Test DELETE /api/products/\{id\} (Delete) (1 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("DELETE /api/products/{id} - Delete product")
+void deleteProduct_ExistingId_ShouldReturn204() throws Exception {
+    doNothing().when(productService).deleteProduct(1L);
+
+    mockMvc.perform(delete("/api/products/1"))
+            .andExpect(status().isNoContent());
+
+    verify(productService).deleteProduct(1L);
+}
+
+@Test
+@DisplayName("DELETE /api/products/{id} - Not Found")
+void deleteProduct_NonExistingId_ShouldReturn404() throws Exception {
+    doThrow(new NotFoundException("Product not found"))
+        .when(productService).deleteProduct(99999L);
+
+    mockMvc.perform(delete("/api/products/99999"))
+            .andExpect(status().isNotFound());
+}
+\end{verbatim}
+
+\textbf{Tổng kết Câu 3}:
+\begin{itemize}
+    \item \textbf{Frontend Login Integration}: 30+ tests (rendering, submission, validation)
+    \item \textbf{Backend Login Integration}: 16 tests (login, register, status codes)
+    \item \textbf{Frontend Product Integration}: 15+ tests (CRUD operations)
+    \item \textbf{Backend Product Integration}: 10 tests (all CRUD endpoints)
+    \item \textbf{Total}: 70+ integration tests
+\end{itemize}
+
+\newpage

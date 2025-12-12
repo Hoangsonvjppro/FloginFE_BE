@@ -1,0 +1,575 @@
+% PHẦN 2: TẤT CẢ 27 PRODUCT DETAILED TEST CASES
+
+\textbf{TC\_PRODUCT\_001: Create product với tất cả fields hợp lệ}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_001 \\ \hline
+\textbf{Test Name} & Tạo sản phẩm mới với đầy đủ thông tin hợp lệ \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Name: Laptop Dell XPS 15 \newline Price: 35000000 \newline Quantity: 10 \newline Category: Electronics \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Điền đầy đủ thông tin
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 201 Created, product xuất hiện trong list \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_001}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_002 \\ \hline
+\textbf{Test Name} & Create product với description rỗng (optional) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Description: (empty) \newline Price: 100000 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Fill required fields, leave description empty
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 201, description = "" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_002}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_003 \\ \hline
+\textbf{Test Name} & Name rỗng/null \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Name: (empty) \newline Price: 100000 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Leave name empty
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Product name is required" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_003}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_004 \\ \hline
+\textbf{Test Name} & Name < 3 chars (e.g. "AB") \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Name: AB \newline Price: 100000 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input 2-character name
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Name must be at least 3 characters" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_004}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_005 \\ \hline
+\textbf{Test Name} & Name = 3 chars (boundary min) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Name: ABC \newline Price: 100000 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input 3-character name
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 201, validation pass \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_005}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_006 \\ \hline
+\textbf{Test Name} & Name = 100 chars (boundary max) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Name: 100 ký tự \newline Price: 100000 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input 100-character name
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 201, validation pass \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_006}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_007 \\ \hline
+\textbf{Test Name} & Name > 100 chars (101 chars) \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Name: 101 ký tự \newline Price: 100000 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input 101-character name
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Name must not exceed 100 characters" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_007}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_008 \\ \hline
+\textbf{Test Name} & Price = 0 \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Price: 0 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input price = 0
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Price must be greater than 0" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_008}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_009 \\ \hline
+\textbf{Test Name} & Price negative (-100) \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Price: -100 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input negative price
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Price must be greater than 0" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_009}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_010 \\ \hline
+\textbf{Test Name} & Price = 0.01 (boundary min) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Price: 0.01 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input minimum valid price
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 201, validation pass \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_010}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_011 \\ \hline
+\textbf{Test Name} & Price = 999,999,999 (max) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Price: 999999999 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input maximum valid price
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 201, validation pass \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_011}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_012 \\ \hline
+\textbf{Test Name} & Price > 999,999,999 (1 billion) \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Price: 1000000000 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input price exceeding max
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Price must not exceed 999,999,999" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_012}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_013 \\ \hline
+\textbf{Test Name} & Quantity negative (-1) \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Price: 100000 \newline Quantity: -1 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input negative quantity
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Quantity must be >= 0" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_013}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_014 \\ \hline
+\textbf{Test Name} & Quantity = 0 (boundary min) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Price: 100000 \newline Quantity: 0 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input quantity = 0 (out of stock)
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 201, product created with quantity 0 \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_014}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_015 \\ \hline
+\textbf{Test Name} & Quantity = 99,999 (max) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Price: 100000 \newline Quantity: 99999 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input maximum valid quantity
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 201, validation pass \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_015}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_016 \\ \hline
+\textbf{Test Name} & Quantity > 99,999 (100,000) \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Price: 100000 \newline Quantity: 100000 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input quantity exceeding max
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Quantity must not exceed 99,999" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_016}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_017 \\ \hline
+\textbf{Test Name} & Description > 500 chars \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Description: 501 ký tự \newline Price: 100000 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input description exceeding 500 chars
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Description must not exceed 500 characters" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_017}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_018 \\ \hline
+\textbf{Test Name} & Category rỗng/null \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Price: 100000 \newline Category: (empty) \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Leave category empty
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Category is required" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_018}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_019 \\ \hline
+\textbf{Test Name} & GET all products - list có data \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Preconditions} & Database có products \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to /products
+    \item Observe product list
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 200, array of products displayed \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_019}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_020 \\ \hline
+\textbf{Test Name} & GET all products - empty list \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Preconditions} & Database không có products \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to /products
+    \item Observe empty list
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 200, empty array [], "No products found" message \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_020}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_021 \\ \hline
+\textbf{Test Name} & GET product by ID - ID tồn tại \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Product ID: 1 (exists) \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item GET /api/products/1
+    \item Verify response
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 200, product object returned \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_021}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_022 \\ \hline
+\textbf{Test Name} & GET product by ID - ID không tồn tại \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Product ID: 99999 (not exists) \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item GET /api/products/99999
+    \item Verify response
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 404, "Product not found" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_022}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_023 \\ \hline
+\textbf{Test Name} & Update product với dữ liệu hợp lệ \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Product ID: 5 \newline Updated Name: Updated Product \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click Edit on product ID 5
+    \item Change name, price, quantity
+    \item Click "Update"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 200, updated product returned \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_023}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_024 \\ \hline
+\textbf{Test Name} & Update product không tồn tại (ID invalid) \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Product ID: 99999 (not exists) \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item PUT /api/products/99999
+    \item Send valid update data
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 404, "Product not found" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_024}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_025 \\ \hline
+\textbf{Test Name} & Update với validation error (name empty) \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Product ID: 5 \newline Name: (empty) \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click Edit on product ID 5
+    \item Clear name field
+    \item Click "Update"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Name is required" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_025}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_026 \\ \hline
+\textbf{Test Name} & Delete product thành công \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Product ID: 10 (exists) \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click Delete on product ID 10
+    \item Confirm deletion
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 204, product removed from list \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_026}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_027 \\ \hline
+\textbf{Test Name} & Delete product không tồn tại \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Product ID: 99999 (not exists) \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item DELETE /api/products/99999
+    \item Verify response
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 404, "Product not found" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_027}
+\end{table}
+
+\newpage

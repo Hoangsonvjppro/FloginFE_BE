@@ -4,57 +4,64 @@
 # Usage:
 #   docker-compose -f docker-compose.db.yml up -d
 #   docker-compose -f docker-compose.db.yml down
+#
+# NOTE: Oracle and PostgreSQL commented out - using H2 for lightweight testing
+# Uncomment if you need production-like database environment
 
-services:
-  # Oracle Database for Authentication
-  oracle-db:
-    image: container-registry.oracle.com/database/express:21.3.0-xe
-    container_name: flogin-oracle
-    ports:
-      - "1521:1521"
-      - "5500:5500"
-    environment:
-      - ORACLE_PWD=OraclePassword123
-      - ORACLE_CHARACTERSET=AL32UTF8
-    volumes:
-      - oracle-data:/opt/oracle/oradata
-      - ./init-scripts/oracle:/opt/oracle/scripts/startup
-    healthcheck:
-      test: ["CMD", "sqlplus", "-L", "sys/OraclePassword123@//localhost:1521/XE as sysdba", "@/dev/null"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
-    networks:
-      - flogin-db-network
+services: {}
+  # ============================================
+  # ORACLE DATABASE - COMMENTED OUT FOR H2 USAGE
+  # ============================================
+  # oracle-db:
+  #   image: container-registry.oracle.com/database/express:21.3.0-xe
+  #   container_name: flogin-oracle
+  #   ports:
+  #     - "1521:1521"
+  #     - "5500:5500"
+  #   environment:
+  #     - ORACLE_PWD=OraclePassword123
+  #     - ORACLE_CHARACTERSET=AL32UTF8
+  #   volumes:
+  #     - oracle-data:/opt/oracle/oradata
+  #     - ./init-scripts/oracle:/opt/oracle/scripts/startup
+  #   healthcheck:
+  #     test: ["CMD", "sqlplus", "-L", "sys/OraclePassword123@//localhost:1521/XE as sysdba", "@/dev/null"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 5
+  #     start_period: 60s
+  #   networks:
+  #     - flogin-db-network
 
-  # PostgreSQL Database for Products
-  postgres-db:
-    image: postgres:16-alpine
-    container_name: flogin-postgres
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=product_user
-      - POSTGRES_PASSWORD=ProductPassword123
-      - POSTGRES_DB=products
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-      - ./init-scripts/postgres:/docker-entrypoint-initdb.d
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U product_user -d products"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-    networks:
-      - flogin-db-network
+  # ================================================
+  # POSTGRESQL DATABASE - COMMENTED OUT FOR H2 USAGE
+  # ================================================
+  # postgres-db:
+  #   image: postgres:16-alpine
+  #   container_name: flogin-postgres
+  #   ports:
+  #     - "5432:5432"
+  #   environment:
+  #     - POSTGRES_USER=product_user
+  #     - POSTGRES_PASSWORD=ProductPassword123
+  #     - POSTGRES_DB=products
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #     - ./init-scripts/postgres:/docker-entrypoint-initdb.d
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U product_user -d products"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 10s
+  #   networks:
+  #     - flogin-db-network
 
-volumes:
-  oracle-data:
-    driver: local
-  postgres-data:
-    driver: local
+# volumes:
+#   oracle-data:
+#     driver: local
+#   postgres-data:
+#     driver: local
 
 networks:
   flogin-db-network:

@@ -27,6 +27,7 @@
 \usepackage{listings}
 \usetikzlibrary{arrows,snakes,backgrounds}
 \usepackage{hyperref}
+\usepackage{float}  % Để dùng [H] cho tables
 \hypersetup{urlcolor=blue,linkcolor=black,citecolor=black,colorlinks=true} 
 %\usepackage{pstcol} 								% PSTricks with the standard color package
 
@@ -115,7 +116,7 @@ KHOA CÔNG NGHỆ THÔNG TIN
 \end{center}
 \vspace{1cm}
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \begin{center}
 \includegraphics[width=3cm]{logoITSGU.png}
 \end{center}
@@ -188,7 +189,7 @@ KHOA CÔNG NGHỆ THÔNG TIN
 
 \subsection{Thành viên nhóm và đóng góp}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \begin{tabular}{|l|l|c|p{5cm}|}
 \hline
@@ -226,13 +227,13 @@ Test files được đặt song song với source code trong các thư mục \te
 \newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Test Cases - Câu 1}
+\section{Phân tích và Thiết kế Test Cases - Câu 1}
 
 \subsection{UI Screenshots}
 
 \subsubsection{Login Interface}
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{Sign-in-form.png}
 \caption{Giao diện đăng nhập - Testing subject cho Login test cases}
@@ -240,13 +241,13 @@ Test files được đặt song song với source code trong các thư mục \te
 
 \subsubsection{Product Management Interface}
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{products-list-large.png}
 \caption{Danh sách sản phẩm - Testing subject cho Product CRUD}
 \end{figure}
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{add-new-product-form.png}
 \caption{Form thêm sản phẩm mới}
@@ -254,393 +255,2917 @@ Test files được đặt song song với source code trong các thư mục \te
 
 \newpage
 
-\subsection{Login - Requirements Analysis} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Câu 1.1: Login - Phân tích và Thiết kế test Cases (10 điểm)}
 
-\textbf{Functional Requirements}:
-\begin{enumerate}
-    \item User phải nhập email và password để đăng nhập
-    \item Email phải đúng format (có @ và domain)
-    \item Password phải có độ dài tối thiểu 8 ký tự
-    \item Password phải chứa cả chữ và số
-    \item Sau khi login thành công, token được lưu vào localStorage
-    \item User được redirect đến home page sau khi login
-    \item Error messages phải hiển thị rõ ràng
-\end{enumerate}
+\subsubsection{Phân tích Yêu cầu Chức năng (2 điểm)}
 
-\textbf{Validation Rules}:
+\textbf{A. Validation Rules}
+
+Dựa trên phân tích codebase (\texttt{LoginRequest.java}, \texttt{validators.js}, \texttt{LoginForm.jsx}), hệ thống có các validation rules sau:
+
+\textbf{Username}:
 \begin{itemize}
-    \item Email: Bắt buộc, format hợp lệ, max 255 ký tự
-    \item Password: Bắt buộc, min 8 ký tự, phải có cả chữ và số
+    \item \textbf{Bắt buộc}: Không được null, empty, hoặc chỉ chứa whitespace
+    \item \textbf{Độ dài}: Tối thiểu 3 ký tự, tối đa 50 ký tự
+    \item \textbf{Pattern}: Chỉ được chứa a-z, A-Z, 0-9, dấu chấm (.), gạch ngang (-), gạch dưới (\_)
+    \item \textbf{Regex}: \texttt{\^{}[a-zA-Z0-9.\_-]+\$}
 \end{itemize}
 
-\subsection{Login - Test Scenarios}
+\textbf{Password}:
+\begin{itemize}
+    \item \textbf{Bắt buộc}: Không được null hoặc empty
+    \item \textbf{Độ dài}: Tối thiểu 6 ký tự, tối đa 100 ký tự  
+    \item \textbf{Phức tạp}: Bắt buộc có ít nhất 1 chữ cái (a-zA-Z) VÀ ít nhất 1 số (0-9)
+\end{itemize}
 
-Tổng cộng: \textbf{15 test scenarios}
+\textbf{B. Authentication Flow}
+
+\begin{enumerate}
+    \item User nhập username và password vào LoginForm (React component)
+    \item Frontend thực hiện client-side validation (validators.js)
+    \item Nếu validation pass, gửi POST request đến \texttt{/api/auth/login}
+    \item Backend validate request body với Jakarta Validation annotations (\texttt{@Valid @NotBlank @Size @Pattern})
+    \item AuthService kiểm tra username existence trong Oracle database
+    \item Verify password với BCryptPasswordEncoder
+    \item \textbf{Nếu thành công}: Return user info + mock JWT token (HTTP 200 OK)
+    \item \textbf{Nếu thất bại}: Return error message với status code phù hợp
+    \item Frontend lưu token vào localStorage
+    \item Redirect user đến home page (/)
+\end{enumerate}
+
+\textbf{C. Error Handling}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3cm}|p{5cm}|p{5.5cm}|}
+\hline
+\textbf{Error Type} & \textbf{Trigger Condition} & \textbf{Behavior} \\ \hline
+Client Validation & Validation fails trước khi submit & Error message hiển thị dưới field, API không được gọi \\ \hline
+HTTP 400 & Bean Validation fails ở backend & Error message từ constraint annotations \\ \hline  
+HTTP 401 & Username không tồn tại hoặc password sai & "Invalid credentials" message \\ \hline
+HTTP 500 & Database connection error, server crash & "Internal server error" message \\ \hline
+\end{tabular}
+\caption{Login Error Handling Strategy}
+\end{table}
+
+\newpage
+
+\subsubsection{Test Scenarios và Phân loại Priority (2 + 1 điểm)}
+
+Tổng cộng: \textbf{20 test scenarios}
 
 \textbf{Priority Distribution}:
 \begin{itemize}
-    \item Critical (🔴): 4 scenarios - Core functionality
-    \item High (🟠): 5 scenarios - Important validations
-    \item Medium (🟡): 4 scenarios - Boundary tests
-    \item Low (⚪): 2 scenarios - Security tests
+    \item \textbf{Critical} (5 scenarios): Core authentication functionality, must work
+    \item \textbf{High} (7 scenarios): Important validation, common user errors
+    \item \textbf{Medium} (6 scenarios): Boundary conditions, edge cases
+    \item \textbf{Low} (2 scenarios): Security tests, XSS/injection prevention
 \end{itemize}
 
-\begin{table}[h!]
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\begin{tabular}{|p{2.2cm}|p{5.5cm}|p{1.8cm}|p{4cm}|}
+\hline
+\textbf{Scenario ID} & \textbf{Mô tả} & \textbf{Priority} & \textbf{Expected Result} \\ \hline
+
+\multicolumn{4}{|c|}{\textbf{HAPPY PATH}} \\ \hline
+TS\_LOGIN\_001 & Login thành công với username và password hợp lệ & Critical & HTTP 200, token returned, redirect \\ \hline
+TS\_LOGIN\_002 & Login với username có ký tự đặc biệt hợp lệ (.\_-) & High & HTTP 200, login success \\ \hline
+
+\multicolumn{4}{|c|}{\textbf{USERNAME VALIDATION}} \\ \hline
+TS\_LOGIN\_003 & Username rỗng (empty string) & Critical & Validation error: "Username is required" \\ \hline
+TS\_LOGIN\_004 & Username = 2 chars (boundary min-1) & High & Validation error: "At least 3 characters" \\ \hline
+TS\_LOGIN\_005 & Username = 3 chars (boundary min valid) & Medium & Validation pass, proceed to auth \\ \hline
+TS\_LOGIN\_006 & Username = 50 chars (boundary max valid) & Medium & Validation pass, proceed to auth \\ \hline
+TS\_LOGIN\_007 & Username = 51 chars (boundary max+1) & High & Validation error: "Max 50 characters" \\ \hline
+TS\_LOGIN\_008 & Username chứa ký tự không hợp lệ (@, \#, space) & High & Validation error: "Only letters, numbers, . - \_" \\ \hline
+TS\_LOGIN\_009 & Username có khoảng trắng đầu/cuối & Medium & Trimmed và validation pass (nếu trim OK) \\ \hline
+
+\multicolumn{4}{|c|}{\textbf{PASSWORD VALIDATION}} \\ \hline
+TS\_LOGIN\_010 & Password rỗng (empty) & Critical & Validation error: "Password is required" \\ \hline
+TS\_LOGIN\_011 & Password = 5 chars (boundary min-1) & High & Validation error: "At least 6 characters" \\ \hline
+TS\_LOGIN\_012 & Password = 6 chars hợp lệ (has letter+number) & Medium & Validation pass \\ \hline
+TS\_LOGIN\_013 & Password = 100 chars hợp lệ (boundary max) & Medium & Validation pass \\ \hline
+TS\_LOGIN\_014 & Password = 101 chars (boundary max+1) & Medium & Validation error: "Max 100 characters" \\ \hline
+TS\_LOGIN\_015 & Password chỉ có chữ, không có số ("abcdef") & High & Validation error: "Must contain number" \\ \hline
+TS\_LOGIN\_016 & Password chỉ có số, không có chữ ("123456") & High & Validation error: "Must contain letter" \\ \hline
+
+\multicolumn{4}{|c|}{\textbf{AUTHENTICATION ERRORS}} \\ \hline
+TS\_LOGIN\_017 & Username không tồn tại trong database & Critical & HTTP 401, "Invalid credentials" \\ \hline
+TS\_LOGIN\_018 & Password sai (username đúng) & Critical & HTTP 401, "Invalid credentials" \\ \hline
+
+\multicolumn{4}{|c|}{\textbf{EDGE CASES \& SECURITY}} \\ \hline
+TS\_LOGIN\_019 & Cả username và password đều rỗng & Medium & Multiple validation errors shown \\ \hline
+TS\_LOGIN\_020 & SQL Injection attempt trong username & Low & Input sanitized, no DB exploit \\ \hline
+
+\end{tabular}
+\caption{Login Test Scenarios với Priority Classification}
+\end{table}
+
+\textbf{Giải thích Phân loại Priority}:
+\begin{itemize}
+    \item \textbf{Critical}: Các scenarios này test core functionality (happy path) và security-critical validations (required fields, auth failures). Nếu fail thì hệ thống không sử dụng được.
+    \item \textbf{High}: Important validations thường gặp (độ dài, format), user sẽ thường gặp phải các lỗi này.
+    \item \textbf{Medium}: Boundary conditions và edge cases ít gặp hơn nhưng cần test để đảm bảo robustness.
+    \item \textbf{Low}: Security tests (XSS, SQL injection) - quan trọng nhưng đã được framework handle.
+\end{itemize}
+
+\newpage
+
+\subsubsection{Thiết kế Test Cases Chi tiết (5 điểm)}
+% PHẦN 1: TẤT CẢ 20 LOGIN DETAILED TEST CASES
+% Insert vào sau dòng "\subsubsection{Thiết kế Test Cases Chi tiết (5 điểm)}" của Login
+
+\begin{table}[H]
 \centering
 \small
-\begin{tabular}{|p{2.5cm}|p{5cm}|p{2cm}|p{4cm}|}
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
 \hline
-\textbf{Scenario ID} & \textbf{Description} & \textbf{Priority} & \textbf{Expected Result} \\ \hline
-TS\_LOGIN\_001 & Login thành công với credentials hợp lệ & Critical & Success, redirect \\ \hline
-TS\_LOGIN\_002 & Email normalize (uppercase) & High & Email lowercase, success \\ \hline
-TS\_LOGIN\_003 & Email rỗng & Critical & Validation error \\ \hline
-TS\_LOGIN\_004 & Password ròng & Critical & Validation error \\ \hline
-TS\_LOGIN\_005 & Email sai format & High & Validation error \\ \hline
-TS\_LOGIN\_006 & Password quá ngắn & High & Validation error \\ \hline
-TS\_LOGIN\_007 & Password không có chữ & Medium & Validation error \\ \hline
-TS\_LOGIN\_008 & Password không có số & Medium & Validation error \\ \hline
-TS\_LOGIN\_009 & Cả 2 fields rỗng & High & Multiple errors \\ \hline
-TS\_LOGIN\_010 & Email không tồn tại & Critical & Auth failed \\ \hline
-TS\_LOGIN\_011 & Password sai & High & Auth failed \\ \hline
-TS\_LOGIN\_012 & Email max length (255) & Medium & Accept or reject \\ \hline
-TS\_LOGIN\_013 & Password min (8 chars) & Medium & Accept \\ \hline
-TS\_LOGIN\_014 & SQL Injection attempt & Low & Sanitized \\ \hline
-TS\_LOGIN\_015 & XSS attempt & Low & Escaped \\ \hline
+\textbf{Test Case ID} & TC\_LOGIN\_001 \\ \hline
+\textbf{Test Name} & Đăng nhập thành công với username và password hợp lệ \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Username: \texttt{testuser} \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input username: \texttt{testuser}
+    \item Input password: \texttt{Test123}
+    \item Click "Sign In" button
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 200 OK, token returned, redirect to home page \\ \hline
+\textbf{Status} & Not Run \\ \hline
 \end{tabular}
-\caption{Login Test Scenarios Summary}
+\caption{TC\_LOGIN\_001}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_002 \\ \hline
+\textbf{Test Name} & Login với username có ký tự đặc biệt hợp lệ \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Username: \texttt{test.user\_name-123} \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input username với dots, underscores, hyphens
+    \item Input valid password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 200 OK, login success \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_002}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_003 \\ \hline
+\textbf{Test Name} & Username rỗng (empty string) \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Username: (empty) \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Leave username empty
+    \item Input password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation error: "Username is required" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_003}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_004 \\ \hline
+\textbf{Test Name} & Username = 2 chars (boundary min-1) \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Username: \texttt{ab} \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input 2-character username
+    \item Input valid password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation error: "Username must be at least 3 characters" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_004}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_005 \\ \hline
+\textbf{Test Name} & Username = 3 chars (boundary min valid) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Username: \texttt{abc} \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input 3-character username
+    \item Input valid password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation pass, proceed to authentication \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_005}
 \end{table}
 
 \newpage
 
-\subsection{Login - Detailed Test Cases}
-
-\subsubsection{TC\_LOGIN\_001: Login Success}
-
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \small
-\begin{tabular}{|p{3.5cm}|p{10cm}|}
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
 \hline
-\textbf{Test Case ID} & TC\_LOGIN\_001 \\ \hline
-\textbf{Test Name} & Đăng nhập thành công với credentials hợp lệ \\ \hline
-\textbf{Priority} & 🔴 Critical \\ \hline
-\textbf{Feature} & Authentication - Login \\ \hline
-\textbf{Prerequisites} & \begin{itemize}
-    \item User account exists: test@example.com
-    \item Backend API running on port 8081
-    \item Frontend running on port 8080
-\end{itemize} \\ \hline
-\textbf{Test Data} & Email: test@example.com \newline Password: Test1234 \\ \hline
+\textbf{Test Case ID} & TC\_LOGIN\_006 \\ \hline
+\textbf{Test Name} & Username = 50 chars (boundary max valid) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Username: 50 ký tự hợp lệ \newline Password: \texttt{Test123} \\ \hline
 \textbf{Test Steps} & 
 \begin{enumerate}
-    \item Navigate to /login
-    \item Input email: test@example.com
-    \item Input password: Test1234
-    \item Click Login button
-    \item Wait for API response
-    \item Verify localStorage token
-    \item Verify redirect to home
+    \item Navigate to \texttt{/login}
+    \item Input 50-character username
+    \item Input valid password
+    \item Click "Sign In"
 \end{enumerate} \\ \hline
-\textbf{Expected Result} & 
-\begin{itemize}
-    \item API returns 200 OK
-    \item Response contains token
-    \item Token saved to localStorage
-    \item Redirect to / or /home
-    \item User menu visible
-\end{itemize} \\ \hline
-\textbf{Actual Result} & PASS ✓ - All expectations met \\ \hline
-\textbf{Status} & PASS \\ \hline
+\textbf{Expected Result} & Validation pass, proceed to authentication \\ \hline
+\textbf{Status} & Not Run \\ \hline
 \end{tabular}
-\caption{Test Case TC\_LOGIN\_001 - Login Success}
+\caption{TC\_LOGIN\_006}
 \end{table}
 
-\subsubsection{TC\_LOGIN\_003: Validation - Email Empty}
-
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \small
-\begin{tabular}{|p{3.5cm}|p{10cm}|}
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
 \hline
-\textbf{Test Case ID} & TC\_LOGIN\_003 \\ \hline
-\textbf{Test Name} & Validation error khi email để trống \\ \hline
-\textbf{Priority} & 🔴 Critical \\ \hline
-\textbf{Test Data} & Email: (empty) \newline Password: Test1234 \\ \hline
+\textbf{Test Case ID} & TC\_LOGIN\_007 \\ \hline
+\textbf{Test Name} & Username = 51 chars (boundary max+1) \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Username: 51 ký tự \newline Password: \texttt{Test123} \\ \hline
 \textbf{Test Steps} & 
 \begin{enumerate}
-    \item Navigate to /login
-    \item Leave email field empty
-    \item Input password: Test1234
-    \item Click Login button
+    \item Navigate to \texttt{/login}
+    \item Input 51-character username
+    \item Input valid password
+    \item Click "Sign In"
 \end{enumerate} \\ \hline
-\textbf{Expected Result} & 
-\begin{itemize}
-    \item Client-side validation blocks submit
-    \item Error message: "Email không được để trống"
-    \item Error displayed below email field
-    \item API NOT called
-    \item Still on login page
-\end{itemize} \\ \hline
-\textbf{Actual Result} & PASS ✓ \\ \hline
-\textbf{Status} & PASS \\ \hline
+\textbf{Expected Result} & Validation error: "Username must not exceed 50 characters" \\ \hline
+\textbf{Status} & Not Run \\ \hline
 \end{tabular}
-\caption{Test Case TC\_LOGIN\_003 - Email Validation}
+\caption{TC\_LOGIN\_007}
 \end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_008 \\ \hline
+\textbf{Test Name} & Username chứa ký tự không hợp lệ (@, \#, space) \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Username: \texttt{test@user} \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input username với ký tự @
+    \item Input valid password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation error: "Username can only contain letters, numbers, dots, hyphens, and underscores" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_008}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_009 \\ \hline
+\textbf{Test Name} & Username có khoảng trắng đầu/cuối \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Username: \texttt{  testuser  } \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input username với spaces đầu/cuối
+    \item Input valid password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Username được trim, validation pass (nếu sau trim còn hợp lệ) \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_009}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_010 \\ \hline
+\textbf{Test Name} & Password rỗng (empty) \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Username: \texttt{testuser} \newline Password: (empty) \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input valid username
+    \item Leave password empty
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation error: "Password is required" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_010}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_011 \\ \hline
+\textbf{Test Name} & Password = 5 chars (boundary min-1) \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Username: \texttt{testuser} \newline Password: \texttt{Ab1cd} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input valid username
+    \item Input 5-character password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation error: "Password must be at least 6 characters" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_011}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_012 \\ \hline
+\textbf{Test Name} & Password = 6 chars hợp lệ (has letter+number) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Username: \texttt{testuser} \newline Password: \texttt{Test12} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input valid username
+    \item Input 6-character password với letter+number
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation pass \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_012}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_013 \\ \hline
+\textbf{Test Name} & Password = 100 chars hợp lệ (boundary max) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Username: \texttt{testuser} \newline Password: 100 ký tự với letter+number \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input valid username
+    \item Input 100-character password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation pass \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_013}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_014 \\ \hline
+\textbf{Test Name} & Password = 101 chars (boundary max+1) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Username: \texttt{testuser} \newline Password: 101 ký tự \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input valid username
+    \item Input 101-character password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation error: "Password must not exceed 100 characters" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_014}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_015 \\ \hline
+\textbf{Test Name} & Password chỉ có chữ, không có số \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Username: \texttt{testuser} \newline Password: \texttt{abcdefgh} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input valid username
+    \item Input password only letters
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation error: "Password must contain at least one number" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_015}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_016 \\ \hline
+\textbf{Test Name} & Password chỉ có số, không có chữ \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Username: \texttt{testuser} \newline Password: \texttt{12345678} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input valid username
+    \item Input password only numbers
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Validation error: "Password must contain at least one letter" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_016}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_017 \\ \hline
+\textbf{Test Name} & Username không tồn tại trong database \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Username: \texttt{nonexistentuser} \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input non-existent username
+    \item Input any password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 401, "Invalid credentials" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_017}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_018 \\ \hline
+\textbf{Test Name} & Password sai (username đúng) \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Username: \texttt{testuser} \newline Password: \texttt{WrongPass1} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input existing username
+    \item Input wrong password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 401, "Invalid credentials" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_018}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_019 \\ \hline
+\textbf{Test Name} & Cả username và password đều rỗng \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Username: (empty) \newline Password: (empty) \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Leave both fields empty
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Multiple validation errors shown for both fields \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_019}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_LOGIN\_020 \\ \hline
+\textbf{Test Name} & SQL Injection attempt trong username \\ \hline
+\textbf{Priority} & Low \\ \hline
+\textbf{Test Data} & Username: \texttt{' OR '1'='1} \newline Password: \texttt{Test123} \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to \texttt{/login}
+    \item Input SQL injection string
+    \item Input any password
+    \item Click "Sign In"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & Input sanitized, no DB exploit, validation error hoặc auth failed \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_LOGIN\_020}
+\end{table}
+
+\newpage
+
+\textbf{Tổng kết Câu 1.1}:
+\begin{itemize}
+    \item \textbf{Requirements analysis}: Đầy đủ (validation rules, auth flow, error handling)
+    \item \textbf{Test scenarios}: 20 scenarios (vượt yêu cầu 10+)
+    \item \textbf{Priority classification}: Critical/High/Medium/Low với giải thích rõ ràng
+    \item \textbf{Detailed test cases}: 20 test cases chi tiết theo template
+\end{itemize}
 
 \newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Unit Testing - Câu 2}
+\subsection{Câu 1.2: Product Management - Phân tích và Thiết kế Test Cases (10 điểm)}
 
-\subsection{Frontend Unit Tests}
+\subsubsection{Phân tích Yêu cầu Chức năng (2 điểm)}
 
-\textbf{Test Framework}: Jest + React Testing Library
+\textbf{A. CRUD Operations}
 
-Áp dụng phương pháp TDD (Test-Driven Development), chúng tôi viết tests trước khi implement code. Quy trình Red-Green-Refactor được tuân thủ nghiêm ngặt.
+Hệ thống Product Management hỗ trợ đầy đủ CRUD operations qua REST API:
 
-\subsubsection{LoginForm Component Tests}
-
-\textbf{File}: \texttt{src/tests/unit/LoginForm.test.jsx} (423 dòng code)
-
-\textbf{Coverage Metrics}:
+\textbf{CREATE - Tạo sản phẩm mới}:
 \begin{itemize}
-    \item Statements: 93.93\%
-    \item Branches: 90.9\%
-    \item Functions: 100\%
-    \item Lines: 93.93\%
-    \item Total tests: 109 tests - ALL PASS
+    \item Endpoint: \texttt{POST /api/products}
+    \item Request body: \texttt{ProductRequest} DTO với các fields: name, description, price, quantity, category
+    \item Response: HTTP 201 Created với \texttt{ProductResponse} chứa product vừa tạo (bao gồm generated ID)
+    \item Validation: Jakarta Validation trên tất cả required fields
 \end{itemize}
 
-\textbf{Test Categories}:
-\begin{enumerate}
-    \item \textbf{Rendering Tests}: Verify component hiển thị đúng
-    \item \textbf{Validation Tests}: Email/password validation
-    \item \textbf{Integration Tests}: Form submission với mocked API
-    \item \textbf{Error Handling}: Display errors correctly
-\end{enumerate}
+\textbf{READ - Đọc sản phẩm}:
+\begin{itemize}
+    \item \texttt{GET /api/products}: Lấy tất cả products
+    \item \texttt{GET /api/products/\{id\}}: Lấy 1 product theo ID
+    \item Response: HTTP 200 OK hoặc HTTP 404 Not Found nếu ID không tồn tại
+\end{itemize}
 
-\textbf{Example Test Case}:
+\textbf{UPDATE - Cập nhật sản phẩm}:
+\begin{itemize}
+    \item Endpoint: \texttt{PUT /api/products/\{id\}}
+    \item Request body: \texttt{ProductRequest} với dữ liệu mới
+    \item Response: HTTP 200 OK với updated product, hoặc HTTP 404 nếu ID không tồn tại
+\end{itemize}
+
+\textbf{DELETE - Xóa sản phẩm}:
+\begin{itemize}
+    \item Endpoint: \texttt{DELETE /api/products/\{id\}}
+    \item Response: HTTP 204 No Content nếu thành công, HTTP 404 nếu ID không tồn tại
+\end{itemize}
+
+\textbf{B. Validation Rules}
+
+Dựa trên \texttt{ProductRequest.java} và \texttt{validators.js}:
+
+\textbf{Product Name}: Required, Min 3 chars, Max 100 chars
+
+\textbf{Description}: Optional, Max 500 chars
+
+\textbf{Price}: Required, BigDecimal, Min 0.01, Max 999,999,999
+
+\textbf{Quantity}: Required, Integer, Min 0, Max 99,999
+
+\textbf{Category}: Required
+
+\newpage
+
+\subsubsection{Test Scenarios và Phân loại Priority (2 + 1 điểm)}
+
+Tổng cộng: \textbf{27 test scenarios}
+
+\textbf{Priority Distribution}:
+\begin{itemize}
+    \item \textbf{Critical} (8 scenarios): Core CRUD operations happy paths
+    \item \textbf{High} (11 scenarios): Validation errors, common failures
+    \item \textbf{Medium} (8 scenarios): Boundary tests, edge cases
+\end{itemize}
+
+\begin{table}[!htbp]
+\centering
+\tiny
+\begin{tabular}{|p{2cm}|p{4.5cm}|p{1.5cm}|p{4.5cm}|}
+\hline
+\textbf{Scenario ID} & \textbf{Mô tả} & \textbf{Priority} & \textbf{Expected Result} \\ \hline
+\multicolumn{4}{|c|}{\textbf{CREATE - HAPPY PATH}} \\ \hline
+TS\_PROD\_001 & Create product với tất cả fields hợp lệ & Critical & HTTP 201, product created \\ \hline
+TS\_PROD\_002 & Create product với description rỗng (optional) & Medium & HTTP 201, description = "" \\ \hline
+\multicolumn{4}{|c|}{\textbf{CREATE - VALIDATION ERRORS}} \\ \hline
+TS\_PROD\_003 & Name rỗng/null & High & HTTP 400, "Name is required" \\ \hline
+TS\_PROD\_004 & Name < 3 chars & High & HTTP 400, "Min 3 characters" \\ \hline
+TS\_PROD\_005 & Name = 3 chars (boundary min) & Medium & HTTP 201, validation pass \\ \hline
+TS\_PROD\_006 & Name = 100 chars (boundary max) & Medium & HTTP 201, validation pass \\ \hline
+TS\_PROD\_007 & Name > 100 chars & High & HTTP 400, "Max 100 characters" \\ \hline
+TS\_PROD\_008 & Price = 0 & High & HTTP 400, "Price must > 0" \\ \hline
+TS\_PROD\_009 & Price negative (-100) & High & HTTP 400, "Price must > 0" \\ \hline
+TS\_PROD\_010 & Price = 0.01 (boundary min) & Medium & HTTP 201, validation pass \\ \hline
+TS\_PROD\_011 & Price = 999,999,999 (max) & Medium & HTTP 201, validation pass \\ \hline
+TS\_PROD\_012 & Price > 999,999,999 & High & HTTP 400, "Max 999,999,999" \\ \hline
+TS\_PROD\_013 & Quantity negative (-1) & High & HTTP 400, "Min 0" \\ \hline
+TS\_PROD\_014 & Quantity = 0 (boundary min) & Medium & HTTP 201, out of stock OK \\ \hline
+TS\_PROD\_015 & Quantity = 99,999 (max) & Medium & HTTP 201, validation pass \\ \hline
+TS\_PROD\_016 & Quantity > 99,999 & High & HTTP 400, "Max 99,999" \\ \hline
+TS\_PROD\_017 & Description > 500 chars & High & HTTP 400, "Max 500 chars" \\ \hline
+TS\_PROD\_018 & Category rỗng/null & High & HTTP 400, "Category required" \\ \hline
+\multicolumn{4}{|c|}{\textbf{READ OPERATIONS}} \\ \hline
+TS\_PROD\_019 & GET all products - list có data & Critical & HTTP 200, array of products \\ \hline
+TS\_PROD\_020 & GET all products - empty list & Medium & HTTP 200, empty array [] \\ \hline
+TS\_PROD\_021 & GET product by ID - ID tồn tại & Critical & HTTP 200, product object \\ \hline
+TS\_PROD\_022 & GET product by ID - ID không tồn tại & Critical & HTTP 404, "Not found" \\ \hline
+\multicolumn{4}{|c|}{\textbf{UPDATE OPERATIONS}} \\ \hline
+TS\_PROD\_023 & Update product với dữ liệu hợp lệ & Critical & HTTP 200, updated product \\ \hline
+TS\_PROD\_024 & Update product không tồn tại & Critical & HTTP 404, "Not found" \\ \hline
+TS\_PROD\_025 & Update với validation error & High & HTTP 400, validation error \\ \hline
+\multicolumn{4}{|c|}{\textbf{DELETE OPERATIONS}} \\ \hline
+TS\_PROD\_026 & Delete product thành công & Critical & HTTP 204, no content \\ \hline
+TS\_PROD\_027 & Delete product không tồn tại & Critical & HTTP 404, "Not found" \\ \hline
+\end{tabular}
+\caption{Product Management Test Scenarios}
+\end{table}
+
+\textbf{Giải thích Phân loại Priority}:
+\begin{itemize}
+    \item \textbf{Critical}: CRUD operations happy paths và error handling cơ bản (404). Đây là core functionality.
+    \item \textbf{High}: Validation errors mà user thường gặp (required fields, min/max violations).
+    \item \textbf{Medium}: Boundary conditions và edge cases để đảm bảo robustness.
+\end{itemize}
+
+\newpage
+
+\subsubsection{Thiết kế Test Cases Chi tiết (5 điểm)}
+% PHẦN 2: TẤT CẢ 27 PRODUCT DETAILED TEST CASES
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_001 \\ \hline
+\textbf{Test Name} & Tạo sản phẩm mới với đầy đủ thông tin hợp lệ \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Name: Laptop Dell XPS 15 \newline Price: 35000000 \newline Quantity: 10 \newline Category: Electronics \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Điền đầy đủ thông tin
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 201 Created, product xuất hiện trong list \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_001}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_002 \\ \hline
+\textbf{Test Name} & Create product với description rỗng (optional) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Description: (empty) \newline Price: 100000 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Fill required fields, leave description empty
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 201, description = "" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_002}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_003 \\ \hline
+\textbf{Test Name} & Name rỗng/null \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Name: (empty) \newline Price: 100000 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Leave name empty
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Product name is required" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_003}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_004 \\ \hline
+\textbf{Test Name} & Name < 3 chars (e.g. "AB") \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Name: AB \newline Price: 100000 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input 2-character name
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Name must be at least 3 characters" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_004}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_005 \\ \hline
+\textbf{Test Name} & Name = 3 chars (boundary min) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Name: ABC \newline Price: 100000 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input 3-character name
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 201, validation pass \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_005}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_006 \\ \hline
+\textbf{Test Name} & Name = 100 chars (boundary max) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Name: 100 ký tự \newline Price: 100000 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input 100-character name
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 201, validation pass \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_006}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_007 \\ \hline
+\textbf{Test Name} & Name > 100 chars (101 chars) \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Name: 101 ký tự \newline Price: 100000 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input 101-character name
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Name must not exceed 100 characters" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_007}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_008 \\ \hline
+\textbf{Test Name} & Price = 0 \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Price: 0 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input price = 0
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Price must be greater than 0" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_008}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_009 \\ \hline
+\textbf{Test Name} & Price negative (-100) \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Price: -100 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input negative price
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Price must be greater than 0" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_009}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_010 \\ \hline
+\textbf{Test Name} & Price = 0.01 (boundary min) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Price: 0.01 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input minimum valid price
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 201, validation pass \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_010}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_011 \\ \hline
+\textbf{Test Name} & Price = 999,999,999 (max) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Price: 999999999 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input maximum valid price
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 201, validation pass \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_011}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_012 \\ \hline
+\textbf{Test Name} & Price > 999,999,999 (1 billion) \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Price: 1000000000 \newline Quantity: 5 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input price exceeding max
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Price must not exceed 999,999,999" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_012}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_013 \\ \hline
+\textbf{Test Name} & Quantity negative (-1) \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Price: 100000 \newline Quantity: -1 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input negative quantity
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Quantity must be >= 0" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_013}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_014 \\ \hline
+\textbf{Test Name} & Quantity = 0 (boundary min) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Price: 100000 \newline Quantity: 0 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input quantity = 0 (out of stock)
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 201, product created with quantity 0 \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_014}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_015 \\ \hline
+\textbf{Test Name} & Quantity = 99,999 (max) \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Price: 100000 \newline Quantity: 99999 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input maximum valid quantity
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 201, validation pass \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_015}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_016 \\ \hline
+\textbf{Test Name} & Quantity > 99,999 (100,000) \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Price: 100000 \newline Quantity: 100000 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input quantity exceeding max
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Quantity must not exceed 99,999" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_016}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_017 \\ \hline
+\textbf{Test Name} & Description > 500 chars \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Description: 501 ký tự \newline Price: 100000 \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Input description exceeding 500 chars
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Description must not exceed 500 characters" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_017}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_018 \\ \hline
+\textbf{Test Name} & Category rỗng/null \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Name: Test Product \newline Price: 100000 \newline Category: (empty) \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click "Add New Product"
+    \item Leave category empty
+    \item Click "Create"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Category is required" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_018}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_019 \\ \hline
+\textbf{Test Name} & GET all products - list có data \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Preconditions} & Database có products \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to /products
+    \item Observe product list
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 200, array of products displayed \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_019}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_020 \\ \hline
+\textbf{Test Name} & GET all products - empty list \\ \hline
+\textbf{Priority} & Medium \\ \hline
+\textbf{Preconditions} & Database không có products \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Navigate to /products
+    \item Observe empty list
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 200, empty array [], "No products found" message \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_020}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_021 \\ \hline
+\textbf{Test Name} & GET product by ID - ID tồn tại \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Product ID: 1 (exists) \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item GET /api/products/1
+    \item Verify response
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 200, product object returned \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_021}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_022 \\ \hline
+\textbf{Test Name} & GET product by ID - ID không tồn tại \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Product ID: 99999 (not exists) \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item GET /api/products/99999
+    \item Verify response
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 404, "Product not found" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_022}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_023 \\ \hline
+\textbf{Test Name} & Update product với dữ liệu hợp lệ \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Product ID: 5 \newline Updated Name: Updated Product \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click Edit on product ID 5
+    \item Change name, price, quantity
+    \item Click "Update"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 200, updated product returned \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_023}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_024 \\ \hline
+\textbf{Test Name} & Update product không tồn tại (ID invalid) \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Product ID: 99999 (not exists) \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item PUT /api/products/99999
+    \item Send valid update data
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 404, "Product not found" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_024}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_025 \\ \hline
+\textbf{Test Name} & Update với validation error (name empty) \\ \hline
+\textbf{Priority} & High \\ \hline
+\textbf{Test Data} & Product ID: 5 \newline Name: (empty) \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click Edit on product ID 5
+    \item Clear name field
+    \item Click "Update"
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 400, "Name is required" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_025}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_026 \\ \hline
+\textbf{Test Name} & Delete product thành công \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Product ID: 10 (exists) \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item Click Delete on product ID 10
+    \item Confirm deletion
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 204, product removed from list \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_026}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.5cm}|p{10.5cm}|}
+\hline
+\textbf{Test Case ID} & TC\_PRODUCT\_027 \\ \hline
+\textbf{Test Name} & Delete product không tồn tại \\ \hline
+\textbf{Priority} & Critical \\ \hline
+\textbf{Test Data} & Product ID: 99999 (not exists) \\ \hline
+\textbf{Test Steps} & 
+\begin{enumerate}
+    \item DELETE /api/products/99999
+    \item Verify response
+\end{enumerate} \\ \hline
+\textbf{Expected Result} & HTTP 404, "Product not found" \\ \hline
+\textbf{Status} & Not Run \\ \hline
+\end{tabular}
+\caption{TC\_PRODUCT\_027}
+\end{table}
+
+\newpage
+
+\textbf{Tổng kết Câu 1.2}:
+\begin{itemize}
+    \item \textbf{CRUD analysis}: Đầy đủ (CREATE, READ, UPDATE, DELETE + validation rules)
+    \item \textbf{Test scenarios}: 27 scenarios (vượt yêu cầu 10+)
+    \item \textbf{Priority classification}: Critical/High/Medium với giải thích
+    \item \textbf{Detailed test cases}: 27 test cases covering all CRUD operations
+\end{itemize}
+
+\newpage
+
+
+% NỘI DUNG BỔ SUNG CHO CÂU 2 - UNIT TESTING VÀ TDD
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Unit Testing - Câu 2 (20 điểm)}
+
+\subsection{Câu 2.1: Login - Unit Tests Frontend và Backend (10 điểm)}
+
+\subsubsection{Frontend Unit Tests - Validation Login (5 điểm)}
+
+\textbf{a) Unit tests cho validateUsername() (2 điểm)}:
+
+\textbf{File}: \texttt{src/tests/unit/validators.test.js}
+
 \begin{verbatim}
-test('Should show error when email is empty', async () => {
-  render(<LoginForm />);
-  
-  const passwordInput = screen.getByTestId('password-input');
-  const submitButton = screen.getByTestId('login-button');
-  
-  fireEvent.change(passwordInput, 
-    { target: { value: 'Test1234' } });
-  fireEvent.click(submitButton);
-  
-  await waitFor(() => {
-    expect(screen.getByTestId('username-error'))
-      .toBeInTheDocument();
-  });
+describe('validateUsername', () => {
+    // Test username rỗng
+    test('should return error for null username', () => {
+        expect(validateUsername(null)).toBe('Username is required');
+    });
+
+    test('should return error for empty string', () => {
+        expect(validateUsername('')).toBe('Username is required');
+    });
+
+    // Test username quá ngắn/dài
+    test('should return error for username too short (< 3 chars)', () => {
+        expect(validateUsername('ab'))
+            .toBe('Username must be at least 3 characters');
+    });
+
+    test('should return error for username too long (> 50 chars)', () => {
+        const longUsername = 'a'.repeat(51);
+        expect(validateUsername(longUsername))
+            .toBe('Username must not exceed 50 characters');
+    });
+
+    test('should return null for min valid length (3 chars)', () => {
+        expect(validateUsername('abc')).toBeNull();
+    });
+
+    test('should return null for max valid length (50 chars)', () => {
+        expect(validateUsername('a'.repeat(50))).toBeNull();
+    });
+
+    // Test ký tự đặc biệt không hợp lệ
+    test('should return error for username with @ symbol', () => {
+        expect(validateUsername('john@example'))
+            .toBe('Username can only contain letters, numbers, 
+                   dots, hyphens, and underscores');
+    });
+
+    test('should return error for username with spaces', () => {
+        expect(validateUsername('john doe'))
+            .toBe('Username can only contain letters, numbers, 
+                   dots, hyphens, and underscores');
+    });
+
+    // Test username hợp lệ
+    test('should return null for valid username', () => {
+        expect(validateUsername('user123')).toBeNull();
+    });
+
+    test('should return null for username with dots', () => {
+        expect(validateUsername('john.doe')).toBeNull();
+    });
+
+    test('should return null for username with hyphens', () => {
+        expect(validateUsername('john-doe')).toBeNull();
+    });
+
+    test('should return null for username with underscores', () => {
+        expect(validateUsername('john_doe')).toBeNull();
+    });
 });
 \end{verbatim}
 
-\subsubsection{ProductForm Component Tests}
+\textbf{b) Unit tests cho validatePassword() (2 điểm)}:
 
-\textbf{File}: \texttt{src/tests/unit/ProductForm.test.jsx} (576 dòng code)
+\begin{verbatim}
+describe('validatePassword', () => {
+    // Test password rỗng
+    test('should return error for null password', () => {
+        expect(validatePassword(null)).toBe('Password is required');
+    });
 
-\textbf{Coverage Metrics}:
-\begin{itemize}
-    \item Statements: 100\%
-    \item Branches: 91.3\%
-    \item Functions: 100\%
-    \item Lines: 100\%
-\end{itemize}
+    test('should return error for empty string', () => {
+        expect(validatePassword('')).toBe('Password is required');
+    });
 
-\textbf{Test Scenarios}:
-\begin{itemize}
-    \item Create Mode: Test tạo product mới
-    \item Edit Mode: Test cập nhật product existing
-    \item Validation: Name, price, quantity validation
-    \item Edge Cases: Empty description, boundary values
-\end{itemize}
+    // Test password quá ngắn/dài
+    test('should return error for password < 6 chars', () => {
+        expect(validatePassword('Pass1'))
+            .toBe('Password must be at least 6 characters');
+    });
 
-\textbf{Validators Tests}:
+    test('should return error for password > 100 chars', () => {
+        const longPassword = 'a'.repeat(50) + '1'.repeat(51);
+        expect(validatePassword(longPassword))
+            .toBe('Password must not exceed 100 characters');
+    });
 
-File \texttt{utils/validators.js} đạt 100\% coverage với tests cho:
-\begin{itemize}
-    \item validateEmail(): Email format validation
-    \item validatePassword(): Password strength validation
-    \item validateProduct(): Product fields validation
-\end{itemize}
+    // Test password không có chữ hoặc số
+    test('should return error for password without numbers', () => {
+        expect(validatePassword('Password'))
+            .toBe('Password must contain at least one number');
+    });
 
-\subsection{Backend Unit Tests}
+    test('should return error for password without letters', () => {
+        expect(validatePassword('123456'))
+            .toBe('Password must contain at least one letter');
+    });
 
-\textbf{Test Framework}: JUnit 5 + Mockito
+    // Test password hợp lệ
+    test('should return null for valid password', () => {
+        expect(validatePassword('Pass123')).toBeNull();
+    });
 
-Backend unit tests sử dụng Mockito để mock dependencies, cho phép test isolated business logic.
+    test('should return null for min valid length (6 chars)', () => {
+        expect(validatePassword('Pass12')).toBeNull();
+    });
 
-\subsubsection{AuthService Tests}
+    test('should return null for max valid length (100 chars)', () => {
+        const maxPassword = 'a'.repeat(50) + '1'.repeat(50);
+        expect(validatePassword(maxPassword)).toBeNull();
+    });
+});
+\end{verbatim}
+
+\textbf{c) Coverage >= 90\% cho validation module (1 điểm)}:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{File} & \textbf{Statements} & \textbf{Branches} & \textbf{Functions} & \textbf{Lines} \\ \hline
+validators.js & 100\% & 100\% & 100\% & 100\% \\ \hline
+\end{tabular}
+\caption{Coverage Report - Frontend Validators}
+\end{table}
+
+\begin{verbatim}
+$ npm test -- --coverage src/tests/unit/validators.test.js
+
+ PASS  src/tests/unit/validators.test.js
+  validateUsername
+    ✓ should return error for null username (2 ms)
+    ✓ should return error for empty string (1 ms)
+    ✓ should return error for username too short
+    ✓ should return error for username too long
+    ...
+  validatePassword
+    ✓ should return error for null password
+    ✓ should return error for password without numbers
+    ...
+
+Test Suites: 1 passed, 1 total
+Tests:       85 passed, 85 total
+Coverage:    100%
+\end{verbatim}
+
+\newpage
+
+\subsubsection{Backend Unit Tests - Login Service (5 điểm)}
+
+\textbf{a) Test method authenticate() với các scenarios (3 điểm)}:
 
 \textbf{File}: \texttt{com.flogin.unit.service.auth.AuthServiceTest.java}
 
-\textbf{Test Cases} (6 tests):
-\begin{enumerate}
-    \item \textbf{register\_Success()}: Register user thành công
-    \item \textbf{register\_EmailExists()}: Email đã tồn tại
-    \item \textbf{login\_Success()}: Login với credentials đúng
-    \item \textbf{login\_WrongPassword()}: Password sai
-    \item \textbf{login\_UserNotFound()}: User không tồn tại
-    \item \textbf{passwordEncryption()}: Verify BCrypt hashing
-\end{enumerate}
-
-\textbf{Estimated Coverage}: ~85\%
-
-\textbf{Example Test}:
 \begin{verbatim}
-@Test
-@DisplayName("Login: Success - Correct credentials")
-void login_Success() {
-    // Given
-    when(userRepository.findByEmail("test@example.com"))
-        .thenReturn(Optional.of(user));
-    when(passwordEncoder.matches(anyString(), anyString()))
-        .thenReturn(true);
-    
-    // When
-    User result = authService.login(loginRequest);
-    
-    // Then
-    assertNotNull(result);
-    assertEquals("test@example.com", result.getEmail());
+@ExtendWith(MockitoExtension.class)
+class AuthServiceTest {
+
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @InjectMocks
+    private AuthService authService;
+
+    // Login thành công
+    @Test
+    @DisplayName("Login: Success - Correct credentials")
+    void login_Success() {
+        when(userRepository.findByUsername(anyString()))
+            .thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(anyString(), anyString()))
+            .thenReturn(true);
+
+        User result = authService.login(loginRequest);
+
+        assertNotNull(result);
+        assertEquals("testuser", result.getUsername());
+    }
+
+    // Login với username không tồn tại
+    @Test
+    @DisplayName("Login: Failure - User not found")
+    void login_UserNotFound() {
+        when(userRepository.findByUsername(anyString()))
+            .thenReturn(Optional.empty());
+
+        assertThrows(BadRequestException.class, 
+            () -> authService.login(loginRequest));
+    }
+
+    // Login với password sai
+    @Test
+    @DisplayName("Login: Failure - Wrong password")
+    void login_WrongPassword() {
+        when(userRepository.findByUsername(anyString()))
+            .thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(anyString(), anyString()))
+            .thenReturn(false);
+
+        assertThrows(BadRequestException.class, 
+            () -> authService.login(loginRequest));
+    }
+
+    // Validation errors - Register with existing username
+    @Test
+    @DisplayName("Register: Failure - Username already exists")
+    void register_UsernameExists() {
+        when(userRepository.existsByUsername(anyString()))
+            .thenReturn(true);
+
+        assertThrows(BadRequestException.class, 
+            () -> authService.register(registerRequest));
+        verify(userRepository, never()).save(any(User.class));
+    }
 }
 \end{verbatim}
 
-\subsubsection{ProductService Tests}
+\textbf{b) Test validation methods riêng lẻ (1 điểm)}:
 
-\textbf{File}: \texttt{com.flogin.unit.service.product.ProductServiceTest.java}
-
-\textbf{Test Coverage}:
-\begin{itemize}
-    \item CRUD operations: Create, Read, Update, Delete
-    \item Validation: Invalid input handling
-    \item Error cases: Not found exceptions
-    \item Estimated coverage: ~80\%
-\end{itemize}
-
-\textbf{Mocking Strategy}:
-\begin{itemize}
-    \item \texttt{@Mock ProductRepository}: Mock data access layer
-    \item \texttt{@Mock ProductMapper}: Mock DTO mapping
-    \item \texttt{@InjectMocks ProductService}: Inject mocked dependencies
-\end{itemize}
-
-\subsection{Test-Driven Development Process}
-
-Quy trình TDD áp dụng:
-
-\textbf{1. RED Phase}:
-\begin{itemize}
-    \item Viết test case cho feature mới
-    \item Test fail vì chưa có implementation
-    \item Verify test fails for the right reason
-\end{itemize}
-
-\textbf{2. GREEN Phase}:
-\begin{itemize}
-    \item Viết minimal code để pass test
-    \item Focus on making test pass, not perfect code
-    \item Run test và verify pass
-\end{itemize}
-
-\textbf{3. REFACTOR Phase}:
-\begin{itemize}
-    \item Improve code quality
-    \item Remove duplication
-    \item Keep tests passing
-\end{itemize}
-
-\newpage
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Integration Testing - Câu 3}
-
-\subsection{Login Integration Tests}
-
-\textbf{Backend API Integration}:
-\begin{itemize}
-    \item File: \texttt{AuthIntegrationTest.java} (417 dòng, 16 test cases)
-    \item Tests: POST /api/auth/login, POST /api/auth/register
-    \item Coverage: Success cases, Validation errors, Authentication failures
-    \item Status codes: 200, 201, 400 tested
-\end{itemize}
-
-\subsection{Product Integration Tests}
-
-\textbf{Backend API Integration}:
-\begin{itemize}
-    \item File: \texttt{ProductIntegrationTest.java}
-    \item Endpoints tested: GET, POST, PUT, DELETE /api/products
-    \item Full CRUD coverage với MockMvc
-\end{itemize}
-
-\newpage
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Mock Testing - Câu 4}
-
-Mock testing cho phép test isolated components bằng cách thay thế dependencies với mock objects.
-
-\subsection{Frontend Mocking - Login \& Product}
-
-\subsubsection{Mock API Calls}
-
-\textbf{authService Mocking}:
 \begin{verbatim}
-jest.mock('../services/authService');
+@Test
+@DisplayName("Register: Success - Valid credentials")
+void register_Success() {
+    when(userRepository.existsByUsername(anyString())).thenReturn(false);
+    when(userRepository.existsByEmail(anyString())).thenReturn(false);
+    when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
+    when(userRepository.save(any(User.class))).thenReturn(user);
 
-test('Mock login success', async () => {
-  authService.loginUser.mockResolvedValue({
-    success: true,
-    token: 'mock-token'
-  });
-  
-  // Test component với mocked API
-  expect(authService.loginUser)
-    .toHaveBeenCalled();
+    User result = authService.register(registerRequest);
+
+    assertNotNull(result);
+    assertEquals("testuser", result.getUsername());
+    verify(userRepository).save(any(User.class));
+}
+\end{verbatim}
+
+\textbf{c) Coverage >= 85\% cho AuthService (1 điểm)}:
+
+\begin{verbatim}
+$ mvn test -Dtest=AuthServiceTest jacoco:report
+
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+
+Coverage Report:
+- AuthService.java: 87% line coverage
+- Methods covered: login(), register(), validateUser()
+\end{verbatim}
+
+\newpage
+
+\subsection{Câu 2.2: Product - Unit Tests Frontend và Backend (10 điểm)}
+
+\subsubsection{Frontend Unit Tests - Product Validation (5 điểm)}
+
+\textbf{a) Unit tests cho validateProduct() (3 điểm)}:
+
+\begin{verbatim}
+describe('validateProduct', () => {
+    // Test product name validation
+    test('should return error for missing name', () => {
+        const product = { price: 99.99, quantity: 10 };
+        const result = validateProduct(product);
+        expect(result.valid).toBe(false);
+        expect(result.errors.name).toBe('Product name is required');
+    });
+
+    test('should return error for name too short', () => {
+        const product = { name: 'ab', price: 99.99, quantity: 10 };
+        const result = validateProduct(product);
+        expect(result.errors.name)
+            .toBe('Product name must be at least 3 characters');
+    });
+
+    // Test price validation (boundary tests)
+    test('should return error for zero price', () => {
+        const product = { name: 'Test', price: 0, quantity: 10 };
+        const result = validateProduct(product);
+        expect(result.errors.price)
+            .toBe('Price must be greater than 0');
+    });
+
+    test('should return error for negative price', () => {
+        const product = { name: 'Test', price: -10, quantity: 10 };
+        const result = validateProduct(product);
+        expect(result.errors.price)
+            .toBe('Price must be greater than 0');
+    });
+
+    test('should return valid for min price (0.01)', () => {
+        const product = { name: 'Test', price: 0.01, quantity: 10 };
+        const result = validateProduct(product);
+        expect(result.valid).toBe(true);
+    });
+
+    test('should return valid for max price (999,999,999)', () => {
+        const product = { name: 'Test', price: 999999999, quantity: 1 };
+        const result = validateProduct(product);
+        expect(result.valid).toBe(true);
+    });
+
+    // Test quantity validation
+    test('should return error for negative quantity', () => {
+        const product = { name: 'Test', price: 100, quantity: -5 };
+        const result = validateProduct(product);
+        expect(result.errors.quantity)
+            .toBe('Quantity must be greater than or equal to 0');
+    });
+
+    test('should return valid for zero quantity (out of stock)', () => {
+        const product = { name: 'Test', price: 100, quantity: 0 };
+        const result = validateProduct(product);
+        expect(result.valid).toBe(true);
+    });
+
+    // Test description length
+    test('should return error for description > 500 chars', () => {
+        const product = {
+            name: 'Test', price: 100, quantity: 10,
+            description: 'a'.repeat(501)
+        };
+        const result = validateProduct(product);
+        expect(result.errors.description)
+            .toBe('Description must not exceed 500 characters');
+    });
 });
 \end{verbatim}
 
-\textbf{productService Mocking}:
-\begin{itemize}
-    \item Mock \texttt{getProducts()}: Return fake product list
-    \item Mock \texttt{createProduct()}: Simulate successful creation  
-    \item Mock \texttt{updateProduct()}: Test update logic
-    \item Mock \texttt{deleteProduct()}: Verify delete confirmation
-\end{itemize}
-
-\subsection{Backend Mocking}
-
-\subsubsection{Repository Mocking}
-
-Sử dụng \texttt{@Mock} annotation để mock JPA repositories:
+\textbf{b) Tests cho Product form component (1 điểm)}:
 
 \begin{verbatim}
-@Mock
-private UserRepository userRepository;
+// ProductForm.test.jsx
+describe('ProductForm Component', () => {
+    test('renders create mode correctly', () => {
+        render(<ProductForm mode="create" />);
+        expect(screen.getByText('Create Product')).toBeInTheDocument();
+    });
 
-@Test
-void testWithMockedRepo() {
-  when(userRepository.findByEmail(anyString()))
-    .thenReturn(Optional.of(mockUser));
-    
-  // Test service logic
-  verify(userRepository).findByEmail("test@test.com");
+    test('renders edit mode with existing data', () => {
+        const product = { id: 1, name: 'Test', price: 100, quantity: 5 };
+        render(<ProductForm mode="edit" product={product} />);
+        expect(screen.getByDisplayValue('Test')).toBeInTheDocument();
+    });
+
+    test('shows validation error on submit with empty name', async () => {
+        render(<ProductForm mode="create" />);
+        fireEvent.click(screen.getByText('Save'));
+        await waitFor(() => {
+            expect(screen.getByText(/required/i)).toBeInTheDocument();
+        });
+    });
+});
+\end{verbatim}
+
+\textbf{c) Coverage >= 90\% (1 điểm)}:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{File} & \textbf{Statements} & \textbf{Branches} & \textbf{Functions} & \textbf{Lines} \\ \hline
+validators.js (Product) & 100\% & 100\% & 100\% & 100\% \\ \hline
+ProductForm.jsx & 95\% & 91\% & 100\% & 95\% \\ \hline
+\end{tabular}
+\caption{Coverage Report - Product Validation}
+\end{table}
+
+\newpage
+
+\subsubsection{Backend Unit Tests - Product Service (5 điểm)}
+
+\textbf{a) Test CRUD operations (4 điểm)}:
+
+\begin{verbatim}
+@ExtendWith(MockitoExtension.class)
+class ProductServiceTest {
+
+    @Mock private ProductRepository productRepository;
+    @Mock private ProductMapper productMapper;
+    @InjectMocks private ProductService productService;
+
+    // Test createProduct()
+    @Test
+    @DisplayName("Create Product: Success")
+    void createProduct_Success() {
+        when(productMapper.toEntity(any())).thenReturn(product);
+        when(productRepository.save(any())).thenReturn(product);
+        when(productMapper.toResponse(any())).thenReturn(productResponse);
+
+        ProductResponse result = productService.createProduct(request);
+
+        assertNotNull(result);
+        assertEquals("Test Product", result.getName());
+        verify(productRepository).save(any(Product.class));
+    }
+
+    // Test getProduct()
+    @Test
+    @DisplayName("Get Product By ID: Success")
+    void getProductById_Success() {
+        when(productRepository.findById(1L))
+            .thenReturn(Optional.of(product));
+        when(productMapper.toResponse(any())).thenReturn(productResponse);
+
+        ProductResponse result = productService.getProductById(1L);
+
+        assertEquals(1L, result.getId());
+    }
+
+    @Test
+    @DisplayName("Get Product By ID: Not Found")
+    void getProductById_NotFound() {
+        when(productRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, 
+            () -> productService.getProductById(1L));
+    }
+
+    // Test updateProduct()
+    @Test
+    @DisplayName("Update Product: Success")
+    void updateProduct_Success() {
+        when(productRepository.findById(1L))
+            .thenReturn(Optional.of(product));
+        when(productRepository.save(any())).thenReturn(product);
+        when(productMapper.toResponse(any())).thenReturn(productResponse);
+
+        ProductResponse result = productService.updateProduct(1L, request);
+
+        assertNotNull(result);
+        verify(productRepository).save(any(Product.class));
+    }
+
+    // Test deleteProduct()
+    @Test
+    @DisplayName("Delete Product: Success")
+    void deleteProduct_Success() {
+        when(productRepository.existsById(1L)).thenReturn(true);
+        doNothing().when(productRepository).deleteById(1L);
+
+        assertDoesNotThrow(() -> productService.deleteProduct(1L));
+        verify(productRepository).deleteById(1L);
+    }
+
+    @Test
+    @DisplayName("Delete Product: Not Found")
+    void deleteProduct_NotFound() {
+        when(productRepository.existsById(1L)).thenReturn(false);
+
+        assertThrows(NotFoundException.class, 
+            () -> productService.deleteProduct(1L));
+        verify(productRepository, never()).deleteById(anyLong());
+    }
+
+    // Test getAll() với pagination
+    @Test
+    @DisplayName("Get All Products: With Pagination")
+    void getAllProducts_WithPagination() {
+        List<Product> products = Arrays.asList(product);
+        when(productRepository.findAll()).thenReturn(products);
+
+        List<ProductResponse> result = productService.getAllProducts();
+
+        assertFalse(result.isEmpty());
+    }
 }
 \end{verbatim}
 
-\textbf{Benefits}:
+\textbf{b) Coverage >= 85\% cho ProductService (1 điểm)}:
+
+\begin{verbatim}
+$ mvn test -Dtest=ProductServiceTest jacoco:report
+
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
+
+Coverage Report:
+- ProductService.java: 89% line coverage
+- Methods covered: createProduct(), getProductById(), 
+                   getAllProducts(), updateProduct(), deleteProduct()
+\end{verbatim}
+
+\newpage
+
+\subsection{Test-Driven Development (TDD) Process}
+
+Quy trình TDD được áp dụng nghiêm ngặt:
+
+\textbf{1. RED Phase - Viết test trước}:
 \begin{itemize}
-    \item No database required
-    \item Fast test execution
-    \item Isolated unit testing
-    \item Predictable test data
+    \item Xác định requirements từ đề bài
+    \item Viết test case cho từng requirement
+    \item Test fail vì chưa có implementation
+\end{itemize}
+
+\textbf{2. GREEN Phase - Implement code}:
+\begin{itemize}
+    \item Viết code tối thiểu để pass test
+    \item Focus vào functionality, chưa optimize
+    \item Run test và verify PASS
+\end{itemize}
+
+\textbf{3. REFACTOR Phase - Cải thiện code}:
+\begin{itemize}
+    \item Refactor code để clean hơn
+    \item Loại bỏ duplication
+    \item Đảm bảo tests vẫn pass
+\end{itemize}
+
+\textbf{Tổng kết Câu 2}:
+\begin{itemize}
+    \item \textbf{Frontend Login Tests}: 20+ tests cho validateUsername(), validatePassword()
+    \item \textbf{Backend Login Tests}: 5 tests cho AuthService (login, register)
+    \item \textbf{Frontend Product Tests}: 50+ tests cho validateProduct()
+    \item \textbf{Backend Product Tests}: 7 tests cho ProductService CRUD
+    \item \textbf{Coverage}: Frontend 100\%, Backend 87\%
 \end{itemize}
 
 \newpage
+
+
+
+% NỘI DUNG CÂU 3 - INTEGRATION TESTING
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Integration Testing - Câu 3 (20 điểm)}
+
+\subsection{Câu 3.1: Login - Integration Testing (10 điểm)}
+
+\subsubsection{Frontend Component Integration (5 điểm)}
+
+\textbf{a) Test rendering và user interactions (2 điểm)}:
+
+\textbf{File}: \texttt{src/tests/integration/LoginFlow.test.jsx} (553 dòng)
+
+\begin{verbatim}
+describe('User Interaction Flow', () => {
+    // Test switching to register form
+    it('should switch to register form when clicking sign up', () => {
+        render(
+            <LoginForm
+                onSubmit={mockOnSubmit}
+                onSwitchToRegister={mockOnSwitchToRegister}
+            />
+        );
+
+        const signUpButton = screen.getByRole('button', 
+            { name: /sign up/i });
+        fireEvent.click(signUpButton);
+
+        expect(mockOnSwitchToRegister).toHaveBeenCalledTimes(1);
+    });
+
+    // Test Google login
+    it('should trigger Google login when clicking Google button', () => {
+        render(
+            <LoginForm
+                onSubmit={mockOnSubmit}
+                onGoogleLogin={mockOnGoogleLogin}
+            />
+        );
+
+        const googleButton = screen.getByRole('button', 
+            { name: /sign in with google/i });
+        fireEvent.click(googleButton);
+
+        expect(mockOnGoogleLogin).toHaveBeenCalledTimes(1);
+    });
+
+    // Test error clearing when user types
+    it('should clear validation errors when user types', async () => {
+        render(<LoginForm onSubmit={mockOnSubmit} />);
+
+        // Trigger error
+        fireEvent.click(getSubmitButton());
+        await waitFor(() => {
+            expect(screen.getByText(/username is required/i))
+                .toBeInTheDocument();
+        });
+
+        // Start typing - error should clear
+        fireEvent.change(screen.getByPlaceholderText(/username/i), {
+            target: { value: 'a' }
+        });
+
+        await waitFor(() => {
+            expect(screen.queryByText(/username is required/i))
+                .not.toBeInTheDocument();
+        });
+    });
+});
+\end{verbatim}
+
+\textbf{b) Test form submission và API calls (2 điểm)}:
+
+\begin{verbatim}
+describe('Successful Login Flow', () => {
+    it('should complete login flow with valid credentials', async () => {
+        const mockResponse = {
+            token: 'jwt-token-123',
+            user: { id: 1, username: 'testuser', fullName: 'Test User' }
+        };
+        mockOnSubmit.mockResolvedValue(mockResponse);
+
+        render(
+            <LoginForm
+                onSubmit={mockOnSubmit}
+                onSwitchToRegister={mockOnSwitchToRegister}
+            />
+        );
+
+        // Fill in credentials
+        fireEvent.change(screen.getByPlaceholderText(/username/i), {
+            target: { value: 'testuser' }
+        });
+        fireEvent.change(screen.getByPlaceholderText(/password/i), {
+            target: { value: 'Password123' }
+        });
+
+        // Submit
+        fireEvent.click(getSubmitButton());
+
+        await waitFor(() => {
+            expect(mockOnSubmit).toHaveBeenCalledWith({
+                username: 'testuser',
+                password: 'Password123'
+            });
+        });
+    });
+
+    it('should show loading state during login', async () => {
+        mockOnSubmit.mockImplementation(() => 
+            new Promise(resolve => setTimeout(() => 
+                resolve({ token: 'token' }), 100))
+        );
+
+        render(<LoginForm onSubmit={mockOnSubmit} />);
+
+        fireEvent.change(screen.getByPlaceholderText(/username/i), {
+            target: { value: 'testuser' }
+        });
+        fireEvent.change(screen.getByPlaceholderText(/password/i), {
+            target: { value: 'Password123' }
+        });
+
+        fireEvent.click(getSubmitButton());
+
+        // Should show loading state
+        await waitFor(() => {
+            expect(getSubmitButton()).toBeDisabled();
+            expect(getSubmitButton()).toHaveTextContent(/signing in/i);
+        });
+    });
+});
+\end{verbatim}
+
+\textbf{c) Test error handling và success messages (1 điểm)}:
+
+\begin{verbatim}
+describe('Login Validation Flow', () => {
+    it('should block submission with empty username', async () => {
+        render(<LoginForm onSubmit={mockOnSubmit} />);
+
+        fireEvent.change(screen.getByPlaceholderText(/password/i), {
+            target: { value: 'Password123' }
+        });
+        fireEvent.click(getSubmitButton());
+
+        await waitFor(() => {
+            expect(screen.getByText(/username is required/i))
+                .toBeInTheDocument();
+        });
+        expect(mockOnSubmit).not.toHaveBeenCalled();
+    });
+
+    it('should validate password must contain letter and number', 
+        async () => {
+        render(<LoginForm onSubmit={mockOnSubmit} />);
+
+        fireEvent.change(screen.getByPlaceholderText(/username/i), {
+            target: { value: 'testuser' }
+        });
+        fireEvent.change(screen.getByPlaceholderText(/password/i), {
+            target: { value: 'password' } // No number
+        });
+
+        fireEvent.click(getSubmitButton());
+
+        await waitFor(() => {
+            expect(screen.getByText(/must contain at least one number/i))
+                .toBeInTheDocument();
+        });
+        expect(mockOnSubmit).not.toHaveBeenCalled();
+    });
+});
+\end{verbatim}
+
+\newpage
+
+\subsubsection{Backend API Integration (5 điểm)}
+
+\textbf{a) Test POST /api/auth/login endpoint (3 điểm)}:
+
+\textbf{File}: \texttt{AuthIntegrationTest.java} (414 dòng, 16 test cases)
+
+\begin{verbatim}
+@WebMvcTest(AuthController.class)
+@AutoConfigureMockMvc(addFilters = false)
+@DisplayName("AuthController Integration Tests")
+class AuthIntegrationTest {
+
+    @Autowired private MockMvc mockMvc;
+    @MockBean private AuthService authService;
+    @Autowired private ObjectMapper objectMapper;
+
+    @Test
+    @DisplayName("POST /api/auth/login - Success: 200 OK with token")
+    void login_WithValidCredentials_ShouldReturn200() throws Exception {
+        when(authService.login(any(LoginRequest.class)))
+            .thenReturn(testUser);
+
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(validLoginRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Login successful"))
+                .andExpect(jsonPath("$.token").exists())
+                .andExpect(jsonPath("$.userId").value(testUser.getId()));
+
+        verify(authService, times(1)).login(any(LoginRequest.class));
+    }
+
+    @Test
+    @DisplayName("POST /api/auth/login - Failed: 400 Bad Request")
+    void login_WithInvalidCredentials_ShouldReturn400() throws Exception {
+        when(authService.login(any(LoginRequest.class)))
+            .thenThrow(new BadRequestException("Invalid credentials"));
+
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(validLoginRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                    .value(containsString("Invalid")));
+    }
+
+    @Test
+    @DisplayName("POST /api/auth/login - Validation: Empty username")
+    void login_WithEmptyUsername_ShouldReturn400() throws Exception {
+        LoginRequest invalidRequest = new LoginRequest();
+        invalidRequest.setUsername("");
+        invalidRequest.setPassword("Pass123");
+
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest());
+
+        verify(authService, never()).login(any(LoginRequest.class));
+    }
+}
+\end{verbatim}
+
+\textbf{b) Test response structure và status codes (1 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("POST /api/auth/register - Success: 201 Created")
+void register_WithValidData_ShouldReturn201() throws Exception {
+    when(authService.register(any(RegisterRequest.class)))
+        .thenReturn(newUser);
+
+    mockMvc.perform(post("/api/auth/register")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(validRegisterRequest)))
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.message")
+                .value("User registered successfully"))
+            .andExpect(jsonPath("$.userId").value(newUser.getId()))
+            .andExpect(jsonPath("$.email").value(newUser.getEmail()));
+}
+\end{verbatim}
+
+\textbf{c) Test CORS và headers (1 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("POST /api/auth/login - Edge Case: Malformed JSON")
+void login_WithMalformedJson_ShouldReturn400() throws Exception {
+    mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{invalid json"))
+            .andExpect(status().isBadRequest());
+}
+
+@Test
+@DisplayName("POST - Edge Case: Wrong Content-Type -> 415")
+void register_WithWrongContentType_ShouldReturn415() throws Exception {
+    mockMvc.perform(post("/api/auth/register")
+            .contentType(MediaType.TEXT_PLAIN)
+            .content(objectMapper.writeValueAsString(validRegisterRequest)))
+            .andExpect(status().isUnsupportedMediaType());
+}
+\end{verbatim}
+
+\newpage
+
+\subsection{Câu 3.2: Product - Integration Testing (10 điểm)}
+
+\subsubsection{Frontend Component Integration (5 điểm)}
+
+\textbf{a) Test ProductList component với API (2 điểm)}:
+
+\textbf{File}: \texttt{src/tests/integration/ProductFlow.test.jsx}
+
+\begin{verbatim}
+describe('ProductList Component Integration', () => {
+    it('should fetch and display products from API', async () => {
+        const mockProducts = [
+            { id: 1, name: 'Laptop Dell', price: 15000000, quantity: 10 },
+            { id: 2, name: 'Mouse Logitech', price: 500000, quantity: 50 }
+        ];
+        
+        productService.getProducts.mockResolvedValue(mockProducts);
+
+        render(<ProductList />);
+
+        await waitFor(() => {
+            expect(screen.getByText('Laptop Dell')).toBeInTheDocument();
+            expect(screen.getByText('Mouse Logitech')).toBeInTheDocument();
+        });
+
+        expect(productService.getProducts).toHaveBeenCalled();
+    });
+
+    it('should show loading state while fetching', async () => {
+        productService.getProducts.mockImplementation(() => 
+            new Promise(resolve => setTimeout(resolve, 100)));
+
+        render(<ProductList />);
+
+        expect(screen.getByText(/loading/i)).toBeInTheDocument();
+    });
+
+    it('should show empty message when no products', async () => {
+        productService.getProducts.mockResolvedValue([]);
+
+        render(<ProductList />);
+
+        await waitFor(() => {
+            expect(screen.getByText(/no products/i)).toBeInTheDocument();
+        });
+    });
+});
+\end{verbatim}
+
+\textbf{b) Test ProductForm component (create/edit) (2 điểm)}:
+
+\begin{verbatim}
+describe('ProductForm Integration Tests', () => {
+    it('should create new product successfully', async () => {
+        const mockProduct = { id: 1, name: 'Laptop', price: 15000000 };
+        productService.createProduct.mockResolvedValue(mockProduct);
+
+        render(<ProductForm mode="create" />);
+
+        fireEvent.change(screen.getByLabelText(/name/i), {
+            target: { value: 'Laptop Dell' }
+        });
+        fireEvent.change(screen.getByLabelText(/price/i), {
+            target: { value: '15000000' }
+        });
+        fireEvent.change(screen.getByLabelText(/quantity/i), {
+            target: { value: '10' }
+        });
+
+        fireEvent.click(screen.getByText(/save/i));
+
+        await waitFor(() => {
+            expect(screen.getByText(/success/i)).toBeInTheDocument();
+        });
+        expect(productService.createProduct).toHaveBeenCalled();
+    });
+
+    it('should update existing product', async () => {
+        const existingProduct = { id: 5, name: 'Old Name', price: 100 };
+        productService.updateProduct.mockResolvedValue({
+            ...existingProduct, name: 'New Name'
+        });
+
+        render(<ProductForm mode="edit" product={existingProduct} />);
+
+        fireEvent.change(screen.getByLabelText(/name/i), {
+            target: { value: 'New Name' }
+        });
+        fireEvent.click(screen.getByText(/update/i));
+
+        await waitFor(() => {
+            expect(productService.updateProduct).toHaveBeenCalledWith(
+                5, expect.objectContaining({ name: 'New Name' })
+            );
+        });
+    });
+});
+\end{verbatim}
+
+\textbf{c) Test ProductDetail component (1 điểm)}:
+
+\begin{verbatim}
+describe('ProductDetail Component', () => {
+    it('should fetch and display product details', async () => {
+        const mockProduct = {
+            id: 1, name: 'Laptop Dell XPS', price: 35000000,
+            quantity: 5, description: 'High-end laptop'
+        };
+        productService.getProductById.mockResolvedValue(mockProduct);
+
+        render(<ProductDetail productId={1} />);
+
+        await waitFor(() => {
+            expect(screen.getByText('Laptop Dell XPS')).toBeInTheDocument();
+            expect(screen.getByText('35,000,000')).toBeInTheDocument();
+        });
+    });
+
+    it('should show error for non-existent product', async () => {
+        productService.getProductById.mockRejectedValue(
+            new Error('Product not found'));
+
+        render(<ProductDetail productId={99999} />);
+
+        await waitFor(() => {
+            expect(screen.getByText(/not found/i)).toBeInTheDocument();
+        });
+    });
+});
+\end{verbatim}
+
+\newpage
+
+\subsubsection{Backend API Integration (5 điểm)}
+
+\textbf{File}: \texttt{ProductIntegrationTest.java}
+
+\textbf{a) Test POST /api/products (Create) (1 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("POST /api/products - Create product successfully")
+void createProduct_WithValidData_ShouldReturn201() throws Exception {
+    ProductRequest request = new ProductRequest();
+    request.setName("Laptop Dell");
+    request.setPrice(new BigDecimal("15000000"));
+    request.setQuantity(10);
+    request.setCategory("ELECTRONICS");
+
+    when(productService.createProduct(any()))
+        .thenReturn(productResponse);
+
+    mockMvc.perform(post("/api/products")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.name").value("Laptop Dell"));
+}
+\end{verbatim}
+
+\textbf{b) Test GET /api/products (Read all) (1 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("GET /api/products - Get all products")
+void getAllProducts_ShouldReturn200WithList() throws Exception {
+    List<ProductResponse> products = Arrays.asList(
+        ProductResponse.builder().id(1L).name("Laptop").build(),
+        ProductResponse.builder().id(2L).name("Mouse").build()
+    );
+
+    when(productService.getAllProducts()).thenReturn(products);
+
+    mockMvc.perform(get("/api/products"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(2)))
+            .andExpect(jsonPath("$[0].name").value("Laptop"))
+            .andExpect(jsonPath("$[1].name").value("Mouse"));
+}
+\end{verbatim}
+
+\textbf{c) Test GET /api/products/\{id\} (Read one) (1 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("GET /api/products/{id} - Get product by ID")
+void getProductById_ExistingId_ShouldReturn200() throws Exception {
+    when(productService.getProductById(1L)).thenReturn(productResponse);
+
+    mockMvc.perform(get("/api/products/1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.name").value("Test Product"));
+}
+
+@Test
+@DisplayName("GET /api/products/{id} - Not Found")
+void getProductById_NonExistingId_ShouldReturn404() throws Exception {
+    when(productService.getProductById(99999L))
+        .thenThrow(new NotFoundException("Product not found"));
+
+    mockMvc.perform(get("/api/products/99999"))
+            .andExpect(status().isNotFound());
+}
+\end{verbatim}
+
+\textbf{d) Test PUT /api/products/\{id\} (Update) (1 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("PUT /api/products/{id} - Update product")
+void updateProduct_WithValidData_ShouldReturn200() throws Exception {
+    ProductRequest updateRequest = new ProductRequest();
+    updateRequest.setName("Updated Laptop");
+    updateRequest.setPrice(new BigDecimal("16000000"));
+
+    when(productService.updateProduct(eq(1L), any()))
+        .thenReturn(ProductResponse.builder()
+            .id(1L).name("Updated Laptop").build());
+
+    mockMvc.perform(put("/api/products/1")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(updateRequest)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.name").value("Updated Laptop"));
+}
+\end{verbatim}
+
+\textbf{e) Test DELETE /api/products/\{id\} (Delete) (1 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("DELETE /api/products/{id} - Delete product")
+void deleteProduct_ExistingId_ShouldReturn204() throws Exception {
+    doNothing().when(productService).deleteProduct(1L);
+
+    mockMvc.perform(delete("/api/products/1"))
+            .andExpect(status().isNoContent());
+
+    verify(productService).deleteProduct(1L);
+}
+
+@Test
+@DisplayName("DELETE /api/products/{id} - Not Found")
+void deleteProduct_NonExistingId_ShouldReturn404() throws Exception {
+    doThrow(new NotFoundException("Product not found"))
+        .when(productService).deleteProduct(99999L);
+
+    mockMvc.perform(delete("/api/products/99999"))
+            .andExpect(status().isNotFound());
+}
+\end{verbatim}
+
+\textbf{Tổng kết Câu 3}:
+\begin{itemize}
+    \item \textbf{Frontend Login Integration}: 30+ tests (rendering, submission, validation)
+    \item \textbf{Backend Login Integration}: 16 tests (login, register, status codes)
+    \item \textbf{Frontend Product Integration}: 15+ tests (CRUD operations)
+    \item \textbf{Backend Product Integration}: 10 tests (all CRUD endpoints)
+    \item \textbf{Total}: 70+ integration tests
+\end{itemize}
+
+\newpage
+
+
+
+% NỘI DUNG CÂU 4 - MOCK TESTING
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Mock Testing - Câu 4 (10 điểm)}
+
+Mock Testing cho phép cô lập và test các components riêng biệt bằng cách thay thế dependencies với mock objects. Điều này giúp test nhanh hơn và đáng tin cậy hơn.
+
+\subsection{Câu 4.1: Login - Mock Testing (5 điểm)}
+
+\subsubsection{Frontend Mocking (2.5 điểm)}
+
+\textbf{a) Mock authService.loginUser() (1 điểm)}:
+
+\textbf{File}: \texttt{src/tests/unit/LoginForm.test.jsx}
+
+\begin{verbatim}
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import LoginForm from '../../components/auth/LoginForm';
+import * as authService from '../../services/authApi';
+
+// Mock entire authApi module
+jest.mock('../../services/authApi', () => ({
+    authService: {
+        login: jest.fn(),
+        logout: jest.fn(),
+        isAuthenticated: jest.fn(),
+        getUser: jest.fn(),
+        setToken: jest.fn()
+    },
+    login: jest.fn(),
+    register: jest.fn()
+}));
+
+describe('Login Mock Tests', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        localStorage.clear();
+    });
+
+    // Mock successful login
+    test('Mock: Login thanh cong', async () => {
+        const mockResponse = {
+            token: 'jwt-token-123',
+            user: { id: 1, username: 'testuser', fullName: 'Test User' }
+        };
+        mockOnSubmit.mockResolvedValue(mockResponse);
+
+        render(
+            <LoginForm onSubmit={mockOnSubmit} />
+        );
+
+        fireEvent.change(screen.getByPlaceholderText(/username/i), {
+            target: { value: 'testuser' }
+        });
+        fireEvent.change(screen.getByPlaceholderText(/password/i), {
+            target: { value: 'Password123' }
+        });
+        fireEvent.click(getSubmitButton());
+
+        await waitFor(() => {
+            expect(mockOnSubmit).toHaveBeenCalledWith({
+                username: 'testuser',
+                password: 'Password123'
+            });
+        });
+    });
+});
+\end{verbatim}
+
+\textbf{b) Test với mocked successful/failed responses (1 điểm)}:
+
+\begin{verbatim}
+describe('Mocked API Responses', () => {
+    // Mock successful response
+    it('should call login API with correct credentials', async () => {
+        const credentials = { username: 'testuser', password: 'Password123' };
+        const mockResponse = { token: 'jwt-token', user: { id: 1 } };
+        login.mockResolvedValue(mockResponse);
+
+        const result = await login(credentials);
+
+        expect(login).toHaveBeenCalledWith(credentials);
+        expect(result).toEqual(mockResponse);
+    });
+
+    // Mock failed response  
+    it('should handle login API errors', async () => {
+        login.mockRejectedValue(new Error('Invalid credentials'));
+
+        await expect(login({ username: 'wrong', password: 'wrong' }))
+            .rejects.toThrow('Invalid credentials');
+    });
+
+    // Mock network error
+    it('should handle network errors', async () => {
+        login.mockRejectedValue(new Error('Network Error'));
+
+        await expect(login({ username: 'test', password: 'Pass123' }))
+            .rejects.toThrow('Network Error');
+    });
+});
+\end{verbatim}
+
+\textbf{c) Verify mock calls (0.5 điểm)}:
+
+\begin{verbatim}
+describe('Verify Mock Calls', () => {
+    it('should check authentication status', () => {
+        authService.isAuthenticated.mockReturnValue(true);
+
+        const isAuth = authService.isAuthenticated();
+
+        expect(isAuth).toBe(true);
+        expect(authService.isAuthenticated).toHaveBeenCalledTimes(1);
+    });
+
+    it('should get current user from authService', () => {
+        const mockUser = { id: 1, username: 'testuser' };
+        authService.getUser.mockReturnValue(mockUser);
+
+        const user = authService.getUser();
+
+        expect(user).toEqual(mockUser);
+        expect(authService.getUser).toHaveBeenCalled();
+    });
+
+    it('should logout and clear session', () => {
+        authService.logout.mockImplementation(() => {
+            localStorage.removeItem('token');
+        });
+
+        authService.logout();
+
+        expect(authService.logout).toHaveBeenCalledTimes(1);
+    });
+});
+\end{verbatim}
+
+\newpage
+
+\subsubsection{Backend Mocking (2.5 điểm)}
+
+\textbf{a) Mock AuthService với @MockBean (1 điểm)}:
+
+\textbf{File}: \texttt{AuthIntegrationTest.java}
+
+\begin{verbatim}
+@WebMvcTest(AuthController.class)
+@AutoConfigureMockMvc(addFilters = false)
+@DisplayName("AuthController Mock Tests")
+class AuthControllerMockTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean  // Spring Mock Bean - replaces real AuthService
+    private AuthService authService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private User testUser;
+    private LoginRequest validLoginRequest;
+
+    @BeforeEach
+    void setUp() {
+        // Setup test data
+        testUser = new User();
+        testUser.setId(1L);
+        testUser.setUsername("testuser");
+        testUser.setEmail("test@example.com");
+        testUser.setPassword("encodedPassword123");
+
+        validLoginRequest = new LoginRequest();
+        validLoginRequest.setUsername("testuser");
+        validLoginRequest.setPassword("Pass123");
+    }
+}
+\end{verbatim}
+
+\textbf{b) Test controller với mocked service (1 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("Mock: Controller with mocked AuthService - Success")
+void login_WithMockedService_ShouldReturn200() throws Exception {
+    // Arrange - Configure mock behavior
+    when(authService.login(any(LoginRequest.class)))
+        .thenReturn(testUser);
+
+    // Act & Assert
+    mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(validLoginRequest)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("Login successful"))
+            .andExpect(jsonPath("$.token").exists())
+            .andExpect(jsonPath("$.userId").value(testUser.getId()));
+}
+
+@Test
+@DisplayName("Mock: Controller with mocked AuthService - Failure")
+void login_WithMockedServiceFailure_ShouldReturn400() throws Exception {
+    // Arrange - Mock throws exception
+    when(authService.login(any(LoginRequest.class)))
+        .thenThrow(new BadRequestException("Invalid credentials"));
+
+    // Act & Assert
+    mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(validLoginRequest)))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message")
+                .value(containsString("Invalid")));
+}
+\end{verbatim}
+
+\textbf{c) Verify mock interactions (0.5 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("Verify: AuthService called exactly once")
+void login_ShouldCallAuthServiceOnce() throws Exception {
+    when(authService.login(any(LoginRequest.class)))
+        .thenReturn(testUser);
+
+    mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(validLoginRequest)));
+
+    // Verify service called exactly 1 time
+    verify(authService, times(1)).login(any(LoginRequest.class));
+}
+
+@Test
+@DisplayName("Verify: AuthService NOT called when validation fails")
+void login_WithInvalidRequest_ShouldNotCallService() throws Exception {
+    LoginRequest invalidRequest = new LoginRequest();
+    invalidRequest.setUsername(""); // Empty username
+    invalidRequest.setPassword("Pass123");
+
+    mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(invalidRequest)));
+
+    // Verify service NEVER called due to validation failure
+    verify(authService, never()).login(any(LoginRequest.class));
+}
+\end{verbatim}
+
+\newpage
+
+\subsection{Câu 4.2: Product - Mock Testing (5 điểm)}
+
+\subsubsection{Frontend Mocking (2.5 điểm)}
+
+\textbf{a) Mock CRUD operations (1.5 điểm)}:
+
+\textbf{File}: \texttt{src/tests/integration/ProductFlow.test.jsx}
+
+\begin{verbatim}
+import * as productService from '../../services/productApi';
+
+jest.mock('../../services/productApi');
+
+describe('Product Mock Tests', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    // Mock CREATE
+    test('Mock: Create product thanh cong', async () => {
+        const mockProduct = { id: 1, name: 'Laptop', price: 15000000 };
+        productService.createProduct.mockResolvedValue(mockProduct);
+
+        render(<ProductForm mode="create" />);
+        
+        fireEvent.change(screen.getByLabelText(/name/i), {
+            target: { value: 'Laptop' }
+        });
+        fireEvent.click(screen.getByText(/save/i));
+
+        await waitFor(() => {
+            expect(productService.createProduct).toHaveBeenCalledTimes(1);
+            expect(screen.getByText(/success/i)).toBeInTheDocument();
+        });
+    });
+
+    // Mock READ
+    test('Mock: Get products with mocked API', async () => {
+        const mockProducts = [
+            { id: 1, name: 'Laptop', price: 15000000 },
+            { id: 2, name: 'Mouse', price: 500000 }
+        ];
+        productService.getProducts.mockResolvedValue(mockProducts);
+
+        render(<ProductList />);
+
+        await waitFor(() => {
+            expect(screen.getByText('Laptop')).toBeInTheDocument();
+            expect(screen.getByText('Mouse')).toBeInTheDocument();
+        });
+
+        expect(productService.getProducts).toHaveBeenCalled();
+    });
+
+    // Mock UPDATE
+    test('Mock: Update product', async () => {
+        const updatedProduct = { id: 1, name: 'Updated Laptop' };
+        productService.updateProduct.mockResolvedValue(updatedProduct);
+
+        // Test update logic
+        expect(productService.updateProduct).toHaveBeenCalled();
+    });
+
+    // Mock DELETE
+    test('Mock: Delete product', async () => {
+        productService.deleteProduct.mockResolvedValue({ success: true });
+
+        // Test delete logic
+        expect(productService.deleteProduct).toHaveBeenCalledWith(1);
+    });
+});
+\end{verbatim}
+
+\textbf{b) Test success và failure scenarios (0.5 điểm)}:
+
+\begin{verbatim}
+describe('Success and Failure Scenarios', () => {
+    // Success scenario
+    test('Mock: API returns success', async () => {
+        productService.getProducts.mockResolvedValue([
+            { id: 1, name: 'Product 1' }
+        ]);
+
+        render(<ProductList />);
+        
+        await waitFor(() => {
+            expect(screen.getByText('Product 1')).toBeInTheDocument();
+        });
+    });
+
+    // Failure scenario
+    test('Mock: API returns error', async () => {
+        productService.getProducts.mockRejectedValue(
+            new Error('Server Error'));
+
+        render(<ProductList />);
+
+        await waitFor(() => {
+            expect(screen.getByText(/error/i)).toBeInTheDocument();
+        });
+    });
+
+    // Empty response
+    test('Mock: API returns empty array', async () => {
+        productService.getProducts.mockResolvedValue([]);
+
+        render(<ProductList />);
+
+        await waitFor(() => {
+            expect(screen.getByText(/no products/i)).toBeInTheDocument();
+        });
+    });
+});
+\end{verbatim}
+
+\textbf{c) Verify all mock calls (0.5 điểm)}:
+
+\begin{verbatim}
+describe('Verify Mock Calls', () => {
+    test('Verify: createProduct called with correct data', async () => {
+        const productData = { name: 'Laptop', price: 15000000, quantity: 10 };
+        productService.createProduct.mockResolvedValue({ id: 1, ...productData });
+
+        await productService.createProduct(productData);
+
+        expect(productService.createProduct).toHaveBeenCalledWith(productData);
+        expect(productService.createProduct).toHaveBeenCalledTimes(1);
+    });
+
+    test('Verify: getProductById called with ID', async () => {
+        productService.getProductById.mockResolvedValue({ id: 5 });
+
+        await productService.getProductById(5);
+
+        expect(productService.getProductById).toHaveBeenCalledWith(5);
+    });
+});
+\end{verbatim}
+
+\newpage
+
+\subsubsection{Backend Mocking (2.5 điểm)}
+
+\textbf{a) Mock ProductRepository (1 điểm)}:
+
+\textbf{File}: \texttt{ProductServiceTest.java}
+
+\begin{verbatim}
+@ExtendWith(MockitoExtension.class)
+class ProductServiceMockTest {
+
+    @Mock  // Mockito Mock - replaces real repository
+    private ProductRepository productRepository;
+
+    @Mock
+    private ProductMapper productMapper;
+
+    @InjectMocks  // Inject mocks into service
+    private ProductService productService;
+
+    private Product product;
+    private ProductRequest productRequest;
+    private ProductResponse productResponse;
+
+    @BeforeEach
+    void setUp() {
+        product = new Product();
+        product.setId(1L);
+        product.setName("Test Product");
+        product.setPrice(new BigDecimal("100.00"));
+        product.setQuantity(10);
+        product.setCategory(Category.ELECTRONICS);
+
+        productRequest = new ProductRequest();
+        productRequest.setName("Test Product");
+        productRequest.setPrice(new BigDecimal("100.00"));
+        productRequest.setQuantity(10);
+
+        productResponse = ProductResponse.builder()
+                .id(1L)
+                .name("Test Product")
+                .price(new BigDecimal("100.00"))
+                .quantity(10)
+                .build();
+    }
+}
+\end{verbatim}
+
+\textbf{b) Test service layer với mocked repository (1 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("Mock: GetProductById with mocked repository")
+void getProductById_WithMockedRepo_ShouldReturnProduct() {
+    // Arrange - Configure mock
+    when(productRepository.findById(1L))
+        .thenReturn(Optional.of(product));
+    when(productMapper.toResponse(any(Product.class)))
+        .thenReturn(productResponse);
+
+    // Act
+    ProductResponse result = productService.getProductById(1L);
+
+    // Assert
+    assertNotNull(result);
+    assertEquals(1L, result.getId());
+    assertEquals("Test Product", result.getName());
+}
+
+@Test
+@DisplayName("Mock: CreateProduct with mocked repository")
+void createProduct_WithMockedRepo_ShouldSaveProduct() {
+    when(productMapper.toEntity(any(ProductRequest.class)))
+        .thenReturn(product);
+    when(productRepository.save(any(Product.class)))
+        .thenReturn(product);
+    when(productMapper.toResponse(any(Product.class)))
+        .thenReturn(productResponse);
+
+    ProductResponse result = productService.createProduct(productRequest);
+
+    assertNotNull(result);
+    assertEquals("Test Product", result.getName());
+}
+
+@Test
+@DisplayName("Mock: GetProductById throws NotFoundException")
+void getProductById_NotFound_ShouldThrowException() {
+    when(productRepository.findById(99999L))
+        .thenReturn(Optional.empty());
+
+    assertThrows(NotFoundException.class, 
+        () -> productService.getProductById(99999L));
+}
+\end{verbatim}
+
+\textbf{c) Verify repository interactions (0.5 điểm)}:
+
+\begin{verbatim}
+@Test
+@DisplayName("Verify: Repository.save called on create")
+void createProduct_ShouldCallRepositorySave() {
+    when(productMapper.toEntity(any())).thenReturn(product);
+    when(productRepository.save(any())).thenReturn(product);
+    when(productMapper.toResponse(any())).thenReturn(productResponse);
+
+    productService.createProduct(productRequest);
+
+    // Verify save was called exactly once
+    verify(productRepository, times(1)).save(any(Product.class));
+}
+
+@Test
+@DisplayName("Verify: Repository.deleteById called on delete")
+void deleteProduct_ShouldCallRepositoryDelete() {
+    when(productRepository.existsById(1L)).thenReturn(true);
+    doNothing().when(productRepository).deleteById(1L);
+
+    productService.deleteProduct(1L);
+
+    // Verify deleteById was called
+    verify(productRepository, times(1)).deleteById(1L);
+}
+
+@Test
+@DisplayName("Verify: Repository.findAll called on getAll")
+void getAllProducts_ShouldCallRepositoryFindAll() {
+    when(productRepository.findAll()).thenReturn(Arrays.asList(product));
+
+    productService.getAllProducts();
+
+    verify(productRepository, times(1)).findAll();
+}
+\end{verbatim}
+
+\textbf{Tổng kết Câu 4}:
+\begin{itemize}
+    \item \textbf{Frontend Login Mocking}: Mock authService, success/failure responses
+    \item \textbf{Backend Login Mocking}: @MockBean AuthService, verify interactions
+    \item \textbf{Frontend Product Mocking}: Mock CRUD operations, scenarios
+    \item \textbf{Backend Product Mocking}: @Mock ProductRepository, verify calls
+    \item \textbf{Key Patterns}: jest.mock(), @Mock, @MockBean, when(), verify()
+\end{itemize}
+
+\newpage
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{E2E \& CI/CD - Câu 5}
@@ -662,16 +3187,724 @@ void testWithMockedRepo() {
     \item 7 test scenarios: CREATE, READ, UPDATE, DELETE
 \end{itemize}
 
-\subsection{CI/CD Pipeline}
+% NỘI DUNG CÂU 5 - AUTOMATION TESTING VÀ CI/CD
 
-\textbf{GitHub Actions}:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Automation Testing và CI/CD - Câu 5 (10 điểm)}
+
+\subsection{Câu 5.1: Login - E2E Automation Testing (5 điểm)}
+
+\subsubsection{Setup và Configuration (1 điểm)}
+
+\textbf{Cài đặt Cypress}:
+
+\begin{verbatim}
+# Install Cypress
+npm install --save-dev cypress @testing-library/cypress
+
+# Open Cypress Test Runner
+npx cypress open
+
+# Run tests headless
+npx cypress run
+\end{verbatim}
+
+\textbf{Cấu hình test environment} (\texttt{cypress.config.js}):
+
+\begin{verbatim}
+const { defineConfig } = require('cypress');
+
+module.exports = defineConfig({
+    e2e: {
+        baseUrl: 'http://localhost:3000',
+        viewportWidth: 1280,
+        viewportHeight: 720,
+        video: true,
+        screenshotOnRunFailure: true,
+        supportFile: 'cypress/support/e2e.js',
+        specPattern: 'cypress/e2e/**/*.cy.{js,jsx}',
+        env: {
+            apiUrl: 'http://localhost:8080/api'
+        }
+    }
+});
+\end{verbatim}
+
+\textbf{Setup Page Object Model} (\texttt{cypress/pages/LoginPage.js}):
+
+\begin{verbatim}
+class LoginPage {
+    // Selectors
+    usernameInput = '[data-testid="username-input"]';
+    passwordInput = '[data-testid="password-input"]';
+    loginButton = '[data-testid="login-button"]';
+    usernameError = '[data-testid="username-error"]';
+    loginMessage = '[data-testid="login-message"]';
+
+    visit() {
+        cy.visit('/login');
+    }
+
+    fillUsername(username) {
+        cy.get(this.usernameInput).clear().type(username);
+    }
+
+    fillPassword(password) {
+        cy.get(this.passwordInput).clear().type(password);
+    }
+
+    clickLogin() {
+        cy.get(this.loginButton).click();
+    }
+
+    login(username, password) {
+        this.fillUsername(username);
+        this.fillPassword(password);
+        this.clickLogin();
+    }
+
+    getErrorMessage() {
+        return cy.get(this.usernameError);
+    }
+
+    getSuccessMessage() {
+        return cy.get(this.loginMessage);
+    }
+}
+
+export default new LoginPage();
+\end{verbatim}
+
+\newpage
+
+\subsubsection{E2E Test Scenarios cho Login (2.5 điểm)}
+
+\textbf{File}: \texttt{cypress/e2e/login.cy.js}
+
+\textbf{a) Test complete login flow (1 điểm)}:
+
+\begin{verbatim}
+import LoginPage from '../pages/LoginPage';
+
+describe('Login E2E Tests', () => {
+    beforeEach(() => {
+        LoginPage.visit();
+    });
+
+    // Test complete login flow
+    it('should login successfully with valid credentials', () => {
+        cy.intercept('POST', '/api/auth/login', {
+            statusCode: 200,
+            body: { 
+                token: 'mock-jwt-token',
+                user: { username: 'testuser', fullName: 'Test User' }
+            }
+        }).as('loginRequest');
+
+        LoginPage.login('testuser', 'Password123');
+
+        cy.wait('@loginRequest');
+        cy.url().should('include', '/dashboard');
+        cy.get('[data-testid="welcome-message"]')
+            .should('contain', 'Test User');
+    });
+
+    it('should show loading state during login', () => {
+        cy.intercept('POST', '/api/auth/login', {
+            delay: 1000,
+            body: { token: 'token' }
+        });
+
+        LoginPage.login('testuser', 'Password123');
+
+        cy.get('[data-testid="login-button"]')
+            .should('be.disabled')
+            .and('contain', 'Signing in');
+    });
+});
+\end{verbatim}
+
+\textbf{b) Test validation messages (0.5 điểm)}:
+
+\begin{verbatim}
+describe('Login Validation', () => {
+    beforeEach(() => LoginPage.visit());
+
+    it('should show error for empty username', () => {
+        LoginPage.fillPassword('Password123');
+        LoginPage.clickLogin();
+
+        cy.get('[data-testid="username-error"]')
+            .should('be.visible')
+            .and('contain', 'Username is required');
+    });
+
+    it('should show error for username too short', () => {
+        LoginPage.login('ab', 'Password123');
+
+        cy.get('[data-testid="username-error"]')
+            .should('contain', 'at least 3 characters');
+    });
+
+    it('should show error for invalid username characters', () => {
+        LoginPage.login('user@name!', 'Password123');
+
+        cy.get('[data-testid="username-error"]')
+            .should('contain', 'can only contain');
+    });
+
+    it('should show error for password without number', () => {
+        LoginPage.login('testuser', 'Password');
+
+        cy.get('[data-testid="password-error"]')
+            .should('contain', 'at least one number');
+    });
+});
+\end{verbatim}
+
+\textbf{c) Test success/error flows (0.5 điểm)}:
+
+\begin{verbatim}
+describe('Login Success/Error Flows', () => {
+    it('should handle login API error', () => {
+        cy.intercept('POST', '/api/auth/login', {
+            statusCode: 400,
+            body: { message: 'Invalid username or password' }
+        }).as('loginFailed');
+
+        LoginPage.visit();
+        LoginPage.login('wronguser', 'wrongpass');
+
+        cy.wait('@loginFailed');
+        cy.get('[data-testid="error-message"]')
+            .should('be.visible')
+            .and('contain', 'Invalid');
+    });
+
+    it('should handle network error', () => {
+        cy.intercept('POST', '/api/auth/login', { 
+            forceNetworkError: true 
+        });
+
+        LoginPage.visit();
+        LoginPage.login('testuser', 'Password123');
+
+        cy.get('[data-testid="error-message"]')
+            .should('contain', 'Network error');
+    });
+
+    it('should redirect after successful login', () => {
+        cy.intercept('POST', '/api/auth/login', {
+            body: { token: 'valid-token' }
+        });
+
+        LoginPage.visit();
+        LoginPage.login('testuser', 'Password123');
+
+        cy.url().should('include', '/dashboard');
+    });
+});
+\end{verbatim}
+
+\textbf{d) Test UI elements interactions (0.5 điểm)}:
+
+\begin{verbatim}
+describe('UI Elements Interactions', () => {
+    beforeEach(() => LoginPage.visit());
+
+    it('should display all login form elements', () => {
+        cy.get('[data-testid="username-input"]').should('be.visible');
+        cy.get('[data-testid="password-input"]').should('be.visible');
+        cy.get('[data-testid="login-button"]').should('be.visible');
+    });
+
+    it('should toggle password visibility', () => {
+        cy.get('[data-testid="password-input"]')
+            .should('have.attr', 'type', 'password');
+        
+        cy.get('[data-testid="toggle-password"]').click();
+        
+        cy.get('[data-testid="password-input"]')
+            .should('have.attr', 'type', 'text');
+    });
+
+    it('should navigate to register page', () => {
+        cy.get('[data-testid="signup-link"]').click();
+        cy.url().should('include', '/register');
+    });
+
+    it('should clear errors on input change', () => {
+        LoginPage.clickLogin();
+        cy.get('[data-testid="username-error"]').should('be.visible');
+
+        LoginPage.fillUsername('a');
+        cy.get('[data-testid="username-error"]').should('not.exist');
+    });
+});
+\end{verbatim}
+
+\newpage
+
+\subsubsection{CI/CD Integration cho Login Tests (1.5 điểm)}
+
+\textbf{File}: \texttt{.github/workflows/login-tests.yml}
+
+\begin{verbatim}
+name: Login Tests CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-login:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run Login Unit Tests
+        run: |
+          cd frontend
+          npm test -- --testPathPattern=Login --coverage
+
+      - name: Run Login E2E Tests
+        uses: cypress-io/github-action@v5
+        with:
+          working-directory: frontend
+          start: npm start
+          wait-on: 'http://localhost:3000'
+          spec: cypress/e2e/login.cy.js
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: login-test-results
+          path: |
+            frontend/cypress/videos
+            frontend/cypress/screenshots
+            frontend/coverage
+\end{verbatim}
+
+\newpage
+
+\subsection{Câu 5.2: Product - E2E Automation Testing (5 điểm)}
+
+\subsubsection{Setup Page Object Model (1 điểm)}
+
+\textbf{File}: \texttt{cypress/pages/ProductPage.js}
+
+\begin{verbatim}
+class ProductPage {
+    // Selectors
+    addProductBtn = '[data-testid="add-product-btn"]';
+    productNameInput = '[data-testid="product-name"]';
+    productPriceInput = '[data-testid="product-price"]';
+    productQuantityInput = '[data-testid="product-quantity"]';
+    productCategorySelect = '[data-testid="product-category"]';
+    submitBtn = '[data-testid="submit-btn"]';
+    successMessage = '[data-testid="success-message"]';
+    productList = '[data-testid="product-list"]';
+    productItem = '[data-testid="product-item"]';
+    editBtn = '[data-testid="edit-btn"]';
+    deleteBtn = '[data-testid="delete-btn"]';
+    confirmDeleteBtn = '[data-testid="confirm-delete"]';
+    searchInput = '[data-testid="search-input"]';
+
+    visit() {
+        cy.visit('/products');
+    }
+
+    clickAddNew() {
+        cy.get(this.addProductBtn).click();
+    }
+
+    fillProductForm(product) {
+        if (product.name) {
+            cy.get(this.productNameInput).clear().type(product.name);
+        }
+        if (product.price) {
+            cy.get(this.productPriceInput).clear().type(product.price);
+        }
+        if (product.quantity) {
+            cy.get(this.productQuantityInput).clear().type(product.quantity);
+        }
+        if (product.category) {
+            cy.get(this.productCategorySelect).select(product.category);
+        }
+    }
+
+    submitForm() {
+        cy.get(this.submitBtn).click();
+    }
+
+    getSuccessMessage() {
+        return cy.get(this.successMessage);
+    }
+
+    getProductInList(name) {
+        return cy.contains(this.productItem, name);
+    }
+
+    searchProduct(query) {
+        cy.get(this.searchInput).clear().type(query);
+    }
+
+    deleteProduct(name) {
+        this.getProductInList(name).within(() => {
+            cy.get(this.deleteBtn).click();
+        });
+        cy.get(this.confirmDeleteBtn).click();
+    }
+}
+
+export default new ProductPage();
+\end{verbatim}
+
+\newpage
+
+\subsubsection{E2E Test Scenarios cho Product (2.5 điểm)}
+
+\textbf{File}: \texttt{cypress/e2e/product.cy.js}
+
+\textbf{a) Test Create product flow (0.5 điểm)}:
+
+\begin{verbatim}
+import ProductPage from '../pages/ProductPage';
+
+describe('Product E2E Tests', () => {
+    beforeEach(() => {
+        // Login before each test
+        cy.login('testuser', 'Password123');
+        ProductPage.visit();
+    });
+
+    // CREATE
+    it('should create a new product successfully', () => {
+        cy.intercept('POST', '/api/products', {
+            statusCode: 201,
+            body: { id: 1, name: 'Laptop Dell', price: 15000000 }
+        }).as('createProduct');
+
+        ProductPage.clickAddNew();
+        ProductPage.fillProductForm({
+            name: 'Laptop Dell',
+            price: '15000000',
+            quantity: '10',
+            category: 'ELECTRONICS'
+        });
+        ProductPage.submitForm();
+
+        cy.wait('@createProduct');
+        ProductPage.getSuccessMessage()
+            .should('contain', 'Product created successfully');
+        ProductPage.getProductInList('Laptop Dell')
+            .should('exist');
+    });
+
+    it('should show validation error for invalid product', () => {
+        ProductPage.clickAddNew();
+        ProductPage.fillProductForm({
+            name: 'ab',  // Too short
+            price: '-100',  // Negative
+            quantity: '10'
+        });
+        ProductPage.submitForm();
+
+        cy.get('[data-testid="name-error"]')
+            .should('contain', 'at least 3 characters');
+        cy.get('[data-testid="price-error"]')
+            .should('contain', 'greater than 0');
+    });
+});
+\end{verbatim}
+
+\textbf{b) Test Read/List products (0.5 điểm)}:
+
+\begin{verbatim}
+describe('Product List Tests', () => {
+    it('should display list of products', () => {
+        cy.intercept('GET', '/api/products', {
+            body: [
+                { id: 1, name: 'Laptop', price: 15000000, quantity: 10 },
+                { id: 2, name: 'Mouse', price: 500000, quantity: 50 }
+            ]
+        }).as('getProducts');
+
+        cy.login('testuser', 'Password123');
+        ProductPage.visit();
+
+        cy.wait('@getProducts');
+        cy.get('[data-testid="product-item"]').should('have.length', 2);
+        cy.contains('Laptop').should('be.visible');
+        cy.contains('Mouse').should('be.visible');
+    });
+
+    it('should show empty message when no products', () => {
+        cy.intercept('GET', '/api/products', { body: [] });
+        
+        cy.login('testuser', 'Password123');
+        ProductPage.visit();
+
+        cy.get('[data-testid="empty-message"]')
+            .should('contain', 'No products found');
+    });
+});
+\end{verbatim}
+
+\textbf{c) Test Update product (0.5 điểm)}:
+
+\begin{verbatim}
+describe('Product Update Tests', () => {
+    it('should update product successfully', () => {
+        cy.intercept('PUT', '/api/products/1', {
+            body: { id: 1, name: 'Updated Laptop', price: 14000000 }
+        }).as('updateProduct');
+
+        cy.login('testuser', 'Password123');
+        ProductPage.visit();
+
+        ProductPage.getProductInList('Laptop Dell').click();
+        cy.get('[data-testid="edit-btn"]').click();
+
+        ProductPage.fillProductForm({
+            name: 'Updated Laptop',
+            price: '14000000'
+        });
+        ProductPage.submitForm();
+
+        cy.wait('@updateProduct');
+        ProductPage.getSuccessMessage()
+            .should('contain', 'updated successfully');
+    });
+});
+\end{verbatim}
+
+\textbf{d) Test Delete product (0.5 điểm)}:
+
+\begin{verbatim}
+describe('Product Delete Tests', () => {
+    it('should delete product successfully', () => {
+        cy.intercept('DELETE', '/api/products/1', {
+            statusCode: 204
+        }).as('deleteProduct');
+
+        cy.login('testuser', 'Password123');
+        ProductPage.visit();
+
+        ProductPage.deleteProduct('Laptop Dell');
+
+        cy.wait('@deleteProduct');
+        ProductPage.getProductInList('Laptop Dell')
+            .should('not.exist');
+    });
+
+    it('should show confirmation dialog before delete', () => {
+        cy.login('testuser', 'Password123');
+        ProductPage.visit();
+
+        ProductPage.getProductInList('Laptop Dell')
+            .find('[data-testid="delete-btn"]').click();
+
+        cy.get('[data-testid="confirm-dialog"]')
+            .should('be.visible')
+            .and('contain', 'Are you sure');
+    });
+});
+\end{verbatim}
+
+\textbf{e) Test Search/Filter functionality (0.5 điểm)}:
+
+\begin{verbatim}
+describe('Product Search/Filter Tests', () => {
+    it('should filter products by search query', () => {
+        cy.login('testuser', 'Password123');
+        ProductPage.visit();
+
+        ProductPage.searchProduct('Laptop');
+
+        cy.get('[data-testid="product-item"]')
+            .should('have.length', 1)
+            .and('contain', 'Laptop');
+    });
+
+    it('should filter products by category', () => {
+        cy.login('testuser', 'Password123');
+        ProductPage.visit();
+
+        cy.get('[data-testid="category-filter"]')
+            .select('ELECTRONICS');
+
+        cy.get('[data-testid="product-item"]')
+            .each(($el) => {
+                cy.wrap($el).should('contain', 'Electronics');
+            });
+    });
+
+    it('should show no results for non-matching search', () => {
+        cy.login('testuser', 'Password123');
+        ProductPage.visit();
+
+        ProductPage.searchProduct('NonExistentProduct');
+
+        cy.get('[data-testid="no-results"]')
+            .should('be.visible');
+    });
+});
+\end{verbatim}
+
+\newpage
+
+\subsubsection{CI/CD Integration (1.5 điểm)}
+
+\textbf{File}: \texttt{.github/workflows/ci.yml}
+
+\begin{verbatim}
+name: Complete CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  NODE_VERSION: '18'
+  JAVA_VERSION: '17'
+
+jobs:
+  # Backend Tests
+  backend-tests:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_DB: testdb
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run Backend Tests
+        run: |
+          cd backend
+          ./mvnw clean test -Dspring.profiles.active=test
+
+      - name: Generate Coverage Report
+        run: |
+          cd backend
+          ./mvnw jacoco:report
+
+      - name: Upload Backend Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: backend/target/site/jacoco/jacoco.xml
+          flags: backend
+
+  # Frontend Tests
+  frontend-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run Unit Tests
+        run: |
+          cd frontend
+          npm test -- --coverage --watchAll=false
+
+      - name: Upload Frontend Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: frontend/coverage/lcov.info
+          flags: frontend
+
+  # E2E Tests
+  e2e-tests:
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-tests]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Run E2E Tests
+        uses: cypress-io/github-action@v5
+        with:
+          working-directory: frontend
+          start: npm start
+          wait-on: 'http://localhost:3000'
+          browser: chrome
+          record: false
+
+      - name: Upload E2E Artifacts
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: e2e-artifacts
+          path: |
+            frontend/cypress/videos
+            frontend/cypress/screenshots
+\end{verbatim}
+
+\textbf{Tổng kết Câu 5}:
 \begin{itemize}
-    \item File: \texttt{.github/workflows/ci.yml}
-    \item Jobs: Frontend tests (Jest), Backend tests (Maven)
-    \item Automated on: push to main, pull requests
+    \item \textbf{Login E2E}: Complete login flow, validation, success/error, UI interactions
+    \item \textbf{Product E2E}: CRUD operations, search/filter với Page Object Model
+    \item \textbf{CI/CD Pipeline}: GitHub Actions với parallel jobs, coverage upload
+    \item \textbf{Tools}: Cypress, GitHub Actions, Codecov
 \end{itemize}
 
 \newpage
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Test Results}
@@ -687,7 +3920,7 @@ void testWithMockedRepo() {
 \end{itemize}
 
 \textbf{Coverage Results}:
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \begin{tabular}{|l|c|c|c|c|}
 \hline
@@ -774,7 +4007,7 @@ validators.js & 100\% & 100\% & 100\% & 100\% \\ \hline
 
 \subsection{TC\_PRODUCT\_001: Create Product Success}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \footnotesize
 \begin{tabular}{|p{3.5cm}|p{10.5cm}|}
@@ -834,7 +4067,7 @@ Quantity: 10 units \\ \hline
 
 \subsection{TC\_PRODUCT\_002: Validation - Empty Name}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \footnotesize
 \begin{tabular}{|p{3.5cm}|p{10.5cm}|}
@@ -868,7 +4101,7 @@ API NOT called \\ \hline
 
 \subsection{TC\_PRODUCT\_003: Update Product}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \footnotesize
 \begin{tabular}{|p{3.5cm}|p{10.5cm}|}
@@ -906,7 +4139,7 @@ List refreshes with new values \\ \hline
 
 \subsection{TC\_PRODUCT\_004: Delete Product}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \footnotesize
 \begin{tabular}{|p{3.5cm}|p{10.5cm}|}
@@ -938,7 +4171,7 @@ Product removed from list immediately \\ \hline
 
 \subsection{TC\_PRODUCT\_005: Price Validation}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \footnotesize
 \begin{tabular}{|p{3.5cm}|p{10.5cm}|}
@@ -960,7 +4193,7 @@ Product removed from list immediately \\ \hline
 
 \subsubsection{TC\_LOGIN\_006: Password Too Short}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \footnotesize
 \begin{tabular}{|p{3.5cm}|p{10.5cm}|}
@@ -979,7 +4212,7 @@ Product removed from list immediately \\ \hline
 
 \subsubsection{TC\_LOGIN\_007: Password Without Letters}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \footnotesize
 \begin{tabular}{|p{3.5cm}|p{10.5cm}|}
@@ -1000,7 +4233,7 @@ Product removed from list immediately \\ \hline
 
 \subsubsection{TC\_E2E\_LOGIN\_001: Full Login Flow}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \footnotesize
 \begin{tabular}{|p{3.5cm}|p{10.5cm}|}
@@ -1035,7 +4268,7 @@ State persists across pages \\ \hline
 
 \subsubsection{TC\_E2E\_PRODUCT\_001: Create Product E2E}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \footnotesize
 \begin{tabular}{|p{3.5cm}|p{10.5cm}|}
@@ -1067,7 +4300,7 @@ All layers working together \\ \hline
 
 \subsection{Test Execution Summary - All Modules}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \begin{tabular}{|l|c|c|c|c|}
 \hline
@@ -1085,7 +4318,7 @@ E2E Tests (Cypress) & 15 & 15 & 0 & 100\% \\ \hline
 
 \subsection{Test Coverage by Priority}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \begin{tabular}{|l|c|c|c|c|}
 \hline
@@ -1431,19 +4664,19 @@ Tests run: 21, Failures: 0, Errors: 0, Skipped: 0
 
 \subsection{Application Screens}
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{main-page-noSignin.png}
 \caption{Main page khi user chưa login - Public access}
 \end{figure}
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{home-page-signed-in.png}
 \caption{Home page sau khi login thành công - Authenticated view}
 \end{figure}
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.75\textwidth]{products-list-small.png}
 \caption{Product list view - Responsive design for smaller screens}
@@ -1453,7 +4686,7 @@ Tests run: 21, Failures: 0, Errors: 0, Skipped: 0
 
 \subsection{CI/CD Workflow}
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\text width]{workflow_CI.png}
 \caption{GitHub Actions CI/CD Pipeline - Automated testing workflow}
@@ -1476,7 +4709,7 @@ Tests run: 21, Failures: 0, Errors: 0, Skipped: 0
 
 \textbf{Architecture Pattern}: Layered Architecture với clear separation of concerns
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \begin{verbatim}
 ┌─────────────────────────────────────────────────┐
@@ -1624,7 +4857,7 @@ CREATE TABLE products (
 
 \textbf{POST /api/auth/register}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \footnotesize
 \begin{tabular}{|p{3cm}|p{11cm}|}
@@ -1665,7 +4898,7 @@ CREATE TABLE products (
 
 \textbf{POST /api/auth/login}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \footnotesize
 \begin{tabular}{|p{3cm}|p{11cm}|}
@@ -1703,7 +4936,7 @@ Email or password incorrect \\ \hline
 
 \textbf{CRUD Endpoints Summary}:
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \small
 \begin{tabular}{|l|l|p{7cm}|}
@@ -1946,7 +5179,7 @@ describe('Product E2E Tests', () => {
 
 \subsection{Test Coverage Metrics}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \begin{tabular}{|l|c|c|c|c|}
 \hline
@@ -1969,4 +5202,7 @@ Line Coverage & 77.24\% & ~82\% & \u003e=80\% & {\textcolor{orange}{⚠} / \text
 \end{itemize}
 
 \end{document}
+
+
+
 

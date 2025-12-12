@@ -2,6 +2,7 @@ package com.flogin;
 
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -25,6 +26,12 @@ import javax.sql.DataSource;
 )
 public class AuthDataSourceConfig {
     
+    @Value("${spring.jpa.auth.hibernate.dialect:org.hibernate.dialect.H2Dialect}")
+    private String hibernateDialect;
+    
+    @Value("${spring.jpa.hibernate.ddl-auto:update}")
+    private String ddlAuto;
+    
     @Primary
     @Bean(name = "authDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.auth")
@@ -39,8 +46,8 @@ public class AuthDataSourceConfig {
             @Qualifier("authDataSource") DataSource dataSource) {
         
         java.util.Map<String, Object> properties = new java.util.HashMap<>();
-        properties.put("hibernate.dialect", "org.hibernate.dialect.OracleDialect");
-        properties.put("hibernate.hbm2ddl.auto", "update");
+        properties.put("hibernate.dialect", hibernateDialect);
+        properties.put("hibernate.hbm2ddl.auto", ddlAuto);
         properties.put("hibernate.show_sql", "false");
         properties.put("hibernate.format_sql", "true");
         
